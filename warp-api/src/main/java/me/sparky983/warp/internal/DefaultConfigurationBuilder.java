@@ -13,7 +13,7 @@ import org.jspecify.annotations.NullMarked;
 /**
  * The default implementation of {@link ConfigurationBuilder}.
  *
- * @param <T> the type of the configuration class.
+ * @param <T> the type of the {@link Configuration @Configuration} class.
  */
 @NullMarked
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
@@ -29,10 +29,9 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
     Objects.requireNonNull(configurationClass, "configurationClass cannot be null");
     if (!configurationClass.isAnnotationPresent(Configuration.class)) {
       throw new IllegalArgumentException(
-          "Class "
-              + configurationClass.getName()
-              + " must be annotated with @"
-              + Configuration.class.getName());
+          String.format(
+              "Class %s must be annotated with @%s",
+              configurationClass.getName(), Configuration.class.getName()));
     }
     this.configurationClass = configurationClass;
   }
