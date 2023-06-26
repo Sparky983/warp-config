@@ -45,7 +45,16 @@ public sealed interface ConfigurationValue {
    *
    * @since 0.1
    */
-  non-sealed interface List extends ConfigurationValue, Iterable<ConfigurationValue> {}
+  non-sealed interface List extends ConfigurationValue, Iterable<ConfigurationValue> {
+    /**
+     * Returns a {@link java.util.List} of the values.
+     *
+     * @return the values
+     * @since 0.1
+     */
+    java.util.List<ConfigurationValue> values();
+  }
+
 
   /**
    * A map of string keys to values.
@@ -53,6 +62,14 @@ public sealed interface ConfigurationValue {
    * @since 0.1
    */
   non-sealed interface Map extends ConfigurationValue {
+    /**
+     * Returns a {@link java.util.Map} of the values.
+     *
+     * @return the values
+     * @since 0.1
+     */
+    java.util.Map<String, ConfigurationValue> values();
+
     /**
      * Returns the value with the given key.
      *
