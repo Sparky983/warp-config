@@ -15,12 +15,13 @@ import org.jspecify.annotations.NullMarked;
  * <p>Properties can be declared optional by using an {@link Optional} return type.
  *
  * <p>Implementations must handle at least the following return types:
+ *
  * <ul>
- *   <li>{@code byte}, {@code short}, {@code int}, {@code long}</li>
- *   <li>{@code float}, {@code double}</li>
- *   <li>{@code boolean}</li>
- *   <li>{@code char}</li>
- *   <li>{@link String}</li>
+ *   <li>{@code byte}, {@code short}, {@code int}, {@code long}
+ *   <li>{@code float}, {@code double}
+ *   <li>{@code boolean}
+ *   <li>{@code char}
+ *   <li>{@link String}
  * </ul>
  *
  * @since 0.1
