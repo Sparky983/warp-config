@@ -10,13 +10,14 @@ class ConfigurationSourceTest {
   void testOf_Null() {
     assertThrows(NullPointerException.class, () -> ConfigurationSource.of(null));
   }
-  
+
   @Test
   void testOf() {
-    final var value = ConfigurationValue.map()
-        .entry("test", ConfigurationValue.primitive("value 1"))
-        .entry("test-2", ConfigurationValue.primitive("value 2"))
-        .build();
+    final var value =
+        ConfigurationValue.map()
+            .entry("test", ConfigurationValue.primitive("value 1"))
+            .entry("test-2", ConfigurationValue.primitive("value 2"))
+            .build();
 
     final var source = ConfigurationSource.of(value);
 

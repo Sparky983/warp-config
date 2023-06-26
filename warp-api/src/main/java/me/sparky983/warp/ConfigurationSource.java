@@ -1,8 +1,7 @@
 package me.sparky983.warp;
 
-import org.jspecify.annotations.NullMarked;
-
 import java.util.Optional;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * A configuration source.

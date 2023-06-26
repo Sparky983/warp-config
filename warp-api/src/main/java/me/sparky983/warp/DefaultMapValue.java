@@ -5,17 +5,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * The default implementation of {@link ConfigurationValue.Map}.
- */
+/** The default implementation of {@link ConfigurationValue.Map}. */
 record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue> values)
     implements ConfigurationValue.Map {
   /**
    * Constructs the map values.
-   * 
+   *
    * @param values the values
-   * @throws NullPointerException if the values map is {@code null} or has an entry that contains 
-   * {@code null}.
+   * @throws NullPointerException if the values map is {@code null} or has an entry that contains
+   *     {@code null}.
    */
   DefaultMapValue(final java.util.Map<String, ConfigurationValue> values) {
     this.values = java.util.Map.copyOf(values);
@@ -31,9 +29,7 @@ record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue> value
     return values.keySet();
   }
 
-  /**
-   * The default implementation of {@link Builder}.
-   */
+  /** The default implementation of {@link Builder}. */
   static final class DefaultBuilder implements Builder {
     private final java.util.Map<String, ConfigurationValue> values = new HashMap<>();
 

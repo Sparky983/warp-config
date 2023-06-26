@@ -66,13 +66,18 @@ class WarpTest {
       @Property("test.property")
       String property();
     }
-    final var configuration = Warp.builder(TestConfiguration.class)
-        .source(ConfigurationSource.of(ConfigurationValue.map()
-            .entry("test", ConfigurationValue.map()
-                .entry("property", ConfigurationValue.primitive("Some value"))
-                .build())
-            .build()))
-        .build();
+    final var configuration =
+        Warp.builder(TestConfiguration.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationValue.map()
+                        .entry(
+                            "test",
+                            ConfigurationValue.map()
+                                .entry("property", ConfigurationValue.primitive("Some value"))
+                                .build())
+                        .build()))
+            .build();
 
     assertEquals("Some value", configuration.property());
   }

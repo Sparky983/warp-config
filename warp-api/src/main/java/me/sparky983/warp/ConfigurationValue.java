@@ -1,11 +1,10 @@
 package me.sparky983.warp;
 
 import java.util.Arrays;
-import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NullMarked;
-
 import java.util.Optional;
 import java.util.Set;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * The possible types of configuration values.

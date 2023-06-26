@@ -52,17 +52,21 @@ final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
    */
   @SuppressWarnings("unchecked")
   private T newProxyInstance(final InvocationHandler invocationHandler) {
-    return (T) Proxy.newProxyInstance(
-        configurationClass.getClassLoader(), new Class[] {configurationClass}, invocationHandler);
+    return (T)
+        Proxy.newProxyInstance(
+            configurationClass.getClassLoader(),
+            new Class[] {configurationClass},
+            invocationHandler);
   }
 
   @Override
   public T build() {
-    return newProxyInstance((proxy, method, args) -> {
-      if (method.getDeclaringClass().equals(Object.class)) {
-        return method.invoke(proxy, args);
-      }
-      throw new RuntimeException("TODO");
-    });
+    return newProxyInstance(
+        (proxy, method, args) -> {
+          if (method.getDeclaringClass().equals(Object.class)) {
+            return method.invoke(proxy, args);
+          }
+          throw new RuntimeException("TODO: to");
+        });
   }
 }

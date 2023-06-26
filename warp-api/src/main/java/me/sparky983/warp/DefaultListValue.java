@@ -11,7 +11,7 @@ record DefaultListValue(@Override java.util.List<ConfigurationValue> values)
    * Constructs the list of values.
    *
    * @param values the list of values; changes in this list will not be reflected in the created
-   *              values
+   *     values
    * @throws NullPointerException if the values list is {@code null} or one of the values are {@code
    *     null}.
    */
