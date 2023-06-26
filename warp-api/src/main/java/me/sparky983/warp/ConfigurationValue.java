@@ -3,6 +3,9 @@ package me.sparky983.warp;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
+import me.sparky983.warp.internal.DefaultListValue;
+import me.sparky983.warp.internal.DefaultMapValue;
+import me.sparky983.warp.internal.DefaultPrimitiveValue;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 

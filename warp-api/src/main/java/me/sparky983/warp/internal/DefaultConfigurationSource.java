@@ -1,21 +1,22 @@
-package me.sparky983.warp;
+package me.sparky983.warp.internal;
 
 import java.util.Objects;
 import java.util.Optional;
+import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.ConfigurationValue.Map;
 import org.jspecify.annotations.NullMarked;
 
 /** The default {@link ConfigurationSource} implementation. */
 @NullMarked
-final class DefaultConfigurationSource implements ConfigurationSource {
+public final class DefaultConfigurationSource implements ConfigurationSource {
   /** Lazily load {@link #EMPTY} via class loading. */
-  static final class Empty {
+  public static final class Empty {
     /** A cached empty instance. */
-    static final ConfigurationSource EMPTY = new DefaultConfigurationSource();
+    public static final ConfigurationSource EMPTY = new DefaultConfigurationSource();
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // an optimization
-  private final Optional<ConfigurationValue.Map> configuration;
+  private final Optional<Map> configuration;
 
   /** A constructor for the empty configuration source. */
   private DefaultConfigurationSource() {
@@ -28,7 +29,7 @@ final class DefaultConfigurationSource implements ConfigurationSource {
    * @param configuration the map
    * @throws NullPointerException if the configuration is {@code null}.
    */
-  DefaultConfigurationSource(final ConfigurationValue.Map configuration) {
+  public DefaultConfigurationSource(final Map configuration) {
     // More accurate exception message than Optional.of
     Objects.requireNonNull(configuration, "configuration cannot be null");
     this.configuration = Optional.of(configuration);

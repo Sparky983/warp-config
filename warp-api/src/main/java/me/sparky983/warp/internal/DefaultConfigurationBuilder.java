@@ -1,10 +1,12 @@
-package me.sparky983.warp;
+package me.sparky983.warp.internal;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import me.sparky983.warp.ConfigurationBuilder;
+import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.annotations.Configuration;
 import org.jspecify.annotations.NullMarked;
 
@@ -14,7 +16,7 @@ import org.jspecify.annotations.NullMarked;
  * @param <T> the type of the configuration class.
  */
 @NullMarked
-final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
+public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
   /**
    * The configuration sources. Initial capacity is set to {@code 1} because 99% of the time only 1
    * source is needed.
@@ -23,7 +25,7 @@ final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
 
   private final Class<T> configurationClass;
 
-  DefaultConfigurationBuilder(final Class<T> configurationClass) {
+  public DefaultConfigurationBuilder(final Class<T> configurationClass) {
     Objects.requireNonNull(configurationClass, "configurationClass cannot be null");
     if (!configurationClass.isAnnotationPresent(Configuration.class)) {
       throw new IllegalArgumentException(

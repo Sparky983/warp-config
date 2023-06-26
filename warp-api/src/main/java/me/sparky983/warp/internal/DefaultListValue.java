@@ -1,11 +1,13 @@
-package me.sparky983.warp;
+package me.sparky983.warp.internal;
 
 import java.util.Iterator;
+import me.sparky983.warp.ConfigurationValue;
+import me.sparky983.warp.ConfigurationValue.List;
 import org.jspecify.annotations.NullMarked;
 
-/** The default implementation of {@link ConfigurationValue.List}. */
+/** The default implementation of {@link List}. */
 @NullMarked
-record DefaultListValue(@Override java.util.List<ConfigurationValue> values)
+public record DefaultListValue(@Override java.util.List<ConfigurationValue> values)
     implements ConfigurationValue.List {
   /**
    * Constructs the list of values.
@@ -15,7 +17,7 @@ record DefaultListValue(@Override java.util.List<ConfigurationValue> values)
    * @throws NullPointerException if the values list is {@code null} or one of the values are {@code
    *     null}.
    */
-  DefaultListValue(final java.util.List<ConfigurationValue> values) {
+  public DefaultListValue(final java.util.List<ConfigurationValue> values) {
     this.values = java.util.List.copyOf(values);
   }
 

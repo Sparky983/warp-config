@@ -1,6 +1,7 @@
 package me.sparky983.warp;
 
 import me.sparky983.warp.annotations.Configuration;
+import me.sparky983.warp.internal.DefaultConfigurationBuilder;
 import org.jspecify.annotations.NullMarked;
 
 /**

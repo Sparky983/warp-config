@@ -1,12 +1,13 @@
-package me.sparky983.warp;
+package me.sparky983.warp.internal;
 
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import me.sparky983.warp.ConfigurationValue;
 
-/** The default implementation of {@link ConfigurationValue.Map}. */
-record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue> values)
+/** The default implementation of {@link Map}. */
+public record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue> values)
     implements ConfigurationValue.Map {
   /**
    * Constructs the map values.
@@ -15,7 +16,7 @@ record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue> value
    * @throws NullPointerException if the values map is {@code null} or has an entry that contains
    *     {@code null}.
    */
-  DefaultMapValue(final java.util.Map<String, ConfigurationValue> values) {
+  public DefaultMapValue(final java.util.Map<String, ConfigurationValue> values) {
     this.values = java.util.Map.copyOf(values);
   }
 
@@ -30,7 +31,7 @@ record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue> value
   }
 
   /** The default implementation of {@link Builder}. */
-  static final class DefaultBuilder implements Builder {
+  public static final class DefaultBuilder implements Builder {
     private final java.util.Map<String, ConfigurationValue> values = new HashMap<>();
 
     @Override
