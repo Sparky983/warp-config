@@ -25,7 +25,9 @@ public interface ConfigurationBuilder<T> {
    * Builds the configuration.
    *
    * @return the built configuration
+   * @throws IllegalStateException if the sources were unable to conform to the configuration.
    * @since 0.1
    */
+  // TODO(Sparky983): Make a proper exception type
   T build();
 }

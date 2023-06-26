@@ -26,6 +26,6 @@ public final class Warp {
    * @since 0.1
    */
   public static <T> ConfigurationBuilder<T> builder(final Class<T> configurationClass) {
-    return null;
+    return new DefaultConfigurationBuilder<>(configurationClass);
   }
 }
