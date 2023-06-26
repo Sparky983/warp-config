@@ -13,7 +13,6 @@ import java.lang.annotation.Target;
  *
  * <ul>
  *   <li>Be an {@code interface}
- *   <li>Declare at least one {@link Property @Property} method
  * </ul>
  *
  * @since 0.1
