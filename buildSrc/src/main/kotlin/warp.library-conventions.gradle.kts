@@ -1,6 +1,6 @@
 plugins {
     `java-library`
-    id("com.github.sherter.google-java-format")
+    id("com.diffplug.spotless")
 }
 
 repositories {
@@ -22,6 +22,13 @@ java {
     }
     withJavadocJar()
     withSourcesJar()
+}
+
+spotless {
+    java {
+        googleJavaFormat("1.17.0")
+        formatAnnotations()
+    }
 }
 
 tasks {
