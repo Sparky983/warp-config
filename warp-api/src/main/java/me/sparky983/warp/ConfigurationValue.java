@@ -1,5 +1,6 @@
 package me.sparky983.warp;
 
+import java.util.Arrays;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 
@@ -24,6 +25,18 @@ import java.util.Set;
 public sealed interface ConfigurationValue {
 
   /**
+   * Creates a new primitive value.
+   *
+   * @param value the string representation of the value
+   * @return the new primitive value
+   * @throws NullPointerException if the value is {@code null}.
+   * @since 0.1
+   */
+  static Primitive primitive(final String value) {
+    return new DefaultPrimitiveValue(value);
+  }
+
+  /**
    * The primitive configuration value.
    *
    * @since 0.1
@@ -41,6 +54,19 @@ public sealed interface ConfigurationValue {
   }
 
   /**
+   * Creates a list of values.
+   *
+   * @param values the values; changes in this array will not be reflected in the created values
+   * @return the new list of values
+   * @throws NullPointerException if the values varargs array is {@code null} or one of the values
+   *     are {@code null}.
+   * @since 0.1
+   */
+  static List list(final ConfigurationValue... values) {
+    return new DefaultListValue(Arrays.asList(values));
+  }
+
+  /**
    * A list of values.
    *
    * @since 0.1
@@ -55,6 +81,15 @@ public sealed interface ConfigurationValue {
     java.util.List<ConfigurationValue> values();
   }
 
+  /**
+   * Creates a new map builder.
+   *
+   * @return the new map builder
+   * @since 0.1
+   */
+  static Map.Builder map() {
+    return new DefaultMapValue.DefaultBuilder();
+  }
 
   /**
    * A map of string keys to values.
@@ -88,5 +123,30 @@ public sealed interface ConfigurationValue {
      * @since 0.1
      */
     Set<String> keys();
+
+    /**
+     * A map builder.
+     *
+     * @since 0.1
+     */
+    interface Builder {
+      /**
+       * Adds an entry to the map.
+       *
+       * @param key the key
+       * @param value the value
+       * @throws NullPointerException if the key or the value are {@code null}.
+       * @since 0.1
+       */
+      Builder entry(String key, ConfigurationValue value);
+
+      /**
+       * Builds the map.
+       *
+       * @return the built map
+       * @since 0.1
+       */
+      Map build();
+    }
   }
 }
