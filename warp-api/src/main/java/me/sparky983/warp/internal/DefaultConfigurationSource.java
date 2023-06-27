@@ -3,6 +3,7 @@ package me.sparky983.warp.internal;
 import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationSource;
+import me.sparky983.warp.ConfigurationValue;
 import me.sparky983.warp.ConfigurationValue.Map;
 import org.jspecify.annotations.NullMarked;
 
@@ -13,6 +14,13 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
   public static final class Empty {
     /** A cached empty instance. */
     public static final ConfigurationSource EMPTY = new DefaultConfigurationSource();
+  }
+
+  /** Lazily load BLANK via class loading. */
+  public static final class Blank {
+    /** A cached blank instance. */
+    public static final ConfigurationSource BLANK =
+        new DefaultConfigurationSource(ConfigurationValue.map().build());
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // an optimization

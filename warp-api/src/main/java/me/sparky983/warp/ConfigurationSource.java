@@ -35,11 +35,22 @@ public interface ConfigurationSource {
   /**
    * Returns an empty configuration source.
    *
-   * @return an empty source.
+   * @return an empty source; it has no configuration
    * @warp.implNote The returned source is cached, however this behaviour should not be depended on.
    * @since 0.1
    */
   static ConfigurationSource empty() {
     return DefaultConfigurationSource.Empty.EMPTY;
+  }
+
+  /**
+   * Returns a blank configuration source.
+   *
+   * @return a blank source; a configuration is present, but it is blank
+   * @warp.apiNote The returned source is cached, however this behaviour should not be depended on.
+   * @since 0.1
+   */
+  static ConfigurationSource blank()  {
+    return DefaultConfigurationSource.Blank.BLANK;
   }
 }
