@@ -3,6 +3,7 @@ package me.sparky983.warp.internal.schema;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.Set;
 import me.sparky983.warp.ConfigurationValue;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.annotations.Property;
+import me.sparky983.warp.internal.DeserializerRegistry;
 
 /**
  * Represents the schema of an {@link Configuration @Configuration} interface.
@@ -27,10 +29,9 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
    * @param configurationClass the configuration class
    * @param properties the properties in the schema
    * @throws NullPointerException if the configuration class is {@code null}, the set of properties
-   * are {@code null} or one of the properties are {@code null}.
+   *     are {@code null} or one of the properties are {@code null}.
    */
-  public InterfaceSchema(
-      final Class<T> configurationClass, final Set<SchemaProperty> properties) {
+  public InterfaceSchema(final Class<T> configurationClass, final Set<SchemaProperty> properties) {
     Objects.requireNonNull(configurationClass, "configurationClass");
 
     this.configurationClass = configurationClass;
@@ -73,18 +74,34 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
   }
 
   @Override
-  public T create(final ConfigurationValue.Map configuration) throws InvalidConfigurationException {
+  public T create(final DeserializerRegistry registry, final ConfigurationValue.Map configuration)
+      throws InvalidConfigurationException {
     Objects.requireNonNull(configuration, "configuration cannot be null");
+
+    final var mappedConfiguration = new HashMap<String, Object>();
 
     final var violations = new LinkedHashSet<SchemaViolation>();
 
     for (final var property : properties) {
-      if (get(property.path(), configuration).isEmpty()) {
-        violations.add(
-            new SchemaViolation(
-                String.format(
-                    "Required property %s was not present in the configuration", property)));
-      }
+      get(property.path(), configuration)
+          .ifPresentOrElse(
+              (value) ->
+                  registry
+                      .deserialize(value, property.rawType(), property.genericType())
+                      .ifPresentOrElse(
+                          (deserialized) -> mappedConfiguration.put(property.path(), deserialized),
+                          () ->
+                              violations.add(
+                                  new SchemaViolation(
+                                      String.format(
+                                          "Unable to parse property %s of type %s",
+                                          property, property.genericType())))),
+              () ->
+                  violations.add(
+                      new SchemaViolation(
+                          String.format(
+                              "Required property %s was not present in the configuration",
+                              property))));
     }
 
     if (!violations.isEmpty()) {
@@ -99,7 +116,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
           }
           final var property = method.getAnnotation(Property.class);
           assert property != null : "Expected property annotation";
-          return ((ConfigurationValue.Primitive) get(property.value(), configuration).get()).value();
+          return mappedConfiguration.get(property.value());
         });
   }
 

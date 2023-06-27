@@ -1,11 +1,15 @@
 package me.sparky983.warp;
 
+import static me.sparky983.warp.ConfigurationValue.map;
+import static me.sparky983.warp.ConfigurationValue.primitive;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.annotations.Property;
+import me.sparky983.warp.internal.schema.InvalidConfigurationException;
 import org.junit.jupiter.api.Test;
 
 class WarpTest {
@@ -16,29 +20,27 @@ class WarpTest {
 
   @Test
   void testBuilder_NotConfigurationClass() {
-    interface TestConfiguration {}
-
-    assertThrows(IllegalArgumentException.class, () -> Warp.builder(TestConfiguration.class));
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.Invalid.class));
   }
 
   @Test
   void testSource_Null() {
-    final var builder = Warp.builder(EmptyConfiguration.class);
+    final var builder = Warp.builder(Configurations.Empty.class);
 
     assertThrows(NullPointerException.class, () -> builder.source(null));
   }
 
   @Test
   void testHashCode_Self() {
-    final var configuration = Warp.builder(EmptyConfiguration.class);
+    final var configuration = Warp.builder(Configurations.Empty.class);
 
     assertEquals(configuration.hashCode(), configuration.hashCode());
   }
 
   @Test
   void testHashCode_Other() {
-    final var configuration1 = Warp.builder(EmptyConfiguration.class);
-    final var configuration2 = Warp.builder(EmptyConfiguration.class);
+    final var configuration1 = Warp.builder(Configurations.Empty.class);
+    final var configuration2 = Warp.builder(Configurations.Empty.class);
 
     assertNotEquals(configuration1.hashCode(), configuration2.hashCode());
   }
@@ -46,52 +48,45 @@ class WarpTest {
   @SuppressWarnings("EqualsWithItself")
   @Test
   void testEquals_Self() {
-    final var configuration = Warp.builder(EmptyConfiguration.class);
+    final var configuration = Warp.builder(Configurations.Empty.class);
 
     assertEquals(configuration, configuration);
   }
 
   @Test
   void testEquals_Other() {
-    final var configuration1 = Warp.builder(EmptyConfiguration.class);
-    final var configuration2 = Warp.builder(EmptyConfiguration.class);
+    final var configuration1 = Warp.builder(Configurations.Empty.class);
+    final var configuration2 = Warp.builder(Configurations.Empty.class);
 
     assertNotEquals(configuration1, configuration2);
   }
 
   @Test
-  void testStringProperty_Exists() {
-    @Configuration
-    interface TestConfiguration {
-      @Property("test.property")
-      String property();
-    }
-    final var configuration =
-        Warp.builder(TestConfiguration.class)
-            .source(
-                ConfigurationSource.of(
-                    ConfigurationValue.map()
-                        .entry(
-                            "test",
-                            ConfigurationValue.map()
-                                .entry("property", ConfigurationValue.primitive("Some value"))
-                                .build())
-                        .build()))
-            .build();
+  void testProperty_NotExists() {
+    final var builder =
+        Warp.builder(Configurations.String.class).source(ConfigurationSource.empty());
 
-    assertEquals("Some value", configuration.property());
+    assertThrows(IllegalStateException.class, builder::build);
   }
 
   @Test
-  void testStringProperty_NotExists() {
-    @Configuration
-    interface TestConfiguration {
-      @Property("test.property")
-      String property();
-    }
-    final var builder = Warp.builder(TestConfiguration.class)
-        .source(ConfigurationSource.empty());
+  void testDeserialization() { // TODO(Sparky983): We definitely need more deserialization tests
+    final var configuration =
+        Warp.builder(Configurations.Int.class)
+            .source(ConfigurationSource.of(map().entry("property", primitive("10")).build()))
+            .build();
 
-    assertThrows(IllegalStateException.class, builder::build);
+    assertEquals(10, configuration.property());
+  }
+
+  @Test
+  void testStringProperty() {
+    final var configuration =
+        Warp.builder(Configurations.String.class)
+            .source(
+                ConfigurationSource.of(map().entry("property", primitive("Some value")).build()))
+            .build();
+
+    assertEquals("Some value", configuration.property());
   }
 }
