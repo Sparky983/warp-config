@@ -16,7 +16,7 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
     public static final ConfigurationSource EMPTY = new DefaultConfigurationSource();
   }
 
-  /** Lazily load BLANK via class loading. */
+  /** Lazily load {@link #BLANK} via class loading. */
   public static final class Blank {
     /** A cached blank instance. */
     public static final ConfigurationSource BLANK =
