@@ -1,13 +1,14 @@
 package me.sparky983.warp.internal;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationSource;
+import me.sparky983.warp.ConfigurationValue;
 import me.sparky983.warp.annotations.Configuration;
+import me.sparky983.warp.internal.schema.ConfigurationSchema;
+import me.sparky983.warp.internal.schema.InvalidConfigurationException;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -23,17 +24,11 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
    */
   private final Collection<ConfigurationSource> sources = new ArrayList<>(1);
 
-  private final Class<T> configurationClass;
+  private final ConfigurationSchema<T> schema;
 
-  public DefaultConfigurationBuilder(final Class<T> configurationClass) {
-    Objects.requireNonNull(configurationClass, "configurationClass cannot be null");
-    if (!configurationClass.isAnnotationPresent(Configuration.class)) {
-      throw new IllegalArgumentException(
-          String.format(
-              "Class %s must be annotated with @%s",
-              configurationClass.getName(), Configuration.class.getName()));
-    }
-    this.configurationClass = configurationClass;
+  public DefaultConfigurationBuilder(final ConfigurationSchema<T> schema) {
+    Objects.requireNonNull(schema, "schema cannot be null");
+    this.schema = schema;
   }
 
   @Override
@@ -43,31 +38,17 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
     return this;
   }
 
-  /**
-   * Creates a new proxy.
-   *
-   * <p>So the {@code SuppressWarnings} only covers the proxy.
-   *
-   * @param invocationHandler the invocation handler
-   * @throws NullPointerException if the invocation handler is {@code null}.
-   */
-  @SuppressWarnings("unchecked")
-  private T newProxyInstance(final InvocationHandler invocationHandler) {
-    return (T)
-        Proxy.newProxyInstance(
-            configurationClass.getClassLoader(),
-            new Class[] {configurationClass},
-            invocationHandler);
-  }
-
   @Override
   public T build() {
-    return newProxyInstance(
-        (proxy, method, args) -> {
-          if (method.getDeclaringClass().equals(Object.class)) {
-            return method.invoke(proxy, args);
-          }
-          throw new RuntimeException("TODO: to");
-        });
+    try {
+      return schema.create(
+          sources.stream()
+              .findFirst()
+              .get()
+              .configuration()
+              .orElse(ConfigurationValue.map().build()));
+    } catch (final InvalidConfigurationException e) {
+      throw new IllegalStateException(e);
+    }
   }
 }

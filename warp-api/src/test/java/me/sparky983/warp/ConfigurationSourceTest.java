@@ -30,4 +30,11 @@ class ConfigurationSourceTest {
 
     assertTrue(source.configuration().isEmpty());
   }
+
+  @Test
+  void testBlank() {
+    final var blank = ConfigurationSource.blank();
+
+    assertEquals(Optional.of(ConfigurationValue.map().build()), blank.configuration());
+  }
 }

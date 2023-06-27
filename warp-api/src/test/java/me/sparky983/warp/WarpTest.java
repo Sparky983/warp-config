@@ -81,4 +81,17 @@ class WarpTest {
 
     assertEquals("Some value", configuration.property());
   }
+
+  @Test
+  void testStringProperty_NotExists() {
+    @Configuration
+    interface TestConfiguration {
+      @Property("test.property")
+      String property();
+    }
+    final var builder = Warp.builder(TestConfiguration.class)
+        .source(ConfigurationSource.empty());
+
+    assertThrows(IllegalStateException.class, builder::build);
+  }
 }
