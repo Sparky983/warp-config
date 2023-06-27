@@ -11,7 +11,7 @@ import me.sparky983.warp.annotations.Property;
 final class MethodProperty implements SchemaProperty {
   private final Method method;
   private final String path;
-RecordComponent
+
   private MethodProperty(final Method method) {
     Objects.requireNonNull(method, "method cannot be null");
     this.method = method;

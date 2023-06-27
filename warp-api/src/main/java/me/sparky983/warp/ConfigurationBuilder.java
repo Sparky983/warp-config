@@ -6,7 +6,7 @@ import org.jspecify.annotations.NullMarked;
 /**
  * A builder for an {@link Configuration @Configuration} class.
  *
- * @param <T> the type of the {@link Configuration @Configuration} class.
+ * @param <T> the type of the configuration class
  * @since 0.1
  */
 @NullMarked

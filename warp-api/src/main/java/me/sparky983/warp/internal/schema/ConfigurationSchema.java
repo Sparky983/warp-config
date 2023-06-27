@@ -11,7 +11,7 @@ import org.jspecify.annotations.NullMarked;
 /**
  * A configuration schema.
  *
- * @param <T> the type of the {@link Configuration @Configuration} class.
+ * @param <T> the type of the configuration class
  */
 @NullMarked
 public interface ConfigurationSchema<T> {
@@ -25,10 +25,15 @@ public interface ConfigurationSchema<T> {
    */
   T create(DeserializerRegistry registry, ConfigurationValue.Map configuration) throws InvalidConfigurationException;
 
+  /**
+   * Returns an unmodifiable set of the properties in this schema.
+   *
+   * @return the properties
+   */
   Set<SchemaProperty> properties();
 
   /**
-   * Creates a schema for a given {@link Configuration @Configuration} interface
+   * Creates a schema for a given configuration interface
    *
    * @param configurationClass the configuration class
    * @return the schema

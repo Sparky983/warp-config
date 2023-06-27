@@ -10,21 +10,20 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import me.sparky983.warp.ConfigurationValue;
-import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
 /**
- * Represents the schema of an {@link Configuration @Configuration} interface.
+ * The schema implementation for configuration interfaces.
  *
- * @param <T> the type of the {@link Configuration @Configuration} interface.
+ * @param <T> the type of the configuration interface
  */
 final class InterfaceSchema<T> implements ConfigurationSchema<T> {
   private final Class<T> configurationClass;
   private final Set<SchemaProperty> properties;
 
   /**
-   * Constructs the {@link Configuration @Configuration} interface schema.
+   * Constructs the configuration interface schema.
    *
    * @param configurationClass the configuration class
    * @param properties the properties in the schema
