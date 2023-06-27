@@ -1,6 +1,8 @@
 package me.sparky983.warp.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -17,7 +19,7 @@ public record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue
    *     {@code null}.
    */
   public DefaultMapValue(final java.util.Map<String, ConfigurationValue> values) {
-    this.values = java.util.Map.copyOf(values);
+    this.values = Collections.unmodifiableMap(new LinkedHashMap<>(values));
   }
 
   @Override
@@ -32,7 +34,7 @@ public record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue
 
   /** The default implementation of {@link Builder}. */
   public static final class DefaultBuilder implements Builder {
-    private final java.util.Map<String, ConfigurationValue> values = new HashMap<>();
+    private final java.util.Map<String, ConfigurationValue> values = new LinkedHashMap<>();
 
     @Override
     public Builder entry(final String key, final ConfigurationValue value) {
