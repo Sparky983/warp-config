@@ -25,7 +25,6 @@ import org.jspecify.annotations.NullMarked;
 @ApiStatus.Experimental
 @NullMarked
 public sealed interface ConfigurationValue {
-
   /**
    * Creates a new primitive value.
    *
