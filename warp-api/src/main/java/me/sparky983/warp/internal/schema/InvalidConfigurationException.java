@@ -14,7 +14,7 @@ public final class InvalidConfigurationException extends Exception {
    *
    * @param message the message
    * @param violations a set of all the violations; changes to this set will not be reflected in the
-   *     set returned by {@link #schemaViolations()}
+   *     set returned by {@link #violations()}
    * @throws NullPointerException if the violations set is {@code null} or one of the violations are
    *     {@code null}.
    */
@@ -29,7 +29,7 @@ public final class InvalidConfigurationException extends Exception {
    *
    * @return the violations
    */
-  public Set<SchemaViolation> schemaViolations() {
+  public Set<SchemaViolation> violations() {
     return violations;
   }
 }
