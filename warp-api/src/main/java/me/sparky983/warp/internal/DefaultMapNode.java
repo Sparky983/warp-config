@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import me.sparky983.warp.ConfigurationNode;
 
 /** The default implementation of {@link Map}. */
@@ -27,8 +26,11 @@ public record DefaultMapNode(@Override java.util.Map<String, ConfigurationNode> 
   }
 
   @Override
-  public Set<String> keys() {
-    return values.keySet();
+  public Iterable<Entry> entries() {
+    return () ->
+        values.entrySet().stream()
+            .map((entry) -> Map.entry(entry.getKey(), entry.getValue()))
+            .iterator();
   }
 
   /** The default implementation of {@link Builder}. */
@@ -48,4 +50,7 @@ public record DefaultMapNode(@Override java.util.Map<String, ConfigurationNode> 
       return new DefaultMapNode(values);
     }
   }
+
+  public record DefaultEntry(@Override String key, @Override ConfigurationNode value)
+      implements Entry {}
 }

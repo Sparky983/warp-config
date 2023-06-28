@@ -99,33 +99,6 @@ public sealed interface ConfigurationNode {
    */
   non-sealed interface Map extends ConfigurationNode {
     /**
-     * Returns a {@link java.util.Map} of the values in this node.
-     *
-     * @return the values
-     * @since 0.1
-     */
-    java.util.Map<String, ConfigurationNode> values();
-
-    /**
-     * Returns the value for the given key.
-     *
-     * @param key the key.
-     * @return an optional containing the value associated with the key if one exists, otherwise an
-     *     {@link Optional#empty()}
-     * @throws NullPointerException if the key is {@code null}.
-     * @since 0.1
-     */
-    Optional<ConfigurationNode> get(String key);
-
-    /**
-     * Returns immutable set of the keys in this map.
-     *
-     * @return the keys in this map
-     * @since 0.1
-     */
-    Set<String> keys();
-
-    /**
      * A map builder.
      *
      * @since 0.1
@@ -148,6 +121,69 @@ public sealed interface ConfigurationNode {
        * @since 0.1
        */
       Map build();
+    }
+
+    /**
+     * Returns a {@link java.util.Map} of the values in this node.
+     *
+     * @return the values
+     * @since 0.1
+     */
+    java.util.Map<String, ConfigurationNode> values();
+
+    /**
+     * Returns the value for the given key.
+     *
+     * @param key the key.
+     * @return an optional containing the value associated with the key if one exists, otherwise an
+     *     {@link Optional#empty()}
+     * @throws NullPointerException if the key is {@code null}.
+     * @since 0.1
+     */
+    Optional<ConfigurationNode> get(String key);
+
+    /**
+     * Returns an iterator over the entries.
+     *
+     * @return the entries in this map
+     * @since 0.1
+     */
+    Iterable<Entry> entries();
+
+    /**
+     * Creates an entry for the given key and value.
+     *
+     * @param key the key.
+     * @param value the value.
+     * @return the entry.
+     * @throws NullPointerException if the key or the value are {@code null}.
+     * @since 0.1
+     */
+    static Entry entry(final String key, final ConfigurationNode value) {
+      return new DefaultMapNode.DefaultEntry(key, value);
+    }
+
+    /**
+     * Represents an entry in a map.
+     *
+     * @since 0.1
+     */
+    interface Entry {
+      /**
+       * Returns they key.
+       *
+       * @return the key
+       * @since 0.1
+       */
+      String key();
+
+      /**
+       * Returns the value.
+       *
+       * @return the value
+       * @since 0.1
+       */
+      ConfigurationNode value();
     }
   }
 }

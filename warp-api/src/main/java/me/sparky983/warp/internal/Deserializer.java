@@ -169,12 +169,12 @@ public interface Deserializer<F extends ConfigurationNode, T> {
         final var keyType = typeArguments[0];
         final var valueType = typeArguments[1];
         final var deserializedMap = new HashMap<>();
-        for (final var entry : value.values().entrySet()) {
+        for (final var entry : value.entries()) {
           final var deserializedKey =
               registry.deserialize(
-                  ConfigurationNode.primitive(entry.getKey()), rawTypeOf(keyType), keyType);
+                  ConfigurationNode.primitive(entry.key()), rawTypeOf(keyType), keyType);
           final var deserializedValue =
-              registry.deserialize(entry.getValue(), rawTypeOf(valueType), valueType);
+              registry.deserialize(entry.value(), rawTypeOf(valueType), valueType);
           if (deserializedKey.isEmpty() || deserializedValue.isEmpty()) {
             return Optional.empty();
           }

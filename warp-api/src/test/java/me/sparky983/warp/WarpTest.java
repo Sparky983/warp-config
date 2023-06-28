@@ -1,7 +1,7 @@
 package me.sparky983.warp;
 
-import static me.sparky983.warp.ConfigurationValue.map;
-import static me.sparky983.warp.ConfigurationValue.primitive;
+import static me.sparky983.warp.ConfigurationNode.map;
+import static me.sparky983.warp.ConfigurationNode.primitive;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
