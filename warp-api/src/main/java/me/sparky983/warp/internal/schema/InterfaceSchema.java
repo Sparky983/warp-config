@@ -85,7 +85,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
     final var violations = new LinkedHashSet<ConfigurationError>();
 
     for (final var property : properties) {
-      Optional<Object> valueOptional = Optional.empty();
+      var valueOptional = Optional.empty();
       for (final var configuration : configurations) {
         Objects.requireNonNull(configuration);
 

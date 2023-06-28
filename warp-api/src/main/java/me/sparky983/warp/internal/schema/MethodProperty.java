@@ -20,7 +20,7 @@ final class MethodProperty implements SchemaProperty {
     }
     this.path = property.value();
 
-    final ParameterizedType<?> type = ParameterizedType.of(method.getGenericReturnType());
+    final var type = ParameterizedType.of(method.getGenericReturnType());
     if (type.rawType().equals(Optional.class)) {
       isOptional = true;
       if (type.typeArguments().size() == 0) {
