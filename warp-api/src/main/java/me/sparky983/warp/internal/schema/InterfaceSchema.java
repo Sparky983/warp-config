@@ -100,7 +100,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
           violations.add(
               new SchemaViolation(
                   String.format(
-                      "Unable to parse property %s of type %s", property, property.genericType())));
+                      "Unable to parse property \"%s\" of type %s", property, property.genericType())));
           continue;
         }
         finalValue = finalValue.or(() -> deserializedValue);
@@ -111,12 +111,12 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
               violations.add(
                   new SchemaViolation(
                       String.format(
-                          "Required property %s was not present in any sources", property))));
+                          "Required property \"%s\" was not present in any sources", property))));
     }
 
     if (!violations.isEmpty()) {
       throw new ConfigurationException(
-          "The configuration did not comply to the schema", violations);
+          "The configuration was invalid", violations);
     }
 
     return newProxyInstance(
