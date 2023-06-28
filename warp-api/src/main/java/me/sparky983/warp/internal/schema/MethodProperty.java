@@ -3,7 +3,6 @@ package me.sparky983.warp.internal.schema;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
-import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.ParameterizedType;
 
