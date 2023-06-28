@@ -81,11 +81,10 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
     Objects.requireNonNull(configurations, "configurations cannot be null");
 
     final var mappedConfiguration = new HashMap<String, Object>();
-
     final var violations = new LinkedHashSet<ConfigurationError>();
 
     for (final var property : properties) {
-      var valueOptional = Optional.empty();
+      boolean isSet = false;
       for (final var configuration : configurations) {
         Objects.requireNonNull(configuration);
 
@@ -102,18 +101,14 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
                       "Unable to parse property \"%s\" of type %s", property, property.type())));
           continue;
         }
-        valueOptional = valueOptional.or(() -> deserialized);
+        isSet = true;
+        mappedConfiguration.putIfAbsent(property.path(), deserialized.get());
       }
-      if (property.isOptional()) {
-        mappedConfiguration.put(property.path(), valueOptional);
-      } else {
-        valueOptional.ifPresentOrElse(
-            (value) -> mappedConfiguration.put(property.path(), value),
-            () ->
-                violations.add(
-                    new SchemaViolation(
-                        String.format(
-                            "Required property \"%s\" was not present in any sources", property))));
+      if (!isSet) {
+        violations.add(
+            new SchemaViolation(
+                String.format(
+                    "Property \"%s\" was not present in any sources", property)));
       }
     }
 

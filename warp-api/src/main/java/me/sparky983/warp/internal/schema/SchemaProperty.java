@@ -7,6 +7,4 @@ public interface SchemaProperty {
   String path();
 
   ParameterizedType<?> type();
-
-  boolean isOptional();
 }
