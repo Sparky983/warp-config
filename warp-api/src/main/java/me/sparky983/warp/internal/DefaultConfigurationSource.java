@@ -44,7 +44,7 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
   }
 
   @Override
-  public Optional<Map> configuration() {
+  public Optional<Map> read() {
     return configuration;
   }
 

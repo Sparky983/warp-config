@@ -25,9 +25,13 @@ public interface ConfigurationBuilder<T> {
    * Builds the configuration.
    *
    * @return the built configuration
-   * @throws IllegalStateException if the sources were unable to conform to the configuration.
+   * @throws ConfigurationException if there was an error with the configuration. Possible causes:
+   * <ul>
+   *   <li>A required property was missing</li>
+   *   <li>A value was unable to be parsed</li>
+   *   <li>One of the sources contained syntax error</li>
+   * </ul>
    * @since 0.1
    */
-  // TODO(Sparky983): Make a proper exception type
-  T build();
+  T build() throws ConfigurationException;
 }

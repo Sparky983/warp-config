@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.sparky983.warp.ConfigurationValue;
+import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import org.jspecify.annotations.NullMarked;
@@ -20,10 +21,11 @@ public interface ConfigurationSchema<T> {
    *
    * @param configuration the configuration
    * @return the configuration
-   * @throws InvalidConfigurationException if the configuration is not compliant with this schema.
+   * @throws ConfigurationException if the configuration is not compliant with this schema.
    * @throws NullPointerException if the configuration is {@code null}.
    */
-  T create(DeserializerRegistry registry, ConfigurationValue.Map configuration) throws InvalidConfigurationException;
+  T create(DeserializerRegistry registry, ConfigurationValue.Map configuration)
+      throws ConfigurationException;
 
   /**
    * Returns an unmodifiable set of the properties in this schema.
@@ -47,9 +49,10 @@ public interface ConfigurationSchema<T> {
               "Class %s must be annotated with @%s",
               configurationClass.getName(), Configuration.class.getName()));
     }
-    final var properties = Stream.of(configurationClass.getMethods())
-        .map(MethodProperty::of)
-        .collect(Collectors.toUnmodifiableSet());
+    final var properties =
+        Stream.of(configurationClass.getMethods())
+            .map(MethodProperty::of)
+            .collect(Collectors.toUnmodifiableSet());
 
     return new InterfaceSchema<>(configurationClass, properties);
   }

@@ -1,11 +1,12 @@
 package me.sparky983.warp.internal.schema;
 
 import java.util.Objects;
+import me.sparky983.warp.ConfigurationError;
 import org.jspecify.annotations.NullMarked;
 
-/** Represents a violation of a constraint defined by a schema */
+/** A {@link ConfigurationError} caused by the violation of a constraint defined by a schema */
 @NullMarked
-public record SchemaViolation(String description) {
+public record SchemaViolation(@Override String description) implements ConfigurationError {
   /**
    * Constructs the schema violation.
    *

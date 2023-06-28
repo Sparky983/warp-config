@@ -21,20 +21,20 @@ class ConfigurationSourceTest {
 
     final var source = ConfigurationSource.of(value);
 
-    assertEquals(Optional.of(value), source.configuration());
+    assertEquals(Optional.of(value), source.read());
   }
 
   @Test
   void testEmpty() {
     final var source = ConfigurationSource.empty();
 
-    assertTrue(source.configuration().isEmpty());
+    assertTrue(source.read().isEmpty());
   }
 
   @Test
   void testBlank() {
     final var blank = ConfigurationSource.blank();
 
-    assertEquals(Optional.of(ConfigurationValue.map().build()), blank.configuration());
+    assertEquals(Optional.of(ConfigurationValue.map().build()), blank.read());
   }
 }

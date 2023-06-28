@@ -9,7 +9,7 @@ import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.ConfigurationValue;
 import me.sparky983.warp.internal.schema.ConfigurationSchema;
-import me.sparky983.warp.internal.schema.InvalidConfigurationException;
+import me.sparky983.warp.ConfigurationException;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -72,17 +72,13 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   }
 
   @Override
-  public T build() {
-    try {
-      return schema.create(
-          DESERIALIZERS,
-          sources.stream()
-              .findFirst()
-              .get()
-              .configuration()
-              .orElse(ConfigurationValue.map().build()));
-    } catch (final InvalidConfigurationException e) {
-      throw new IllegalStateException(e);
-    }
+  public T build() throws ConfigurationException {
+    return schema.create(
+        DESERIALIZERS,
+        sources.stream()
+            .findFirst()
+            .get()
+            .read()
+            .orElse(ConfigurationValue.map().build()));
   }
 }

@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import me.sparky983.warp.ConfigurationValue;
+import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
@@ -74,7 +75,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
 
   @Override
   public T create(final DeserializerRegistry registry, final ConfigurationValue.Map configuration)
-      throws InvalidConfigurationException {
+      throws ConfigurationException {
     Objects.requireNonNull(configuration, "configuration cannot be null");
 
     final var mappedConfiguration = new HashMap<String, Object>();
@@ -104,7 +105,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
     }
 
     if (!violations.isEmpty()) {
-      throw new InvalidConfigurationException(
+      throw new ConfigurationException(
           "The configuration did not comply to the schema", violations);
     }
 
