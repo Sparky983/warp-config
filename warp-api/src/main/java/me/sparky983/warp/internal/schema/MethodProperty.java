@@ -56,11 +56,6 @@ final class MethodProperty implements SchemaProperty {
   }
 
   @Override
-  public Optional<ConfigurationNode> defaultValue() {
-    return Optional.empty();
-  }
-
-  @Override
   public String toString() {
     return path;
   }

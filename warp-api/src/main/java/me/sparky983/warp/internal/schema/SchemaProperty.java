@@ -10,9 +10,5 @@ public interface SchemaProperty {
 
   ParameterizedType<?> type();
 
-  // TODO(Sparky983): Optional properties
   boolean isOptional();
-
-  // TODO(Sparky983): Default values
-  Optional<ConfigurationNode> defaultValue();
 }
