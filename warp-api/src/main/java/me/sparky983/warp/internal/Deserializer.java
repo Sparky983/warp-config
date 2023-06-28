@@ -136,8 +136,7 @@ public interface Deserializer<F extends ConfigurationNode, T> {
         final var elementType = type.typeArguments().get(0);
         final var deserializedList = new ArrayList<>();
         for (final var element : value.values()) {
-          final var deserialized =
-              registry.deserialize(element, elementType);
+          final var deserialized = registry.deserialize(element, elementType);
           if (deserialized.isEmpty()) {
             return Optional.empty();
           }
@@ -161,8 +160,7 @@ public interface Deserializer<F extends ConfigurationNode, T> {
         for (final var entry : value.entries()) {
           final var deserializedKey =
               registry.deserialize(ConfigurationNode.primitive(entry.key()), keyType);
-          final var deserializedValue =
-              registry.deserialize(entry.value(), valueType);
+          final var deserializedValue = registry.deserialize(entry.value(), valueType);
           if (deserializedKey.isEmpty() || deserializedValue.isEmpty()) {
             return Optional.empty();
           }
