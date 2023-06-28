@@ -12,7 +12,7 @@ class ConfigurationSourceTest {
   }
 
   @Test
-  void testOf() {
+  void testOf() throws ConfigurationException {
     final var value =
         ConfigurationValue.map()
             .entry("test", ConfigurationValue.primitive("value 1"))
@@ -25,14 +25,14 @@ class ConfigurationSourceTest {
   }
 
   @Test
-  void testEmpty() {
+  void testEmpty() throws ConfigurationException {
     final var source = ConfigurationSource.empty();
 
     assertTrue(source.read().isEmpty());
   }
 
   @Test
-  void testBlank() {
+  void testBlank() throws ConfigurationException {
     final var blank = ConfigurationSource.blank();
 
     assertEquals(Optional.of(ConfigurationValue.map().build()), blank.read());

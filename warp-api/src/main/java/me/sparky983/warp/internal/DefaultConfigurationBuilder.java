@@ -74,8 +74,10 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
 
   @Override
   public T build() throws ConfigurationException {
-    return schema.create(
-        DESERIALIZERS,
-        sources.stream().findFirst().get().read().orElse(ConfigurationValue.map().build()));
+    final var configurations = new ArrayList<ConfigurationValue.Map>(sources.size());
+    for (final var source : sources) {
+      source.read().ifPresent(configurations::add);
+    }
+    return schema.create(DESERIALIZERS, configurations);
   }
 }

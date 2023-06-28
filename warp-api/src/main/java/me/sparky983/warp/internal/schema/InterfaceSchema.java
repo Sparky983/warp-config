@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -41,7 +42,6 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
 
   private static Optional<ConfigurationValue> get(
       final String path, final ConfigurationValue.Map configuration) {
-
     ConfigurationValue currentNode = configuration;
     final var keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
     while (currentNode instanceof ConfigurationValue.Map map) {
@@ -75,34 +75,43 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
   }
 
   @Override
-  public T create(final DeserializerRegistry registry, final ConfigurationValue.Map configuration)
+  public T create(
+      final DeserializerRegistry registry, final List<ConfigurationValue.Map> configurations)
       throws ConfigurationException {
-    Objects.requireNonNull(configuration, "configuration cannot be null");
+    Objects.requireNonNull(configurations, "configurations cannot be null");
 
     final var mappedConfiguration = new HashMap<String, Object>();
 
     final var violations = new LinkedHashSet<ConfigurationError>();
 
     for (final var property : properties) {
-      get(property.path(), configuration)
-          .ifPresentOrElse(
-              (value) ->
-                  registry
-                      .deserialize(value, property.rawType(), property.genericType())
-                      .ifPresentOrElse(
-                          (deserialized) -> mappedConfiguration.put(property.path(), deserialized),
-                          () ->
-                              violations.add(
-                                  new SchemaViolation(
-                                      String.format(
-                                          "Unable to parse property %s of type %s",
-                                          property, property.genericType())))),
-              () ->
-                  violations.add(
-                      new SchemaViolation(
-                          String.format(
-                              "Required property %s was not present in the configuration",
-                              property))));
+      Optional<Object> finalValue = Optional.empty();
+      for (final var configuration : configurations) {
+        Objects.requireNonNull(configuration);
+
+        final var value = get(property.path(), configuration);
+        if (value.isEmpty()) {
+          continue;
+        }
+
+        final var deserializedValue =
+            registry.deserialize(value.get(), property.rawType(), property.genericType());
+        if (deserializedValue.isEmpty()) {
+          violations.add(
+              new SchemaViolation(
+                  String.format(
+                      "Unable to parse property %s of type %s", property, property.genericType())));
+          continue;
+        }
+        finalValue = finalValue.or(() -> deserializedValue);
+      }
+      finalValue.ifPresentOrElse(
+          (value) -> mappedConfiguration.put(property.path(), value),
+          () ->
+              violations.add(
+                  new SchemaViolation(
+                      String.format(
+                          "Required property %s was not present in any sources", property))));
     }
 
     if (!violations.isEmpty()) {

@@ -62,11 +62,12 @@ class WarpTest {
     final var builder =
         Warp.builder(Configurations.String.class).source(ConfigurationSource.empty());
 
-    assertThrows(IllegalStateException.class, builder::build);
+    assertThrows(ConfigurationException.class, builder::build);
   }
 
   @Test
-  void testDeserialization() { // TODO(Sparky983): We definitely need more deserialization tests
+  // TODO(Sparky983): We definitely need more deserialization tests
+  void testDeserialization() throws ConfigurationException {
     final var configuration =
         Warp.builder(Configurations.Int.class)
             .source(ConfigurationSource.of(map().entry("property", primitive("10")).build()))
@@ -76,7 +77,7 @@ class WarpTest {
   }
 
   @Test
-  void testStringProperty() {
+  void testStringProperty() throws ConfigurationException {
     final var configuration =
         Warp.builder(Configurations.String.class)
             .source(
