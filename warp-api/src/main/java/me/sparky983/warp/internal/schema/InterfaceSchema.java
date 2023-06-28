@@ -33,7 +33,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
    * @throws NullPointerException if the configuration class is {@code null}, the set of properties
    *     are {@code null} or one of the properties are {@code null}.
    */
-  public InterfaceSchema(final Class<T> configurationClass, final Set<SchemaProperty> properties) {
+  InterfaceSchema(final Class<T> configurationClass, final Set<SchemaProperty> properties) {
     Objects.requireNonNull(configurationClass, "configurationClass");
 
     this.configurationClass = configurationClass;

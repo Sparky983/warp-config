@@ -10,7 +10,7 @@ import org.jspecify.annotations.NullMarked;
 
 /** A registry of {@link Deserializer Deserializers}. */
 @NullMarked
-public final class DeserializerRegistry {
+final class DeserializerRegistry {
   private final Map<DeserializerQualifier, Deserializer<?, ?>> deserializers = new HashMap<>();
 
   private DeserializerRegistry() {}
@@ -32,7 +32,7 @@ public final class DeserializerRegistry {
    * @throws NullPointerException if the value type, deserialized type or the deserializer are
    *     {@code null}.
    */
-  public <F extends ConfigurationNode, T> DeserializerRegistry register(
+  <F extends ConfigurationNode, T> DeserializerRegistry register(
       final Class<F> valueType,
       final Class<T> deserializedType,
       final Deserializer<? super F, ? extends T> deserializer) {
@@ -73,7 +73,7 @@ public final class DeserializerRegistry {
 
   private record DeserializerQualifier(
       Class<? extends ConfigurationNode> valueType, Class<?> deserializedType) {
-    public DeserializerQualifier {
+    private DeserializerQualifier {
       Objects.requireNonNull(valueType, "valueType cannot be null");
       Objects.requireNonNull(deserializedType, "deserializedType cannot be null");
     }
