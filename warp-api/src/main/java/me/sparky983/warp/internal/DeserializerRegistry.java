@@ -10,7 +10,7 @@ import org.jspecify.annotations.NullMarked;
 
 /** A registry of {@link Deserializer Deserializers}. */
 @NullMarked
-final class DeserializerRegistry {
+public final class DeserializerRegistry {
   private final Map<DeserializerQualifier, Deserializer<?, ?>> deserializers = new HashMap<>();
 
   private DeserializerRegistry() {}
