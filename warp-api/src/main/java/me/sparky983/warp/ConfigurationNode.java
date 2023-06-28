@@ -2,7 +2,6 @@ package me.sparky983.warp;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.Set;
 import me.sparky983.warp.internal.DefaultListNode;
 import me.sparky983.warp.internal.DefaultMapNode;
 import me.sparky983.warp.internal.DefaultPrimitiveNode;

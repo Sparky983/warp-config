@@ -29,8 +29,7 @@ public interface Deserializer<F extends ConfigurationNode, T> {
    *
    * <p>The value result is the same as the input.
    */
-  Deserializer<ConfigurationNode, ConfigurationNode> IDENTITY =
-      (type, value) -> Optional.of(value);
+  Deserializer<ConfigurationNode, ConfigurationNode> IDENTITY = (type, value) -> Optional.of(value);
 
   /** A {@link Byte} deserializer */
   Deserializer<ConfigurationNode.Primitive, Byte> BYTE =

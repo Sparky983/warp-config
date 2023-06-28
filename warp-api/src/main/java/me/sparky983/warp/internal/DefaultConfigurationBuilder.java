@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationException;
-import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.internal.schema.ConfigurationSchema;
 import org.jspecify.annotations.NullMarked;
 
