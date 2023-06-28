@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationValue;
 import me.sparky983.warp.annotations.Property;
@@ -80,7 +81,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
 
     final var mappedConfiguration = new HashMap<String, Object>();
 
-    final var violations = new LinkedHashSet<SchemaViolation>();
+    final var violations = new LinkedHashSet<ConfigurationError>();
 
     for (final var property : properties) {
       get(property.path(), configuration)
