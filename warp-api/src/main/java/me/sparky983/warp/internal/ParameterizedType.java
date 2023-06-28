@@ -54,13 +54,13 @@ public final class ParameterizedType<T> {
       return of(cls);
     } else if (type instanceof java.lang.reflect.ParameterizedType parameterizedType) {
       return new ParameterizedType<>(
-          // this is actually safe - https://bugs.openjdk.org/browse/JDK-6255169
+          // This is actually safe - https://bugs.openjdk.org/browse/JDK-6255169
           (Class<?>) parameterizedType.getRawType(),
           Stream.of(parameterizedType.getActualTypeArguments())
               .<ParameterizedType<?>>map(ParameterizedType::of)
               .toList());
     } else if (type instanceof WildcardType wildcardType) {
-      // currently Java only supports a single bound
+      // Currently Java only supports a single bound
       return of(wildcardType.getUpperBounds()[0]);
     } else if (type instanceof GenericArrayType genericArrayType) {
       return of(of(genericArrayType.getGenericComponentType()).rawType().arrayType());
