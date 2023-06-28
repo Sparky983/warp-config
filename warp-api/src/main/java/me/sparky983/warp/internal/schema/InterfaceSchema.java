@@ -45,7 +45,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
     ConfigurationNode currentNode = configuration;
     final var keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
     while (currentNode instanceof ConfigurationNode.Map map) {
-      final var value = map.getValue(keys.poll());
+      final var value = map.get(keys.poll());
       if (value.isEmpty()) {
         return Optional.empty();
       }

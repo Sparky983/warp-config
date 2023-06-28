@@ -22,7 +22,7 @@ public record DefaultMapNode(@Override java.util.Map<String, ConfigurationNode> 
   }
 
   @Override
-  public Optional<ConfigurationNode> getValue(final String key) {
+  public Optional<ConfigurationNode> get(final String key) {
     return Optional.ofNullable(values.get(key));
   }
 

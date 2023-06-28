@@ -115,7 +115,7 @@ public sealed interface ConfigurationNode {
      * @throws NullPointerException if the key is {@code null}.
      * @since 0.1
      */
-    Optional<ConfigurationNode> getValue(String key);
+    Optional<ConfigurationNode> get(String key);
 
     /**
      * Returns immutable set of the keys in this map.
