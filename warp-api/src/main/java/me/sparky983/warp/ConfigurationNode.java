@@ -3,14 +3,14 @@ package me.sparky983.warp;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
-import me.sparky983.warp.internal.DefaultListValue;
-import me.sparky983.warp.internal.DefaultMapValue;
-import me.sparky983.warp.internal.DefaultPrimitiveValue;
+import me.sparky983.warp.internal.DefaultListNode;
+import me.sparky983.warp.internal.DefaultMapNode;
+import me.sparky983.warp.internal.DefaultPrimitiveNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
 
 /**
- * The possible types of configuration values.
+ * The configuration node.
  *
  * <p>There are three possible variants:
  *
@@ -24,9 +24,9 @@ import org.jspecify.annotations.NullMarked;
  */
 @ApiStatus.Experimental
 @NullMarked
-public sealed interface ConfigurationValue {
+public sealed interface ConfigurationNode {
   /**
-   * Creates a new primitive value.
+   * Creates a new primitive node.
    *
    * @param value the string representation of the value
    * @return the new primitive value
@@ -34,17 +34,17 @@ public sealed interface ConfigurationValue {
    * @since 0.1
    */
   static Primitive primitive(final String value) {
-    return new DefaultPrimitiveValue(value);
+    return new DefaultPrimitiveNode(value);
   }
 
   /**
-   * The primitive configuration value.
+   * The primitive configuration node.
    *
    * @since 0.1
    */
-  non-sealed interface Primitive extends ConfigurationValue {
+  non-sealed interface Primitive extends ConfigurationNode {
     /**
-     * Returns a string representation of the value.
+     * Returns a string representation of this node.
      *
      * <p>Consumers may parse this however they please.
      *
@@ -63,8 +63,8 @@ public sealed interface ConfigurationValue {
    *     are {@code null}.
    * @since 0.1
    */
-  static List list(final ConfigurationValue... values) {
-    return new DefaultListValue(Arrays.asList(values));
+  static List list(final ConfigurationNode... values) {
+    return new DefaultListNode(Arrays.asList(values));
   }
 
   /**
@@ -72,14 +72,14 @@ public sealed interface ConfigurationValue {
    *
    * @since 0.1
    */
-  non-sealed interface List extends ConfigurationValue, Iterable<ConfigurationValue> {
+  non-sealed interface List extends ConfigurationNode, Iterable<ConfigurationNode> {
     /**
-     * Returns a {@link java.util.List} of the values.
+     * Returns an immutable {@link java.util.List} containing the values of this node.
      *
      * @return the values
      * @since 0.1
      */
-    java.util.List<ConfigurationValue> values();
+    java.util.List<ConfigurationNode> values();
   }
 
   /**
@@ -89,7 +89,7 @@ public sealed interface ConfigurationValue {
    * @since 0.1
    */
   static Map.Builder map() {
-    return new DefaultMapValue.DefaultBuilder();
+    return new DefaultMapNode.DefaultBuilder();
   }
 
   /**
@@ -97,17 +97,17 @@ public sealed interface ConfigurationValue {
    *
    * @since 0.1
    */
-  non-sealed interface Map extends ConfigurationValue {
+  non-sealed interface Map extends ConfigurationNode {
     /**
-     * Returns a {@link java.util.Map} of the values.
+     * Returns a {@link java.util.Map} of the values in this node.
      *
      * @return the values
      * @since 0.1
      */
-    java.util.Map<String, ConfigurationValue> values();
+    java.util.Map<String, ConfigurationNode> values();
 
     /**
-     * Returns the value with the given key.
+     * Returns the value for the given key.
      *
      * @param key the key.
      * @return an optional containing the value associated with the key if one exists, otherwise an
@@ -115,7 +115,7 @@ public sealed interface ConfigurationValue {
      * @throws NullPointerException if the key is {@code null}.
      * @since 0.1
      */
-    Optional<ConfigurationValue> getValue(String key);
+    Optional<ConfigurationNode> getValue(String key);
 
     /**
      * Returns immutable set of the keys in this map.
@@ -139,7 +139,7 @@ public sealed interface ConfigurationValue {
        * @throws NullPointerException if the key or the value are {@code null}.
        * @since 0.1
        */
-      Builder entry(String key, ConfigurationValue value);
+      Builder entry(String key, ConfigurationNode value);
 
       /**
        * Builds the map.

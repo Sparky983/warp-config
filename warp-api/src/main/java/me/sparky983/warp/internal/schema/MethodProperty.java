@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Optional;
-import me.sparky983.warp.ConfigurationValue;
+import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.annotations.Property;
 
 final class MethodProperty implements SchemaProperty {
@@ -47,7 +47,7 @@ final class MethodProperty implements SchemaProperty {
   }
 
   @Override
-  public Optional<ConfigurationValue> defaultValue() {
+  public Optional<ConfigurationNode> defaultValue() {
     return Optional.empty();
   }
 

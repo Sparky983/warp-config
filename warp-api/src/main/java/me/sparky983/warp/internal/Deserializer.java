@@ -12,28 +12,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import me.sparky983.warp.ConfigurationValue;
+import me.sparky983.warp.ConfigurationNode;
 import org.jspecify.annotations.NullMarked;
 
 /**
- * A {@link ConfigurationValue} deserialize.
+ * A {@link ConfigurationNode} deserialize.
  *
  * @param <F> the type to deserialize
  * @param <T> the deserialized type
  */
 @FunctionalInterface
 @NullMarked
-public interface Deserializer<F extends ConfigurationValue, T> {
+public interface Deserializer<F extends ConfigurationNode, T> {
   /**
    * An identity deserializer.
    *
    * <p>The value result is the same as the input.
    */
-  Deserializer<ConfigurationValue, ConfigurationValue> IDENTITY =
+  Deserializer<ConfigurationNode, ConfigurationNode> IDENTITY =
       (type, value) -> Optional.of(value);
 
   /** A {@link Byte} deserializer */
-  Deserializer<ConfigurationValue.Primitive, Byte> BYTE =
+  Deserializer<ConfigurationNode.Primitive, Byte> BYTE =
       (type, value) -> {
         try {
           return Optional.of(Byte.valueOf(value.value()));
@@ -43,7 +43,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
       };
 
   /** A {@link Short} deserializer. */
-  Deserializer<ConfigurationValue.Primitive, Short> SHORT =
+  Deserializer<ConfigurationNode.Primitive, Short> SHORT =
       (type, value) -> {
         try {
           return Optional.of(Short.valueOf(value.value()));
@@ -53,7 +53,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
       };
 
   /** A {@link Integer} deserializer. */
-  Deserializer<ConfigurationValue.Primitive, Integer> INTEGER =
+  Deserializer<ConfigurationNode.Primitive, Integer> INTEGER =
       (type, value) -> {
         try {
           return Optional.of(Integer.valueOf(value.value()));
@@ -63,7 +63,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
       };
 
   /** A {@link Long} deserializer. */
-  Deserializer<ConfigurationValue.Primitive, Long> LONG =
+  Deserializer<ConfigurationNode.Primitive, Long> LONG =
       (type, value) -> {
         try {
           return Optional.of(Long.valueOf(value.value()));
@@ -73,7 +73,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
       };
 
   /** A {@link Float} deserializer. */
-  Deserializer<ConfigurationValue.Primitive, Float> FLOAT =
+  Deserializer<ConfigurationNode.Primitive, Float> FLOAT =
       (type, value) -> {
         try {
           return Optional.of(Float.valueOf(value.value()));
@@ -83,7 +83,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
       };
 
   /** A {@link Double} deserializer. */
-  Deserializer<ConfigurationValue.Primitive, Double> DOUBLE =
+  Deserializer<ConfigurationNode.Primitive, Double> DOUBLE =
       (type, value) -> {
         try {
           return Optional.of(Double.valueOf(value.value()));
@@ -93,7 +93,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
       };
 
   /** A {@link Boolean} deserializer. */
-  Deserializer<ConfigurationValue.Primitive, Boolean> BOOLEAN =
+  Deserializer<ConfigurationNode.Primitive, Boolean> BOOLEAN =
       (type, value) ->
           switch (value.value().toLowerCase()) {
             case "true" -> Optional.of(Boolean.TRUE);
@@ -106,7 +106,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
    *
    * <p>Only allows alphanumeric characters.
    */
-  Deserializer<ConfigurationValue.Primitive, Character> CHARACTER =
+  Deserializer<ConfigurationNode.Primitive, Character> CHARACTER =
       (type, value) -> {
         if (value.value().length() != 1) {
           return Optional.empty();
@@ -119,7 +119,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
       };
 
   /** A {@link String} deserializer. */
-  Deserializer<ConfigurationValue.Primitive, String> STRING =
+  Deserializer<ConfigurationNode.Primitive, String> STRING =
       (type, value) -> Optional.of(value.value());
 
   /**
@@ -132,7 +132,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
    */
   Optional<T> deserialize(Type type, F value);
 
-  static Deserializer<ConfigurationValue.List, List<?>> list(final DeserializerRegistry registry) {
+  static Deserializer<ConfigurationNode.List, List<?>> list(final DeserializerRegistry registry) {
     Objects.requireNonNull(registry, "registry cannot be null");
 
     return (type, value) -> {
@@ -157,7 +157,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
     };
   }
 
-  static Deserializer<ConfigurationValue.Map, Map<?, ?>> map(final DeserializerRegistry registry) {
+  static Deserializer<ConfigurationNode.Map, Map<?, ?>> map(final DeserializerRegistry registry) {
     Objects.requireNonNull(registry, "registry cannot be null");
 
     return (type, value) -> {
@@ -172,7 +172,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
         for (final var entry : value.values().entrySet()) {
           final var deserializedKey =
               registry.deserialize(
-                  ConfigurationValue.primitive(entry.getKey()), rawTypeOf(keyType), keyType);
+                  ConfigurationNode.primitive(entry.getKey()), rawTypeOf(keyType), keyType);
           final var deserializedValue =
               registry.deserialize(entry.getValue(), rawTypeOf(valueType), valueType);
           if (deserializedKey.isEmpty() || deserializedValue.isEmpty()) {

@@ -8,7 +8,7 @@ import java.util.Objects;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationSource;
-import me.sparky983.warp.ConfigurationValue;
+import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.internal.schema.ConfigurationSchema;
 import org.jspecify.annotations.NullMarked;
 
@@ -20,10 +20,10 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
   // Too much typing
-  private static final Class<ConfigurationValue.Primitive> PRIMITIVE =
-      ConfigurationValue.Primitive.class;
-  private static final Class<ConfigurationValue.List> LIST = ConfigurationValue.List.class;
-  private static final Class<ConfigurationValue.Map> MAP = ConfigurationValue.Map.class;
+  private static final Class<ConfigurationNode.Primitive> PRIMITIVE =
+      ConfigurationNode.Primitive.class;
+  private static final Class<ConfigurationNode.List> LIST = ConfigurationNode.List.class;
+  private static final Class<ConfigurationNode.Map> MAP = ConfigurationNode.Map.class;
 
   /** The default deserializer registry. */
   private static final DeserializerRegistry DESERIALIZERS =
@@ -74,7 +74,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
 
   @Override
   public T build() throws ConfigurationException {
-    final var configurations = new ArrayList<ConfigurationValue.Map>(sources.size());
+    final var configurations = new ArrayList<ConfigurationNode.Map>(sources.size());
     for (final var source : sources) {
       source.read().ifPresent(configurations::add);
     }

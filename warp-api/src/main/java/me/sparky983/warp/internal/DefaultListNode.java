@@ -1,14 +1,13 @@
 package me.sparky983.warp.internal;
 
 import java.util.Iterator;
-import me.sparky983.warp.ConfigurationValue;
-import me.sparky983.warp.ConfigurationValue.List;
+import me.sparky983.warp.ConfigurationNode;
 import org.jspecify.annotations.NullMarked;
 
 /** The default implementation of {@link List}. */
 @NullMarked
-public record DefaultListValue(@Override java.util.List<ConfigurationValue> values)
-    implements ConfigurationValue.List {
+public record DefaultListNode(@Override java.util.List<ConfigurationNode> values)
+    implements ConfigurationNode.List {
   /**
    * Constructs the list of values.
    *
@@ -17,12 +16,12 @@ public record DefaultListValue(@Override java.util.List<ConfigurationValue> valu
    * @throws NullPointerException if the values list is {@code null} or one of the values are {@code
    *     null}.
    */
-  public DefaultListValue(final java.util.List<ConfigurationValue> values) {
+  public DefaultListNode(final java.util.List<ConfigurationNode> values) {
     this.values = java.util.List.copyOf(values);
   }
 
   @Override
-  public Iterator<ConfigurationValue> iterator() {
+  public Iterator<ConfigurationNode> iterator() {
     return values.iterator();
   }
 }

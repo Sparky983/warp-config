@@ -2,7 +2,7 @@ package me.sparky983.warp.internal.schema;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
-import me.sparky983.warp.ConfigurationValue;
+import me.sparky983.warp.ConfigurationNode;
 
 /** A property in a schema. */
 public interface SchemaProperty {
@@ -16,5 +16,5 @@ public interface SchemaProperty {
   boolean isOptional();
 
   // TODO(Sparky983): Default values
-  Optional<ConfigurationValue> defaultValue();
+  Optional<ConfigurationNode> defaultValue();
 }

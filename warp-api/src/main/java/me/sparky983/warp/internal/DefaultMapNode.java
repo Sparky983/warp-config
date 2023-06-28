@@ -5,11 +5,11 @@ import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import me.sparky983.warp.ConfigurationValue;
+import me.sparky983.warp.ConfigurationNode;
 
 /** The default implementation of {@link Map}. */
-public record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue> values)
-    implements ConfigurationValue.Map {
+public record DefaultMapNode(@Override java.util.Map<String, ConfigurationNode> values)
+    implements ConfigurationNode.Map {
   /**
    * Constructs the map values.
    *
@@ -17,12 +17,12 @@ public record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue
    * @throws NullPointerException if the values map is {@code null} or has an entry that contains
    *     {@code null}.
    */
-  public DefaultMapValue(final java.util.Map<String, ConfigurationValue> values) {
+  public DefaultMapNode(final java.util.Map<String, ConfigurationNode> values) {
     this.values = Collections.unmodifiableMap(new LinkedHashMap<>(values));
   }
 
   @Override
-  public Optional<ConfigurationValue> getValue(final String key) {
+  public Optional<ConfigurationNode> getValue(final String key) {
     return Optional.ofNullable(values.get(key));
   }
 
@@ -33,10 +33,10 @@ public record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue
 
   /** The default implementation of {@link Builder}. */
   public static final class DefaultBuilder implements Builder {
-    private final java.util.Map<String, ConfigurationValue> values = new LinkedHashMap<>();
+    private final java.util.Map<String, ConfigurationNode> values = new LinkedHashMap<>();
 
     @Override
-    public Builder entry(final String key, final ConfigurationValue value) {
+    public Builder entry(final String key, final ConfigurationNode value) {
       Objects.requireNonNull(key, "key cannot be null");
       Objects.requireNonNull(value, "value cannot be null");
       values.put(key, value);
@@ -45,7 +45,7 @@ public record DefaultMapValue(@Override java.util.Map<String, ConfigurationValue
 
     @Override
     public Map build() {
-      return new DefaultMapValue(values);
+      return new DefaultMapNode(values);
     }
   }
 }

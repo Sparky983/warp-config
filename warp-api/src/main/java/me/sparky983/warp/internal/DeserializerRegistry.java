@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import me.sparky983.warp.ConfigurationValue;
+import me.sparky983.warp.ConfigurationNode;
 import org.jspecify.annotations.NullMarked;
 
 /** A registry of {@link Deserializer Deserializers}. */
@@ -32,7 +32,7 @@ public final class DeserializerRegistry {
    * @throws NullPointerException if the value type, deserialized type or the deserializer are
    *     {@code null}.
    */
-  public <F extends ConfigurationValue, T> DeserializerRegistry register(
+  public <F extends ConfigurationNode, T> DeserializerRegistry register(
       final Class<F> valueType,
       final Class<T> deserializedType,
       final Deserializer<? super F, ? extends T> deserializer) {
@@ -42,37 +42,37 @@ public final class DeserializerRegistry {
     return this;
   }
 
-  public <F extends ConfigurationValue, T> Optional<T> deserialize(
+  public <F extends ConfigurationNode, T> Optional<T> deserialize(
       final F serialized, final Class<T> type, final Type genericType) {
     Objects.requireNonNull(serialized, "serialized cannot be null");
     Objects.requireNonNull(type, "type cannot be null");
     Objects.requireNonNull(genericType, "genericType cannot be null");
 
-    final Class<? extends ConfigurationValue> serializedType;
-    if (serialized instanceof ConfigurationValue.Primitive) {
-      serializedType = ConfigurationValue.Primitive.class;
-    } else if (serialized instanceof ConfigurationValue.List) {
-      serializedType = ConfigurationValue.List.class;
-    } else if (serialized instanceof ConfigurationValue.Map) {
-      serializedType = ConfigurationValue.Map.class;
+    final Class<? extends ConfigurationNode> serializedType;
+    if (serialized instanceof ConfigurationNode.Primitive) {
+      serializedType = ConfigurationNode.Primitive.class;
+    } else if (serialized instanceof ConfigurationNode.List) {
+      serializedType = ConfigurationNode.List.class;
+    } else if (serialized instanceof ConfigurationNode.Map) {
+      serializedType = ConfigurationNode.Map.class;
     } else {
       throw new AssertionError("Unexpected configuration value");
     }
 
     return get(serializedType, type)
-        .or(() -> get(ConfigurationValue.class, type))
+        .or(() -> get(ConfigurationNode.class, type))
         .flatMap((deserializer) -> deserializer.deserialize(genericType, serialized));
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  private <F extends ConfigurationValue, T> Optional<Deserializer<F, T>> get(
-      final Class<? extends ConfigurationValue> serializedType, final Class<T> type) {
+  private <F extends ConfigurationNode, T> Optional<Deserializer<F, T>> get(
+      final Class<? extends ConfigurationNode> serializedType, final Class<T> type) {
     final var deserializer = deserializers.get(new DeserializerQualifier(serializedType, type));
     return Optional.ofNullable((Deserializer) deserializer);
   }
 
   private record DeserializerQualifier(
-      Class<? extends ConfigurationValue> valueType, Class<?> deserializedType) {
+      Class<? extends ConfigurationNode> valueType, Class<?> deserializedType) {
     public DeserializerQualifier {
       Objects.requireNonNull(valueType, "valueType cannot be null");
       Objects.requireNonNull(deserializedType, "deserializedType cannot be null");

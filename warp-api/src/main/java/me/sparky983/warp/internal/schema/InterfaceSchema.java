@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
-import me.sparky983.warp.ConfigurationValue;
+import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
@@ -40,11 +40,11 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
     this.properties = Set.copyOf(properties);
   }
 
-  private static Optional<ConfigurationValue> get(
-      final String path, final ConfigurationValue.Map configuration) {
-    ConfigurationValue currentNode = configuration;
+  private static Optional<ConfigurationNode> get(
+      final String path, final ConfigurationNode.Map configuration) {
+    ConfigurationNode currentNode = configuration;
     final var keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
-    while (currentNode instanceof ConfigurationValue.Map map) {
+    while (currentNode instanceof ConfigurationNode.Map map) {
       final var value = map.getValue(keys.poll());
       if (value.isEmpty()) {
         return Optional.empty();
@@ -76,7 +76,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
 
   @Override
   public T create(
-      final DeserializerRegistry registry, final List<ConfigurationValue.Map> configurations)
+      final DeserializerRegistry registry, final List<ConfigurationNode.Map> configurations)
       throws ConfigurationException {
     Objects.requireNonNull(configurations, "configurations cannot be null");
 

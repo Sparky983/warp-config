@@ -19,7 +19,7 @@ public interface ConfigurationSource {
    * @throws ConfigurationException if there was an error reading the configuration.
    * @since 0.1
    */
-  Optional<ConfigurationValue.Map> read() throws ConfigurationException;
+  Optional<ConfigurationNode.Map> read() throws ConfigurationException;
 
   /**
    * Creates a new configuration source from the given map.
@@ -29,7 +29,7 @@ public interface ConfigurationSource {
    * @throws NullPointerException if the map is {@code null}.
    * @since 0.1
    */
-  static ConfigurationSource of(final ConfigurationValue.Map map) {
+  static ConfigurationSource of(final ConfigurationNode.Map map) {
     return new DefaultConfigurationSource(map);
   }
 

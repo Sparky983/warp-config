@@ -14,9 +14,9 @@ class ConfigurationSourceTest {
   @Test
   void testOf() throws ConfigurationException {
     final var value =
-        ConfigurationValue.map()
-            .entry("test", ConfigurationValue.primitive("value 1"))
-            .entry("test-2", ConfigurationValue.primitive("value 2"))
+        ConfigurationNode.map()
+            .entry("test", ConfigurationNode.primitive("value 1"))
+            .entry("test-2", ConfigurationNode.primitive("value 2"))
             .build();
 
     final var source = ConfigurationSource.of(value);
@@ -35,6 +35,6 @@ class ConfigurationSourceTest {
   void testBlank() throws ConfigurationException {
     final var blank = ConfigurationSource.blank();
 
-    assertEquals(Optional.of(ConfigurationValue.map().build()), blank.read());
+    assertEquals(Optional.of(ConfigurationNode.map().build()), blank.read());
   }
 }

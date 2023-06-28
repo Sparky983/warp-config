@@ -3,8 +3,8 @@ package me.sparky983.warp.internal;
 import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationSource;
-import me.sparky983.warp.ConfigurationValue;
-import me.sparky983.warp.ConfigurationValue.Map;
+import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.ConfigurationNode.Map;
 import org.jspecify.annotations.NullMarked;
 
 /** The default {@link ConfigurationSource} implementation. */
@@ -20,7 +20,7 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
   public static final class Blank {
     /** A cached blank instance. */
     public static final ConfigurationSource BLANK =
-        new DefaultConfigurationSource(ConfigurationValue.map().build());
+        new DefaultConfigurationSource(ConfigurationNode.map().build());
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // an optimization
