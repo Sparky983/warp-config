@@ -31,6 +31,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
    */
   Deserializer<ConfigurationValue, ConfigurationValue> IDENTITY =
       (type, value) -> Optional.of(value);
+
   /** A {@link Byte} deserializer */
   Deserializer<ConfigurationValue.Primitive, Byte> BYTE =
       (type, value) -> {
@@ -40,6 +41,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
           return Optional.empty();
         }
       };
+
   /** A {@link Short} deserializer. */
   Deserializer<ConfigurationValue.Primitive, Short> SHORT =
       (type, value) -> {
@@ -49,6 +51,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
           return Optional.empty();
         }
       };
+
   /** A {@link Integer} deserializer. */
   Deserializer<ConfigurationValue.Primitive, Integer> INTEGER =
       (type, value) -> {
@@ -58,6 +61,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
           return Optional.empty();
         }
       };
+
   /** A {@link Long} deserializer. */
   Deserializer<ConfigurationValue.Primitive, Long> LONG =
       (type, value) -> {
@@ -67,6 +71,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
           return Optional.empty();
         }
       };
+
   /** A {@link Float} deserializer. */
   Deserializer<ConfigurationValue.Primitive, Float> FLOAT =
       (type, value) -> {
@@ -76,6 +81,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
           return Optional.empty();
         }
       };
+
   /** A {@link Double} deserializer. */
   Deserializer<ConfigurationValue.Primitive, Double> DOUBLE =
       (type, value) -> {
@@ -85,6 +91,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
           return Optional.empty();
         }
       };
+
   /** A {@link Boolean} deserializer. */
   Deserializer<ConfigurationValue.Primitive, Boolean> BOOLEAN =
       (type, value) ->
@@ -93,6 +100,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
             case "false" -> Optional.of(Boolean.FALSE);
             default -> Optional.empty();
           };
+
   /**
    * An {@link Character} deserializer.
    *
@@ -109,6 +117,7 @@ public interface Deserializer<F extends ConfigurationValue, T> {
         }
         return Optional.empty();
       };
+
   /** A {@link String} deserializer. */
   Deserializer<ConfigurationValue.Primitive, String> STRING =
       (type, value) -> Optional.of(value.value());
@@ -161,8 +170,11 @@ public interface Deserializer<F extends ConfigurationValue, T> {
         final var valueType = typeArguments[1];
         final var deserializedMap = new HashMap<>();
         for (final var entry : value.values().entrySet()) {
-          final var deserializedKey = registry.deserialize(ConfigurationValue.primitive(entry.getKey()), rawTypeOf(keyType), keyType);
-          final var deserializedValue = registry.deserialize(entry.getValue(), rawTypeOf(valueType), valueType);
+          final var deserializedKey =
+              registry.deserialize(
+                  ConfigurationValue.primitive(entry.getKey()), rawTypeOf(keyType), keyType);
+          final var deserializedValue =
+              registry.deserialize(entry.getValue(), rawTypeOf(valueType), valueType);
           if (deserializedKey.isEmpty() || deserializedValue.isEmpty()) {
             return Optional.empty();
           }

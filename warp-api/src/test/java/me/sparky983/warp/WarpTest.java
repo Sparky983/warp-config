@@ -6,10 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.List;
-import me.sparky983.warp.annotations.Configuration;
-import me.sparky983.warp.annotations.Property;
-import me.sparky983.warp.internal.schema.InvalidConfigurationException;
 import org.junit.jupiter.api.Test;
 
 class WarpTest {

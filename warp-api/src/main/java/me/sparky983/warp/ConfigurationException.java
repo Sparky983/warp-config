@@ -1,8 +1,6 @@
 package me.sparky983.warp;
 
 import java.util.Set;
-import me.sparky983.warp.internal.schema.ConfigurationSchema;
-import me.sparky983.warp.internal.schema.SchemaViolation;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 

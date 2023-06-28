@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import me.sparky983.warp.ConfigurationBuilder;
+import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.ConfigurationValue;
 import me.sparky983.warp.internal.schema.ConfigurationSchema;
-import me.sparky983.warp.ConfigurationException;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -20,7 +20,8 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
   // Too much typing
-  private static final Class<ConfigurationValue.Primitive> PRIMITIVE = ConfigurationValue.Primitive.class;
+  private static final Class<ConfigurationValue.Primitive> PRIMITIVE =
+      ConfigurationValue.Primitive.class;
   private static final Class<ConfigurationValue.List> LIST = ConfigurationValue.List.class;
   private static final Class<ConfigurationValue.Map> MAP = ConfigurationValue.Map.class;
 
@@ -75,10 +76,6 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   public T build() throws ConfigurationException {
     return schema.create(
         DESERIALIZERS,
-        sources.stream()
-            .findFirst()
-            .get()
-            .read()
-            .orElse(ConfigurationValue.map().build()));
+        sources.stream().findFirst().get().read().orElse(ConfigurationValue.map().build()));
   }
 }

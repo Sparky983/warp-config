@@ -1,7 +1,6 @@
 package me.sparky983.warp.internal.schema;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Optional;

@@ -1,7 +1,6 @@
 package me.sparky983.warp.internal;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Optional;

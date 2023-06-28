@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import me.sparky983.warp.ConfigurationValue;
 import me.sparky983.warp.ConfigurationException;
+import me.sparky983.warp.ConfigurationValue;
 import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.DeserializerRegistry;
 

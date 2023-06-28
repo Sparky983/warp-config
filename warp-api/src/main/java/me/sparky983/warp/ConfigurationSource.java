@@ -51,7 +51,7 @@ public interface ConfigurationSource {
    * @warp.apiNote The returned source is cached, however this behaviour should not be depended on.
    * @since 0.1
    */
-  static ConfigurationSource blank()  {
+  static ConfigurationSource blank() {
     return DefaultConfigurationSource.Blank.BLANK;
   }
 }

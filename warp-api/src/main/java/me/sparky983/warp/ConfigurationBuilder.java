@@ -26,11 +26,12 @@ public interface ConfigurationBuilder<T> {
    *
    * @return the built configuration
    * @throws ConfigurationException if there was an error with the configuration. Possible causes:
-   * <ul>
-   *   <li>A required property was missing</li>
-   *   <li>A value was unable to be parsed</li>
-   *   <li>One of the sources contained syntax error</li>
-   * </ul>
+   *     <ul>
+   *       <li>A required property was missing
+   *       <li>A value was unable to be parsed
+   *       <li>One of the sources contained syntax error
+   *     </ul>
+   *
    * @since 0.1
    */
   T build() throws ConfigurationException;
