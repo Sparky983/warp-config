@@ -6,22 +6,24 @@ import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.annotations.Property;
+import me.sparky983.warp.internal.ParameterizedType;
 
 final class MethodProperty implements SchemaProperty {
-  private final Method method;
   private final String path;
+  private final ParameterizedType<?> type;
 
   private MethodProperty(final Method method) {
     Objects.requireNonNull(method, "method cannot be null");
-    this.method = method;
     final var property = method.getAnnotation(Property.class);
     if (property == null) {
       throw new IllegalArgumentException(
           String.format("Method %s must be annotated with @%s", method, Property.class.getName()));
     }
-    this.path = property.value();
+    path = property.value();
+    type = ParameterizedType.of(method.getGenericReturnType());
   }
 
+  // TODO: document and include error thrown by ParameterizedType.of(Type)
   static SchemaProperty of(final Method method) {
     return new MethodProperty(method);
   }
@@ -32,13 +34,8 @@ final class MethodProperty implements SchemaProperty {
   }
 
   @Override
-  public Class<?> rawType() {
-    return method.getReturnType();
-  }
-
-  @Override
-  public Type genericType() {
-    return method.getGenericReturnType();
+  public ParameterizedType<?> type() {
+    return type;
   }
 
   @Override

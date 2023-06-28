@@ -1,16 +1,14 @@
 package me.sparky983.warp.internal.schema;
 
-import java.lang.reflect.Type;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.internal.ParameterizedType;
 
 /** A property in a schema. */
 public interface SchemaProperty {
   String path();
 
-  Class<?> rawType();
-
-  Type genericType();
+  ParameterizedType<?> type();
 
   // TODO(Sparky983): Optional properties
   boolean isOptional();

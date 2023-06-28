@@ -85,28 +85,26 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
     final var violations = new LinkedHashSet<ConfigurationError>();
 
     for (final var property : properties) {
-      Optional<Object> finalValue = Optional.empty();
+      Optional<Object> valueOptional = Optional.empty();
       for (final var configuration : configurations) {
         Objects.requireNonNull(configuration);
 
-        final var value = get(property.path(), configuration);
-        if (value.isEmpty()) {
+        final var node = get(property.path(), configuration);
+        if (node.isEmpty()) {
           continue;
         }
 
-        final var deserializedValue =
-            registry.deserialize(value.get(), property.rawType(), property.genericType());
-        if (deserializedValue.isEmpty()) {
+        final var deserialized = registry.deserialize(node.get(), property.type());
+        if (deserialized.isEmpty()) {
           violations.add(
               new SchemaViolation(
                   String.format(
-                      "Unable to parse property \"%s\" of type %s",
-                      property, property.genericType())));
+                      "Unable to parse property \"%s\" of type %s", property, property.type())));
           continue;
         }
-        finalValue = finalValue.or(() -> deserializedValue);
+        valueOptional = valueOptional.or(() -> deserialized);
       }
-      finalValue.ifPresentOrElse(
+      valueOptional.ifPresentOrElse(
           (value) -> mappedConfiguration.put(property.path(), value),
           () ->
               violations.add(

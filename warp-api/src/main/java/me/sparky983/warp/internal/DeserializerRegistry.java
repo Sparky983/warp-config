@@ -1,6 +1,5 @@
 package me.sparky983.warp.internal;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -43,10 +42,9 @@ public final class DeserializerRegistry {
   }
 
   public <F extends ConfigurationNode, T> Optional<T> deserialize(
-      final F serialized, final Class<T> type, final Type genericType) {
+      final F serialized, final ParameterizedType<T> type) {
     Objects.requireNonNull(serialized, "serialized cannot be null");
     Objects.requireNonNull(type, "type cannot be null");
-    Objects.requireNonNull(genericType, "genericType cannot be null");
 
     final Class<? extends ConfigurationNode> serializedType;
     if (serialized instanceof ConfigurationNode.Primitive) {
@@ -59,9 +57,9 @@ public final class DeserializerRegistry {
       throw new AssertionError("Unexpected configuration value");
     }
 
-    return get(serializedType, type)
-        .or(() -> get(ConfigurationNode.class, type))
-        .flatMap((deserializer) -> deserializer.deserialize(genericType, serialized));
+    return get(serializedType, type.rawType())
+        .or(() -> get(ConfigurationNode.class, type.rawType()))
+        .flatMap((deserializer) -> deserializer.deserialize(type, serialized));
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

@@ -1,10 +1,5 @@
 package me.sparky983.warp.internal;
 
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -129,29 +124,26 @@ public interface Deserializer<F extends ConfigurationNode, T> {
    * @return an optional containing the deserialized value if it could not be deserialized,
    *     otherwise an empty optional
    */
-  Optional<T> deserialize(Type type, F value);
+  Optional<T> deserialize(ParameterizedType<? extends T> type, F value);
 
   static Deserializer<ConfigurationNode.List, List<?>> list(final DeserializerRegistry registry) {
     Objects.requireNonNull(registry, "registry cannot be null");
 
     return (type, value) -> {
-      if (type instanceof Class<?>) {
-        // raw type
+      if (type.isRaw()) {
         return Optional.of(value.values());
-      } else if (type instanceof ParameterizedType parameterizedType) {
-        final var elementType = parameterizedType.getActualTypeArguments()[0];
+      } else {
+        final var elementType = type.typeArguments().get(0);
         final var deserializedList = new ArrayList<>();
         for (final var element : value.values()) {
           final var deserialized =
-              registry.deserialize(element, rawTypeOf(elementType), elementType);
+              registry.deserialize(element, elementType);
           if (deserialized.isEmpty()) {
             return Optional.empty();
           }
           deserializedList.add(deserialized.get());
         }
         return Optional.of(Collections.unmodifiableList(deserializedList));
-      } else {
-        return Optional.empty(); // unexpected type
       }
     };
   }
@@ -160,47 +152,24 @@ public interface Deserializer<F extends ConfigurationNode, T> {
     Objects.requireNonNull(registry, "registry cannot be null");
 
     return (type, value) -> {
-      if (type instanceof Class<?>) {
-        // raw type
+      if (type.isRaw()) {
         return Optional.of(value.values());
-      } else if (type instanceof ParameterizedType parameterizedType) {
-        final var typeArguments = parameterizedType.getActualTypeArguments();
-        final var keyType = typeArguments[0];
-        final var valueType = typeArguments[1];
+      } else {
+        final var keyType = type.typeArguments().get(0);
+        final var valueType = type.typeArguments().get(1);
         final var deserializedMap = new HashMap<>();
         for (final var entry : value.entries()) {
           final var deserializedKey =
-              registry.deserialize(
-                  ConfigurationNode.primitive(entry.key()), rawTypeOf(keyType), keyType);
+              registry.deserialize(ConfigurationNode.primitive(entry.key()), keyType);
           final var deserializedValue =
-              registry.deserialize(entry.value(), rawTypeOf(valueType), valueType);
+              registry.deserialize(entry.value(), valueType);
           if (deserializedKey.isEmpty() || deserializedValue.isEmpty()) {
             return Optional.empty();
           }
           deserializedMap.put(deserializedKey, deserializedValue);
         }
         return Optional.of(Collections.unmodifiableMap(deserializedMap));
-      } else {
-        return Optional.empty(); // unexpected type
       }
     };
-  }
-
-  private static Class<?> rawTypeOf(final Type type) {
-    if (type instanceof Class<?> cls) {
-      return cls;
-    } else if (type instanceof GenericArrayType genericArrayType) {
-      return rawTypeOf(genericArrayType.getGenericComponentType()).arrayType();
-    } else if (type instanceof ParameterizedType parameterizedType) {
-      // this is actually safe - https://bugs.openjdk.org/browse/JDK-6255169
-      return (Class<?>) parameterizedType.getRawType();
-    } else if (type instanceof TypeVariable<?> typeVariable) {
-      return Object.class;
-    } else if (type instanceof WildcardType wildcardType) {
-      // currently only 1 upper bound is supported
-      return rawTypeOf(wildcardType.getUpperBounds()[0]);
-    } else {
-      throw new IllegalArgumentException("Unexpected type");
-    }
   }
 }
