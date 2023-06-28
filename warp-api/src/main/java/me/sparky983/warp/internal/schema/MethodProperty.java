@@ -1,7 +1,6 @@
 package me.sparky983.warp.internal.schema;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationNode;
@@ -11,6 +10,7 @@ import me.sparky983.warp.internal.ParameterizedType;
 final class MethodProperty implements SchemaProperty {
   private final String path;
   private final ParameterizedType<?> type;
+  private final boolean isOptional;
 
   private MethodProperty(final Method method) {
     Objects.requireNonNull(method, "method cannot be null");
@@ -19,8 +19,20 @@ final class MethodProperty implements SchemaProperty {
       throw new IllegalArgumentException(
           String.format("Method %s must be annotated with @%s", method, Property.class.getName()));
     }
-    path = property.value();
-    type = ParameterizedType.of(method.getGenericReturnType());
+    this.path = property.value();
+
+    final ParameterizedType<?> type = ParameterizedType.of(method.getGenericReturnType());
+    if (type.rawType().equals(Optional.class)) {
+      isOptional = true;
+      if (type.typeArguments().size() == 0) {
+        this.type = ParameterizedType.of(Object.class);
+      } else {
+        this.type = type.typeArguments().get(0);
+      }
+    } else {
+      isOptional = false;
+      this.type = type;
+    }
   }
 
   // TODO: document and include error thrown by ParameterizedType.of(Type)
@@ -40,7 +52,7 @@ final class MethodProperty implements SchemaProperty {
 
   @Override
   public boolean isOptional() {
-    return false;
+    return isOptional;
   }
 
   @Override

@@ -7,9 +7,12 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -104,13 +107,17 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
         }
         valueOptional = valueOptional.or(() -> deserialized);
       }
-      valueOptional.ifPresentOrElse(
-          (value) -> mappedConfiguration.put(property.path(), value),
-          () ->
-              violations.add(
-                  new SchemaViolation(
-                      String.format(
-                          "Required property \"%s\" was not present in any sources", property))));
+      if (property.isOptional()) {
+        mappedConfiguration.put(property.path(), valueOptional);
+      } else {
+        valueOptional.ifPresentOrElse(
+            (value) -> mappedConfiguration.put(property.path(), value),
+            () ->
+                violations.add(
+                    new SchemaViolation(
+                        String.format(
+                            "Required property \"%s\" was not present in any sources", property))));
+      }
     }
 
     if (!violations.isEmpty()) {
