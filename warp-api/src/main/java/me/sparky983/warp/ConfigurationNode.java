@@ -27,24 +27,6 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public sealed interface ConfigurationNode {
   /**
-   * Returns a nil node.
-   *
-   * @return the nil node
-   * @since 0.1
-   * @warp.implNote The returned nil is cached, however this behaviour should not be depended on.
-   */
-  static Nil nil() {
-    return DefaultNilNode.NIL;
-  }
-
-  /**
-   * The nil configuration node.
-   *
-   * @since 0.1
-   */
-  non-sealed interface Nil extends ConfigurationNode {}
-
-  /**
    * Creates a new primitive node.
    *
    * @param value the string representation of the value
@@ -205,4 +187,22 @@ public sealed interface ConfigurationNode {
       ConfigurationNode value();
     }
   }
+
+  /**
+   * Returns a nil node.
+   *
+   * @return the nil node
+   * @since 0.1
+   * @warp.implNote The returned nil is cached, however this behaviour should not be depended on.
+   */
+  static Nil nil() {
+    return DefaultNilNode.NIL;
+  }
+
+  /**
+   * The nil configuration node.
+   *
+   * @since 0.1
+   */
+  non-sealed interface Nil extends ConfigurationNode {}
 }

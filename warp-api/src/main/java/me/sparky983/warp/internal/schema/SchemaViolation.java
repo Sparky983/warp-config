@@ -4,7 +4,7 @@ import java.util.Objects;
 import me.sparky983.warp.ConfigurationError;
 import org.jspecify.annotations.NullMarked;
 
-/** A {@link ConfigurationError} caused by the violation of a constraint defined by a schema */
+/** A {@link ConfigurationError} caused by the violation of a constraint defined by a schema. */
 @NullMarked
 record SchemaViolation(@Override String description) implements ConfigurationError {
   /**

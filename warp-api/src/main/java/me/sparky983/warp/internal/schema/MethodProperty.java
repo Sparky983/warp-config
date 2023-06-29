@@ -5,6 +5,7 @@ import java.util.Objects;
 import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.ParameterizedType;
 
+/** A {@link SchemaProperty} for a {@link Property @Property} method. */
 final class MethodProperty implements SchemaProperty {
   private final String path;
   private final ParameterizedType<?> type;
@@ -21,7 +22,17 @@ final class MethodProperty implements SchemaProperty {
     this.type = ParameterizedType.of(method.getGenericReturnType());
   }
 
-  // TODO: document and include error thrown by ParameterizedType.of(Type)
+  // TODO: document and include error thrown by ParameterizedType.of(Type)(
+
+  /**
+   * Creates a new method property.
+   *
+   * @param method the method
+   * @return the new property
+   * @throws IllegalArgumentException if the method is not annotated with {@link Property @Property}
+   *     or the method's return type references a type variable.
+   * @throws NullPointerException if the method is {@code null}.
+   */
   static SchemaProperty of(final Method method) {
     return new MethodProperty(method);
   }

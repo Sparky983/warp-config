@@ -126,23 +126,13 @@ public interface Deserializer<F extends ConfigurationNode, T> {
    */
   Optional<T> deserialize(ParameterizedType<? extends T> type, F node);
 
-  static Deserializer<ConfigurationNode, Optional<?>> optional(
-      final DeserializerRegistry deserializers) {
-    Objects.requireNonNull(deserializers, "deserializers cannot be null");
-
-    return (type, node) -> {
-      if (node instanceof ConfigurationNode.Nil) {
-        return Optional.of(Optional.empty());
-      }
-      if (type.isRaw()) {
-        return Optional.of(Optional.of(node));
-      } else {
-        final var valueType = type.typeArguments().get(0);
-        return deserializers.deserialize(node, valueType).map(Optional::of);
-      }
-    };
-  }
-
+  /**
+   * Creates a new list deserializer for the given deserializer registry.
+   *
+   * @param deserializers the deserializer registry.
+   * @return the list deserializer
+   * @throws NullPointerException if the deserializer registry is {@code null}.
+   */
   static Deserializer<ConfigurationNode.List, List<?>> list(
       final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
@@ -165,6 +155,13 @@ public interface Deserializer<F extends ConfigurationNode, T> {
     };
   }
 
+  /**
+   * Creates a new map deserializer for the given deserializer registry.
+   *
+   * @param deserializers the deserializer registry.
+   * @return the list deserializer
+   * @throws NullPointerException if the deserializer registry is {@code null}.
+   */
   static Deserializer<ConfigurationNode.Map, Map<?, ?>> map(
       final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
@@ -186,6 +183,30 @@ public interface Deserializer<F extends ConfigurationNode, T> {
           deserializedMap.put(key, value);
         }
         return Optional.of(Collections.unmodifiableMap(deserializedMap));
+      }
+    };
+  }
+
+  /**
+   * Creates a new optional deserializer for the given deserializer registry.
+   *
+   * @param deserializers the deserializer registry.
+   * @return the list deserializer
+   * @throws NullPointerException if the deserializer registry is {@code null}.
+   */
+  static Deserializer<ConfigurationNode, Optional<?>> optional(
+      final DeserializerRegistry deserializers) {
+    Objects.requireNonNull(deserializers, "deserializers cannot be null");
+
+    return (type, node) -> {
+      if (node instanceof ConfigurationNode.Nil) {
+        return Optional.of(Optional.empty());
+      }
+      if (type.isRaw()) {
+        return Optional.of(Optional.of(node));
+      } else {
+        final var valueType = type.typeArguments().get(0);
+        return deserializers.deserialize(node, valueType).map(Optional::of);
       }
     };
   }

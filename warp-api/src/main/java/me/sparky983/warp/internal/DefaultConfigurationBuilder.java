@@ -49,6 +49,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .register(PRIMITIVE, String.class, Deserializer.STRING)
           .register(PRIMITIVE, CharSequence.class, Deserializer.STRING);
 
+  /** The default defaults registry */
   private static final DefaultsRegistry DEFAULTS =
       DefaultsRegistry.create()
           .register(Optional.class, ConfigurationNode.nil())

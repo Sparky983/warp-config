@@ -14,6 +14,11 @@ public final class DeserializerRegistry {
 
   private DeserializerRegistry() {}
 
+  /**
+   * Creates a new deserializer registry.
+   *
+   * @return the new deserializer registry
+   */
   static DeserializerRegistry create() {
     return new DeserializerRegistry();
   }
@@ -41,6 +46,17 @@ public final class DeserializerRegistry {
     return this;
   }
 
+  /**
+   * Deserializes the given node into the given type.
+   *
+   * @param serialized the serialized node
+   * @param type the type to deserialize the node into
+   * @return an optional containing the deserialized node if it could be deserialized, otherwise an
+   *     empty optional
+   * @param <F> the node type
+   * @param <T> the type to deserialize the node into
+   * @throws NullPointerException if the serialized node or the type is {@code null}.
+   */
   public <F extends ConfigurationNode, T> Optional<T> deserialize(
       final F serialized, final ParameterizedType<T> type) {
     Objects.requireNonNull(serialized, "serialized cannot be null");
@@ -64,6 +80,15 @@ public final class DeserializerRegistry {
         .flatMap((deserializer) -> deserializer.deserialize(type, serialized));
   }
 
+  /**
+   * Gets the deserializer for the given type and node type.
+   *
+   * @param serializedType the node type
+   * @param type the type
+   * @return an optional containing the deserializer if one was found, otherwise an empty optional
+   * @param <F> the node type
+   * @param <T> the type
+   */
   @SuppressWarnings("unchecked")
   private <F extends ConfigurationNode, T> Optional<Deserializer<F, T>> get(
       final Class<? extends ConfigurationNode> serializedType, final Class<T> type) {

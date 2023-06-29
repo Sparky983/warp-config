@@ -37,15 +37,49 @@ public final class ParameterizedType<T> {
     this.typeArguments = List.copyOf(typeArguments);
   }
 
+  /**
+   * Creates a new raw parameterized type for the given class.
+   *
+   * @param rawType the class
+   * @return the new parameterized type
+   * @param <T> the type
+   * @throws NullPointerException if the class is {@code null}.
+   */
   public static <T> ParameterizedType<T> of(final Class<T> rawType) {
     return new ParameterizedType<>(rawType, List.of());
   }
 
+  /**
+   * Creates a new parameterized type for the given class with the given type arguments.
+   *
+   * @param rawType the class
+   * @param typeArguments the type arguments; changes to this array will not be reflected in the
+   *     resulting parameterized type's type arguments
+   * @return the new parameterized type
+   * @param <T> the type
+   * @throws IllegalArgumentException if the number of type arguments is not 0 (raw type) and the
+   *     number of type arguments don't match the amount of type parameters declared by the class.
+   * @throws NullPointerException if the class, the type arguments array or any of the type
+   *     arguments are {@code null}.
+   */
   public static <T> ParameterizedType<T> of(
       final Class<T> rawType, final ParameterizedType<?>... typeArguments) {
     return new ParameterizedType<>(rawType, List.of(typeArguments));
   }
 
+  /**
+   * Creates a new parameterized type for the given class with the given type arguments.
+   *
+   * @param rawType the class
+   * @param typeArguments the type arguments; changes to this array will not be reflected in the
+   *     resulting parameterized type's type arguments
+   * @return the new parameterized type
+   * @param <T> the type
+   * @throws IllegalArgumentException if the number of type arguments is not 0 (raw type) and the
+   *     number of type arguments don't match the amount of type parameters declared by the class.
+   * @throws NullPointerException if the class, the type arguments array or any of the type
+   *     arguments are {@code null}.
+   */
   public static <T> ParameterizedType<T> of(
       final Class<T> rawType, final Class<?>... typeArguments) {
     return new ParameterizedType<>(
@@ -56,6 +90,15 @@ public final class ParameterizedType<T> {
             .toList());
   }
 
+  /**
+   * Creates a new parameterized type for the type.
+   *
+   * @param type the type
+   * @throws IllegalArgumentException if the given type included a type variable or if the type was
+   *     unexpected
+   * @throws NullPointerException if the class, the type arguments array or any of the type
+   *     arguments are {@code null}.
+   */
   public static ParameterizedType<?> of(final Type type) {
     if (type instanceof Class<?> cls) {
       return of(cls);
@@ -78,22 +121,47 @@ public final class ParameterizedType<T> {
     }
   }
 
+  /**
+   * Returns the raw type.
+   *
+   * @return the raw type
+   */
   public Class<T> rawType() {
     return rawType;
   }
 
+  /**
+   * Returns the type arguments.
+   *
+   * @return the type arguments
+   */
   public List<ParameterizedType<?>> typeArguments() {
     return typeArguments;
   }
 
+  /**
+   * Returns the type arguments as classes.
+   *
+   * @return the type arguments
+   */
   public List<Class<?>> rawTypeArguments() {
     return typeArguments.stream().<Class<?>>map(ParameterizedType::rawType).toList();
   }
 
+  /**
+   * Checks whether this parameterized type has type arguments.
+   *
+   * @return {@code true} if this parameterized type has type arguments, otherwise {@code false}
+   */
   public boolean isParameterized() {
     return !isRaw();
   }
 
+  /**
+   * Checks whether this parameterized type has no type arguments.
+   *
+   * @return {@code true} if this parameterized type has no type arguments, otherwise {@code false}
+   */
   public boolean isRaw() {
     return typeArguments.isEmpty();
   }
