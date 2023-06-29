@@ -47,6 +47,10 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .register(PRIMITIVE, String.class, Deserializer.STRING)
           .register(PRIMITIVE, CharSequence.class, Deserializer.STRING);
 
+  private static final DefaultsRegistry DEFAULTS = DefaultsRegistry.create()
+      .register(List.class, ConfigurationNode.list())
+      .register(Map.class, ConfigurationNode.map().build());
+
   static {
     DESERIALIZERS.register(LIST, List.class, Deserializer.list(DESERIALIZERS));
     DESERIALIZERS.register(MAP, Map.class, Deserializer.map(DESERIALIZERS));
@@ -78,6 +82,6 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
     for (final var source : sources) {
       source.read().ifPresent(configurations::add);
     }
-    return schema.create(DESERIALIZERS, configurations);
+    return schema.create(DESERIALIZERS, DEFAULTS, configurations);
   }
 }

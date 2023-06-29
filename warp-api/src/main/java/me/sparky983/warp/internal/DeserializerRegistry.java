@@ -62,11 +62,11 @@ public final class DeserializerRegistry {
         .flatMap((deserializer) -> deserializer.deserialize(type, serialized));
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
+  @SuppressWarnings("unchecked")
   private <F extends ConfigurationNode, T> Optional<Deserializer<F, T>> get(
       final Class<? extends ConfigurationNode> serializedType, final Class<T> type) {
     final var deserializer = deserializers.get(new DeserializerQualifier(serializedType, type));
-    return Optional.ofNullable((Deserializer) deserializer);
+    return Optional.ofNullable((Deserializer<F, T>) deserializer);
   }
 
   private record DeserializerQualifier(

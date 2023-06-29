@@ -13,7 +13,9 @@ import java.util.Set;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.annotations.Property;
+import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
 /**
@@ -76,9 +78,13 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
 
   @Override
   public T create(
-      final DeserializerRegistry registry, final List<ConfigurationNode.Map> configurations)
+      final DeserializerRegistry deserializers,
+      final DefaultsRegistry defaults,
+      final List<Map> configurations)
       throws ConfigurationException {
     Objects.requireNonNull(configurations, "configurations cannot be null");
+    Objects.requireNonNull(deserializers, "deserializers cannot be null");
+    Objects.requireNonNull(defaults, "defaults cannot be null");
 
     final var mappedConfiguration = new HashMap<String, Object>();
     final var violations = new LinkedHashSet<ConfigurationError>();
@@ -93,7 +99,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
           continue;
         }
 
-        final var deserialized = registry.deserialize(node.get(), property.type());
+        final var deserialized = deserializers.deserialize(node.get(), property.type());
         if (deserialized.isEmpty()) {
           violations.add(
               new SchemaViolation(
@@ -105,10 +111,16 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
         mappedConfiguration.putIfAbsent(property.path(), deserialized.get());
       }
       if (!isSet) {
-        violations.add(
-            new SchemaViolation(
-                String.format(
-                    "Property \"%s\" was not present in any sources", property)));
+        defaults
+            .get(property.type().rawType())
+            .flatMap((node) -> deserializers.deserialize(node, property.type()))
+            .ifPresentOrElse(
+                (value) -> mappedConfiguration.put(property.path(), value),
+                () ->
+                    violations.add(
+                        new SchemaViolation(
+                            String.format(
+                                "Property \"%s\" was not present in any sources", property))));
       }
     }
 

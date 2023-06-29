@@ -5,8 +5,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.sparky983.warp.ConfigurationException;
-import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.annotations.Configuration;
+import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import org.jspecify.annotations.NullMarked;
 
@@ -20,12 +21,14 @@ public interface ConfigurationSchema<T> {
   /**
    * Creates a configuration compliant with this schema.
    *
+   * @param deserializers the deserializer registry
+   * @param defaults the defaults register
    * @param configuration the configuration
    * @return a list of the configurations in order of precedence
    * @throws ConfigurationException if any configurations were not compliant with this schema.
-   * @throws NullPointerException if the configuration is {@code null}.
+   * @throws NullPointerException   if the configuration is {@code null}.
    */
-  T create(DeserializerRegistry registry, List<ConfigurationNode.Map> configuration)
+  T create(DeserializerRegistry deserializers, DefaultsRegistry defaults, List<Map> configuration)
       throws ConfigurationException;
 
   /**
