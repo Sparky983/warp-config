@@ -1,5 +1,7 @@
 package me.sparky983.warp;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -26,7 +28,7 @@ public final class ConfigurationException extends Exception {
   public ConfigurationException(
       final @Nullable String message, final Set<ConfigurationError> errors) {
     super(message);
-    this.errors = Set.copyOf(errors);
+    this.errors = Collections.unmodifiableSet(new LinkedHashSet<>(errors));
   }
 
   /**
