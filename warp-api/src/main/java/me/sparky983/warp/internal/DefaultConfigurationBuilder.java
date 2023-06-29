@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -20,6 +21,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
   // Too much typing
+  private static final Class<ConfigurationNode> NODE = ConfigurationNode.class;
   private static final Class<ConfigurationNode.Primitive> PRIMITIVE =
       ConfigurationNode.Primitive.class;
   private static final Class<ConfigurationNode.List> LIST = ConfigurationNode.List.class;
@@ -49,10 +51,12 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
 
   private static final DefaultsRegistry DEFAULTS =
       DefaultsRegistry.create()
+          .register(Optional.class, ConfigurationNode.nil())
           .register(List.class, ConfigurationNode.list())
           .register(Map.class, ConfigurationNode.map().build());
 
   static {
+    DESERIALIZERS.register(NODE, Optional.class, Deserializer.optional(DESERIALIZERS));
     DESERIALIZERS.register(LIST, List.class, Deserializer.list(DESERIALIZERS));
     DESERIALIZERS.register(MAP, Map.class, Deserializer.map(DESERIALIZERS));
   }

@@ -126,6 +126,23 @@ public interface Deserializer<F extends ConfigurationNode, T> {
    */
   Optional<T> deserialize(ParameterizedType<? extends T> type, F value);
 
+  static Deserializer<ConfigurationNode, Optional<?>> optional(
+      final DeserializerRegistry registry) {
+    Objects.requireNonNull(registry, "registry cannot be null");
+
+    return (type, value) -> {
+      if (value instanceof ConfigurationNode.Nil) {
+        return Optional.of(Optional.empty());
+      }
+      if (type.isRaw()) {
+        return Optional.of(Optional.of(value));
+      } else {
+        final var valueType = type.typeArguments().get(0);
+        return registry.deserialize(value, valueType).map(Optional::of);
+      }
+    };
+  }
+
   static Deserializer<ConfigurationNode.List, List<?>> list(final DeserializerRegistry registry) {
     Objects.requireNonNull(registry, "registry cannot be null");
 
