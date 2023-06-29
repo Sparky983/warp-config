@@ -47,9 +47,10 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .register(PRIMITIVE, String.class, Deserializer.STRING)
           .register(PRIMITIVE, CharSequence.class, Deserializer.STRING);
 
-  private static final DefaultsRegistry DEFAULTS = DefaultsRegistry.create()
-      .register(List.class, ConfigurationNode.list())
-      .register(Map.class, ConfigurationNode.map().build());
+  private static final DefaultsRegistry DEFAULTS =
+      DefaultsRegistry.create()
+          .register(List.class, ConfigurationNode.list())
+          .register(Map.class, ConfigurationNode.map().build());
 
   static {
     DESERIALIZERS.register(LIST, List.class, Deserializer.list(DESERIALIZERS));
