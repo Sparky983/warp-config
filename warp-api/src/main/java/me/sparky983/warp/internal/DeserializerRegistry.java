@@ -53,6 +53,8 @@ public final class DeserializerRegistry {
       serializedType = ConfigurationNode.List.class;
     } else if (serialized instanceof ConfigurationNode.Map) {
       serializedType = ConfigurationNode.Map.class;
+    } else if (serialized instanceof ConfigurationNode.Nil) {
+      serializedType = ConfigurationNode.Nil.class;
     } else {
       throw new AssertionError("Unexpected configuration value");
     }

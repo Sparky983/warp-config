@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import me.sparky983.warp.internal.DefaultListNode;
 import me.sparky983.warp.internal.DefaultMapNode;
+import me.sparky983.warp.internal.DefaultNilNode;
 import me.sparky983.warp.internal.DefaultPrimitiveNode;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
@@ -17,6 +18,7 @@ import org.jspecify.annotations.NullMarked;
  *   <li>{@link Primitive} - represents a primitive value such as a string or number
  *   <li>{@link List} - represents a list of values
  *   <li>{@link Map} - represents a map of keys to values
+ *   <li>{@link Nil} - represents no value
  * </ul>
  *
  * @since 0.1
@@ -24,6 +26,24 @@ import org.jspecify.annotations.NullMarked;
 @ApiStatus.Experimental
 @NullMarked
 public sealed interface ConfigurationNode {
+  /**
+   * Returns a nil node.
+   *
+   * @return the nil node
+   * @since 0.1
+   * @warp.implNote The returned nil is cached, however this behaviour should not be depended on.
+   */
+  static Nil nil() {
+    return DefaultNilNode.NIL;
+  }
+
+  /**
+   * The nil configuration node.
+   *
+   * @since 0.1
+   */
+  non-sealed interface Nil extends ConfigurationNode {}
+
   /**
    * Creates a new primitive node.
    *
