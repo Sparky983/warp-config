@@ -21,8 +21,8 @@ public final class DeserializerRegistry {
   /**
    * Registers the given deserializer.
    *
-   * @param valueType the type of the serialized value; {@code ConfigurationValue.class} registers
-   *     for all
+   * @param nodeType the type of the serialized node; {@code ConfigurationValue.class} registers for
+   *     all
    * @param deserializedType the type to deserialize to
    * @param deserializer the serializer
    * @return this registry
@@ -32,12 +32,12 @@ public final class DeserializerRegistry {
    *     {@code null}.
    */
   <F extends ConfigurationNode, T> DeserializerRegistry register(
-      final Class<F> valueType,
+      final Class<F> nodeType,
       final Class<T> deserializedType,
       final Deserializer<? super F, ? extends T> deserializer) {
     Objects.requireNonNull(deserializer, "deserializer cannot be null");
 
-    deserializers.put(new DeserializerQualifier(valueType, deserializedType), deserializer);
+    deserializers.put(new DeserializerQualifier(nodeType, deserializedType), deserializer);
     return this;
   }
 
@@ -72,9 +72,9 @@ public final class DeserializerRegistry {
   }
 
   private record DeserializerQualifier(
-      Class<? extends ConfigurationNode> valueType, Class<?> deserializedType) {
+      Class<? extends ConfigurationNode> nodeType, Class<?> deserializedType) {
     private DeserializerQualifier {
-      Objects.requireNonNull(valueType, "valueType cannot be null");
+      Objects.requireNonNull(nodeType, "nodeType cannot be null");
       Objects.requireNonNull(deserializedType, "deserializedType cannot be null");
     }
   }

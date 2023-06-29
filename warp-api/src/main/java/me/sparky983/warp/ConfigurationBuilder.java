@@ -28,7 +28,7 @@ public interface ConfigurationBuilder<T> {
    * @throws ConfigurationException if there was an error with the configuration. Possible causes:
    *     <ul>
    *       <li>A required property was missing
-   *       <li>A value was unable to be parsed
+   *       <li>A node was unable to be parsed
    *       <li>One of the sources contained syntax error
    *     </ul>
    *

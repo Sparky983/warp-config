@@ -47,14 +47,14 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
     ConfigurationNode currentNode = configuration;
     final var keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
     while (currentNode instanceof ConfigurationNode.Map map) {
-      final var value = map.get(keys.poll());
-      if (value.isEmpty()) {
+      final var node = map.get(keys.poll());
+      if (node.isEmpty()) {
         return Optional.empty();
       }
       if (keys.isEmpty()) {
-        return value;
+        return node;
       }
-      currentNode = value.get();
+      currentNode = node.get();
     }
     return Optional.empty();
   }
@@ -115,7 +115,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
             .get(property.type().rawType())
             .flatMap((node) -> deserializers.deserialize(node, property.type()))
             .ifPresentOrElse(
-                (value) -> mappedConfiguration.put(property.path(), value),
+                (deserialized) -> mappedConfiguration.put(property.path(), deserialized),
                 () ->
                     violations.add(
                         new SchemaViolation(
