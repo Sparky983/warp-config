@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.19.0")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.20.0")
 
     implementation("org.jetbrains:annotations:24.0.1")
     implementation("org.jspecify:jspecify:0.3.0")
