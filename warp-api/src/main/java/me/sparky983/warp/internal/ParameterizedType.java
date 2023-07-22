@@ -94,6 +94,7 @@ public final class ParameterizedType<T> {
    * Creates a new parameterized type for the type.
    *
    * @param type the type
+   * @return the new parameterized type
    * @throws IllegalArgumentException if the given type included a type variable or if the type was
    *     unexpected
    * @throws NullPointerException if the class, the type arguments array or any of the type
