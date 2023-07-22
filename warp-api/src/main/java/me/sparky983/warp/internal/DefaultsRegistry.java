@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationNode;
-import org.jspecify.annotations.NullMarked;
 
 /** A registry of defaults. */
 public final class DefaultsRegistry {

@@ -2,7 +2,6 @@ package me.sparky983.warp.internal;
 
 import java.util.Iterator;
 import me.sparky983.warp.ConfigurationNode;
-import org.jspecify.annotations.NullMarked;
 
 /** The default implementation of {@link List}. */
 public record DefaultListNode(@Override java.util.List<ConfigurationNode> values)

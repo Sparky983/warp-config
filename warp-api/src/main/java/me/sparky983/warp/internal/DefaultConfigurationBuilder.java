@@ -11,7 +11,6 @@ import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.internal.schema.Schema;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * The default implementation of {@link ConfigurationBuilder}.

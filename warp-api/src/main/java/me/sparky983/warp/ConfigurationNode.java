@@ -7,7 +7,6 @@ import me.sparky983.warp.internal.DefaultMapNode;
 import me.sparky983.warp.internal.DefaultNilNode;
 import me.sparky983.warp.internal.DefaultPrimitiveNode;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * The configuration node.

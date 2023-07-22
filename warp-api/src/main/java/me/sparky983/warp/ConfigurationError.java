@@ -1,7 +1,5 @@
 package me.sparky983.warp;
 
-import org.jspecify.annotations.NullMarked;
-
 /**
  * Represents a configuration error.
  *

@@ -5,7 +5,6 @@ import java.util.Optional;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.ConfigurationSource;
-import org.jspecify.annotations.NullMarked;
 
 /** The default {@link ConfigurationSource} implementation. */
 public final class DefaultConfigurationSource implements ConfigurationSource {

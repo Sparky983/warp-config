@@ -3,7 +3,6 @@ package me.sparky983.warp;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.DefaultConfigurationBuilder;
 import me.sparky983.warp.internal.schema.Schema;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * The entry point for Warp.
@@ -27,7 +26,6 @@ public final class Warp {
    * @since 0.1
    */
   public static <T> ConfigurationBuilder<T> builder(final Class<T> configurationClass) {
-    return new DefaultConfigurationBuilder<>(
-        Schema.interfaceSchema(configurationClass));
+    return new DefaultConfigurationBuilder<>(Schema.interfaceSchema(configurationClass));
   }
 }

@@ -1,7 +1,6 @@
 package me.sparky983.warp;
 
 import me.sparky983.warp.annotations.Configuration;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * A builder for an {@link Configuration @Configuration} class.

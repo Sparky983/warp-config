@@ -3,7 +3,6 @@ package me.sparky983.warp.internal.schema;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.*;
-
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -107,11 +106,11 @@ final class InterfaceSchema<T> implements Schema<T> {
         if (defaultNode.isEmpty()) {
           violations.add(
               new SchemaViolation(
-                  String.format(
-                      "Property \"%s\" was not present in any sources", property)));
+                  String.format("Property \"%s\" was not present in any sources", property)));
         } else {
           try {
-            final Object deserialized = deserializers.deserialize(defaultNode.get(), property.type());
+            final Object deserialized =
+                deserializers.deserialize(defaultNode.get(), property.type());
             mappedConfiguration.putIfAbsent(property.path(), deserialized);
           } catch (final DeserializationException e) {
             violations.add(new SchemaViolation(e.getMessage()));
@@ -129,7 +128,8 @@ final class InterfaceSchema<T> implements Schema<T> {
           if (method.getDeclaringClass().equals(Object.class)) {
             return method.invoke(proxy, args);
           }
-          final me.sparky983.warp.annotations.Property property = method.getAnnotation(me.sparky983.warp.annotations.Property.class);
+          final me.sparky983.warp.annotations.Property property =
+              method.getAnnotation(me.sparky983.warp.annotations.Property.class);
           assert property != null : "Expected property annotation";
           return mappedConfiguration.get(property.value());
         });

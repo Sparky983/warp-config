@@ -1,7 +1,6 @@
 package me.sparky983.warp.internal;
 
 import java.util.Objects;
-import org.jspecify.annotations.NullMarked;
 
 public final class DeserializationException extends Exception {
   public DeserializationException(final String message) {

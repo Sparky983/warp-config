@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * A runtime representation of a type that is optionally parameterized.
@@ -103,19 +102,20 @@ public final class ParameterizedType<T> {
     return switch (type) {
       case Class<?> cls -> of(cls);
       case java.lang.reflect.ParameterizedType parameterizedType ->
-          // This is actually safe - https://bugs.openjdk.org/browse/JDK-6255169
-          new ParameterizedType<>(
-            (Class<?>) parameterizedType.getRawType(),
-            Stream.of(parameterizedType.getActualTypeArguments())
-                .<ParameterizedType<?>>map(ParameterizedType::of)
-                .toList());
-      // Currently Java only supports a single bound
+      // This is actually safe - https://bugs.openjdk.org/browse/JDK-6255169
+      new ParameterizedType<>(
+          (Class<?>) parameterizedType.getRawType(),
+          Stream.of(parameterizedType.getActualTypeArguments())
+              .<ParameterizedType<?>>map(ParameterizedType::of)
+              .toList());
+        // Currently Java only supports a single bound
       case WildcardType wildcardType -> of(wildcardType.getUpperBounds()[0]);
-      case GenericArrayType genericArrayType ->
-          of(of(genericArrayType.getGenericComponentType()).rawType().arrayType());
-      case TypeVariable<?> __ ->
-          throw new IllegalArgumentException("Type variables are not allowed in ParameterizedType");
-      default -> throw new IllegalArgumentException(String.format("Unexpected type %s", type.getTypeName()));
+      case GenericArrayType genericArrayType -> of(
+          of(genericArrayType.getGenericComponentType()).rawType().arrayType());
+      case TypeVariable<?> __ -> throw new IllegalArgumentException(
+          "Type variables are not allowed in ParameterizedType");
+      default -> throw new IllegalArgumentException(
+          String.format("Unexpected type %s", type.getTypeName()));
     };
   }
 

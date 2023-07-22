@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-
 import me.sparky983.warp.ConfigurationNode;
-import org.jspecify.annotations.NullMarked;
 
 /** A registry of {@link Deserializer Deserializers}. */
 public final class DeserializerRegistry {
@@ -31,12 +29,10 @@ public final class DeserializerRegistry {
    * @param deserializer the serializer
    * @return this registry
    * @param <T> the type to deserialize to
-   * @throws NullPointerException if the deserialized type or the deserializer are
-   *     {@code null}.
+   * @throws NullPointerException if the deserialized type or the deserializer are {@code null}.
    */
   <T> DeserializerRegistry register(
-      final Class<T> deserializedType,
-      final Deserializer<? extends T> deserializer) {
+      final Class<T> deserializedType, final Deserializer<? extends T> deserializer) {
     Objects.requireNonNull(deserializedType, "deserializedType cannot be null");
     Objects.requireNonNull(deserializer, "deserializer cannot be null");
 
@@ -46,7 +42,8 @@ public final class DeserializerRegistry {
 
   <T> DeserializerRegistry register(
       final Class<T> deserializedType,
-      final Function<? super DeserializerRegistry, ? extends Deserializer<? extends T>> deserializer) {
+      final Function<? super DeserializerRegistry, ? extends Deserializer<? extends T>>
+          deserializer) {
     Objects.requireNonNull(deserializer, "deserializer cannot be null");
     return register(deserializedType, deserializer.apply(this));
   }
@@ -62,8 +59,8 @@ public final class DeserializerRegistry {
    * @throws NullPointerException if the serialized node or the type is {@code null}.
    * @throws DeserializationException if the node was unable to be deserialized.
    */
-  public <T> T deserialize(
-      final ConfigurationNode serialized, final ParameterizedType<T> type) throws DeserializationException {
+  public <T> T deserialize(final ConfigurationNode serialized, final ParameterizedType<T> type)
+      throws DeserializationException {
     Objects.requireNonNull(serialized, "serialized cannot be null");
     Objects.requireNonNull(type, "type cannot be null");
 

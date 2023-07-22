@@ -8,9 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-
 import me.sparky983.warp.ConfigurationNode;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * A {@link ConfigurationNode} deserialize.
@@ -46,7 +44,8 @@ public interface Deserializer<T> {
               case "false" -> Boolean.FALSE;
               default -> throw new DeserializationException("Expected \"true\" or \"false\"");
             };
-            default -> throw new DeserializationException("Unable to deserialize value into boolean");
+            default -> throw new DeserializationException(
+                "Unable to deserialize value into boolean");
           };
 
   /**
@@ -70,10 +69,13 @@ public interface Deserializer<T> {
       };
 
   /** A {@link String} deserializer. */
-  Deserializer<String> STRING = (type, node) -> switch (node) {
-    case ConfigurationNode.Primitive primitive -> primitive.value();
-    default -> throw new DeserializationException("Unable to deserialize value into string");
-  };
+  Deserializer<String> STRING =
+      (type, node) ->
+          switch (node) {
+            case ConfigurationNode.Primitive primitive -> primitive.value();
+            default -> throw new DeserializationException(
+                "Unable to deserialize value into string");
+          };
 
   /**
    * Deserializes the given node.
@@ -84,19 +86,21 @@ public interface Deserializer<T> {
    *     an empty optional
    * @throws DeserializationException if the node was unable to be deserialized.
    */
-  T deserialize(ParameterizedType<? extends T> type, ConfigurationNode node) throws DeserializationException;
+  T deserialize(ParameterizedType<? extends T> type, ConfigurationNode node)
+      throws DeserializationException;
 
   private static <T> Deserializer<T> number(
-      final Function<? super String, ? extends T> parser,
-      final String name) {
+      final Function<? super String, ? extends T> parser, final String name) {
     return (type, node) -> {
       if (!(node instanceof final ConfigurationNode.Primitive primitive)) {
-        throw new DeserializationException(String.format("Unable to deserialize value into %s", name));
+        throw new DeserializationException(
+            String.format("Unable to deserialize value into %s", name));
       }
       try {
         return parser.apply(primitive.value());
       } catch (final NumberFormatException e) {
-        throw new DeserializationException(String.format("\"%s\" is not a valid %s", primitive.value(), name));
+        throw new DeserializationException(
+            String.format("\"%s\" is not a valid %s", primitive.value(), name));
       }
     };
   }
@@ -108,22 +112,22 @@ public interface Deserializer<T> {
    * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static Deserializer<List<?>> list(
-      final DeserializerRegistry deserializers) {
+  static Deserializer<List<?>> list(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (type, node) -> switch (node) {
-      case ConfigurationNode.List list when type.isRaw() -> list.values();
-      case ConfigurationNode.List list -> {
-        final ParameterizedType<?> elementType = type.typeArguments().get(0);
-        final List<Object> deserializedList = new ArrayList<>();
-        for (final ConfigurationNode element : list.values()) {
-          deserializedList.add(deserializers.deserialize(element, elementType));
-        }
-        yield Collections.unmodifiableList(deserializedList);
-      }
-      default -> throw new DeserializationException("Unable to deserialize value into list");
-    };
+    return (type, node) ->
+        switch (node) {
+          case ConfigurationNode.List list when type.isRaw() -> list.values();
+          case ConfigurationNode.List list -> {
+            final ParameterizedType<?> elementType = type.typeArguments().get(0);
+            final List<Object> deserializedList = new ArrayList<>();
+            for (final ConfigurationNode element : list.values()) {
+              deserializedList.add(deserializers.deserialize(element, elementType));
+            }
+            yield Collections.unmodifiableList(deserializedList);
+          }
+          default -> throw new DeserializationException("Unable to deserialize value into list");
+        };
   }
 
   /**
@@ -133,26 +137,26 @@ public interface Deserializer<T> {
    * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static Deserializer<Map<?, ?>> map(
-      final DeserializerRegistry deserializers) {
+  static Deserializer<Map<?, ?>> map(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (type, node) -> switch (node) {
-      case ConfigurationNode.Map map when type.isRaw() -> map.values();
-      case ConfigurationNode.Map map -> {
-        final ParameterizedType<?> keyType = type.typeArguments().get(0);
-        final ParameterizedType<?> valueType = type.typeArguments().get(1);
-        final Map<Object, Object> deserializedMap = new HashMap<>();
-        for (final ConfigurationNode.Map.Entry entry : map.entries()) {
-          final Object key =
-              deserializers.deserialize(ConfigurationNode.primitive(entry.key()), keyType);
-          final Object value = deserializers.deserialize(entry.value(), valueType);
-          deserializedMap.put(key, value);
-        }
-        yield Collections.unmodifiableMap(deserializedMap);
-      }
-      default -> throw new DeserializationException("Unable to deserialize value into map");
-    };
+    return (type, node) ->
+        switch (node) {
+          case ConfigurationNode.Map map when type.isRaw() -> map.values();
+          case ConfigurationNode.Map map -> {
+            final ParameterizedType<?> keyType = type.typeArguments().get(0);
+            final ParameterizedType<?> valueType = type.typeArguments().get(1);
+            final Map<Object, Object> deserializedMap = new HashMap<>();
+            for (final ConfigurationNode.Map.Entry entry : map.entries()) {
+              final Object key =
+                  deserializers.deserialize(ConfigurationNode.primitive(entry.key()), keyType);
+              final Object value = deserializers.deserialize(entry.value(), valueType);
+              deserializedMap.put(key, value);
+            }
+            yield Collections.unmodifiableMap(deserializedMap);
+          }
+          default -> throw new DeserializationException("Unable to deserialize value into map");
+        };
   }
 
   /**
@@ -162,14 +166,14 @@ public interface Deserializer<T> {
    * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static Deserializer<Optional<?>> optional(
-      final DeserializerRegistry deserializers) {
+  static Deserializer<Optional<?>> optional(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (type, node) -> switch (node) {
-      case ConfigurationNode.Nil nil -> Optional.empty();
-      case ConfigurationNode __ when type.isRaw() -> Optional.of(node);
-      default -> Optional.of(deserializers.deserialize(node, type.typeArguments().get(0)));
-    };
+    return (type, node) ->
+        switch (node) {
+          case ConfigurationNode.Nil nil -> Optional.empty();
+          case ConfigurationNode __ when type.isRaw() -> Optional.of(node);
+          default -> Optional.of(deserializers.deserialize(node, type.typeArguments().get(0)));
+        };
   }
 }

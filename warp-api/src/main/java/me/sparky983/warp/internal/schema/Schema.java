@@ -10,7 +10,6 @@ import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * A configuration schema.
