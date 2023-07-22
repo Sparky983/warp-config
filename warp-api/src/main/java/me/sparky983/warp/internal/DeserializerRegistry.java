@@ -56,28 +56,25 @@ public final class DeserializerRegistry {
    * @param <F> the node type
    * @param <T> the type to deserialize the node into
    * @throws NullPointerException if the serialized node or the type is {@code null}.
+   * @throws DeserializationException if the node was unable to be deserialized.
    */
-  public <F extends ConfigurationNode, T> Optional<T> deserialize(
-      final F serialized, final ParameterizedType<T> type) {
+  public <F extends ConfigurationNode, T> T deserialize(
+      final F serialized, final ParameterizedType<T> type) throws DeserializationException {
     Objects.requireNonNull(serialized, "serialized cannot be null");
     Objects.requireNonNull(type, "type cannot be null");
 
-    final Class<? extends ConfigurationNode> serializedType;
-    if (serialized instanceof ConfigurationNode.Primitive) {
-      serializedType = ConfigurationNode.Primitive.class;
-    } else if (serialized instanceof ConfigurationNode.List) {
-      serializedType = ConfigurationNode.List.class;
-    } else if (serialized instanceof ConfigurationNode.Map) {
-      serializedType = ConfigurationNode.Map.class;
-    } else if (serialized instanceof ConfigurationNode.Nil) {
-      serializedType = ConfigurationNode.Nil.class;
-    } else {
-      throw new AssertionError("Unexpected configuration value");
-    }
+    final var serializedType = switch (serialized) {
+      case ConfigurationNode.Primitive primitive -> ConfigurationNode.Primitive.class;
+      case ConfigurationNode.List list -> ConfigurationNode.List.class;
+      case ConfigurationNode.Map map -> ConfigurationNode.Map.class;
+      case ConfigurationNode.Nil nil -> ConfigurationNode.Nil.class;
+    };
 
-    return get(serializedType, type.rawType())
-        .or(() -> get(ConfigurationNode.class, type.rawType()))
-        .flatMap((deserializer) -> deserializer.deserialize(type, serialized));
+    final var deserializer = get(serializedType, type.rawType());
+    if (deserializer.isPresent()) {
+      return deserializer.get().deserialize(type, serialized);
+    }
+    throw new DeserializationException(String.format("No deserializer of type %s", type));
   }
 
   /**
@@ -93,7 +90,12 @@ public final class DeserializerRegistry {
   private <F extends ConfigurationNode, T> Optional<Deserializer<F, T>> get(
       final Class<? extends ConfigurationNode> serializedType, final Class<T> type) {
     final var deserializer = deserializers.get(new DeserializerQualifier(serializedType, type));
-    return Optional.ofNullable((Deserializer<F, T>) deserializer);
+    if (deserializer == null) {
+      return Optional.ofNullable(
+          (Deserializer<F, T>)
+              deserializers.get(new DeserializerQualifier(ConfigurationNode.class, type)));
+    }
+    return Optional.of((Deserializer<F, T>) deserializer);
   }
 
   private record DeserializerQualifier(

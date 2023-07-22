@@ -16,6 +16,7 @@ import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.DefaultsRegistry;
+import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
 /**
@@ -99,28 +100,30 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
           continue;
         }
 
-        final var deserialized = deserializers.deserialize(node.get(), property.type());
-        if (deserialized.isEmpty()) {
+        isSet = true;
+
+        try {
+          final var deserialized = deserializers.deserialize(node.get(), property.type());
+          mappedConfiguration.putIfAbsent(property.path(), deserialized);
+        } catch (final DeserializationException e) {
+          violations.add(new SchemaViolation(e.getMessage()));
+        }
+      }
+      if (!isSet) {
+        final Optional<ConfigurationNode> defaultNode = defaults.get(property.type().rawType());
+        if (defaultNode.isEmpty()) {
           violations.add(
               new SchemaViolation(
                   String.format(
-                      "Unable to parse property \"%s\" of type %s", property, property.type())));
-          continue;
+                      "Property \"%s\" was not present in any sources", property)));
+        } else {
+          try {
+            final var deserialized = deserializers.deserialize(defaultNode.get(), property.type());
+            mappedConfiguration.putIfAbsent(property.path(), deserialized);
+          } catch (final DeserializationException e) {
+            violations.add(new SchemaViolation(e.getMessage()));
+          }
         }
-        isSet = true;
-        mappedConfiguration.putIfAbsent(property.path(), deserialized.get());
-      }
-      if (!isSet) {
-        defaults
-            .get(property.type().rawType())
-            .flatMap((node) -> deserializers.deserialize(node, property.type()))
-            .ifPresentOrElse(
-                (deserialized) -> mappedConfiguration.put(property.path(), deserialized),
-                () ->
-                    violations.add(
-                        new SchemaViolation(
-                            String.format(
-                                "Property \"%s\" was not present in any sources", property))));
       }
     }
 
