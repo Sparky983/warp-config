@@ -100,8 +100,8 @@ public final class ParameterizedType<T> {
    */
   public static ParameterizedType<?> of(final Type type) {
     return switch (type) {
-      case Class<?> cls -> of(cls);
-      case java.lang.reflect.ParameterizedType parameterizedType ->
+      case final Class<?> cls -> of(cls);
+      case final java.lang.reflect.ParameterizedType parameterizedType ->
       // This is actually safe - https://bugs.openjdk.org/browse/JDK-6255169
       new ParameterizedType<>(
           (Class<?>) parameterizedType.getRawType(),
@@ -109,10 +109,10 @@ public final class ParameterizedType<T> {
               .<ParameterizedType<?>>map(ParameterizedType::of)
               .toList());
         // Currently Java only supports a single bound
-      case WildcardType wildcardType -> of(wildcardType.getUpperBounds()[0]);
-      case GenericArrayType genericArrayType -> of(
+      case final WildcardType wildcardType -> of(wildcardType.getUpperBounds()[0]);
+      case final GenericArrayType genericArrayType -> of(
           of(genericArrayType.getGenericComponentType()).rawType().arrayType());
-      case TypeVariable<?> __ -> throw new IllegalArgumentException(
+      case final TypeVariable<?> __ -> throw new IllegalArgumentException(
           "Type variables are not allowed in ParameterizedType");
       default -> throw new IllegalArgumentException(
           String.format("Unexpected type %s", type.getTypeName()));
