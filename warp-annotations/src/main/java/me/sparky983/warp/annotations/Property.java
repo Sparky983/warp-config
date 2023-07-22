@@ -12,6 +12,14 @@ import org.jspecify.annotations.NullMarked;
 /**
  * Marks a method of an {@link Configuration @Configuration} class as a property.
  *
+ * <p>Property methods must:
+ * <ul>
+ *   <li>Be {@code public}
+ *   <li>Not be {@code static}
+ *   <li>Not be generic
+ *   <li>Have no additional parameters (an explicit receiver parameter is allowed)
+ * </ul>
+ *
  * <p>Properties can be declared optional by using an {@link Optional} return type.
  *
  * <p>Implementations must handle at least the following return types:
