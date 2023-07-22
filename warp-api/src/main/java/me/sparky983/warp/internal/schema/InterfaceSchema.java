@@ -88,8 +88,8 @@ final class InterfaceSchema<T> implements Schema<T> {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
     Objects.requireNonNull(defaults, "defaults cannot be null");
 
-    final var mappedConfiguration = new HashMap<String, Object>();
-    final var violations = new LinkedHashSet<ConfigurationError>();
+    final java.util.Map<String, Object> mappedConfiguration = new HashMap<>();
+    final Set<ConfigurationError> violations = new LinkedHashSet<>();
 
     for (final Property property : properties) {
       boolean isAbsent = true;
