@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import me.sparky983.warp.annotations.Configuration;
 import org.junit.jupiter.api.Test;
 
 class WarpTest {
@@ -63,6 +64,14 @@ class WarpTest {
         Warp.builder(Configurations.String.class).source(ConfigurationSource.empty());
 
     assertThrows(ConfigurationException.class, builder::build);
+  }
+
+  @Test
+  void testUnserializableProperty() {
+   final ConfigurationBuilder<Configurations.Unserializable> builder =
+       Warp.builder(Configurations.Unserializable.class);
+
+   assertThrows(IllegalStateException.class, builder::build);
   }
 
   @Test

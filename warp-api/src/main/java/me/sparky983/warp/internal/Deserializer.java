@@ -37,7 +37,7 @@ public interface Deserializer<T> {
 
   /** A {@link Boolean} deserializer. */
   Deserializer<Boolean> BOOLEAN =
-      (type, node) ->
+      (node, type) ->
           switch (node) {
             case ConfigurationNode.Primitive primitive -> switch (primitive.value()) {
               case "true" -> Boolean.TRUE;
@@ -54,7 +54,7 @@ public interface Deserializer<T> {
    * <p>Only allows alphanumeric characters.
    */
   Deserializer<Character> CHARACTER =
-      (type, node) -> {
+      (node, type) -> {
         if (!(node instanceof ConfigurationNode.Primitive primitive)) {
           throw new DeserializationException("Unable to deserialize value into character");
         }
@@ -70,7 +70,7 @@ public interface Deserializer<T> {
 
   /** A {@link String} deserializer. */
   Deserializer<String> STRING =
-      (type, node) ->
+      (node, type) ->
           switch (node) {
             case ConfigurationNode.Primitive primitive -> primitive.value();
             default -> throw new DeserializationException(
@@ -80,18 +80,18 @@ public interface Deserializer<T> {
   /**
    * Deserializes the given node.
    *
-   * @param type the type of the node
    * @param node a non-null node
+   * @param type the type of the node
    * @return an optional containing the deserialized node if it could not be deserialized, otherwise
    *     an empty optional
    * @throws DeserializationException if the node was unable to be deserialized.
    */
-  T deserialize(ParameterizedType<? extends T> type, ConfigurationNode node)
+  T deserialize(ConfigurationNode node, ParameterizedType<? extends T> type)
       throws DeserializationException;
 
   private static <T> Deserializer<T> number(
       final Function<? super String, ? extends T> parser, final String name) {
-    return (type, node) -> {
+    return (node, type) -> {
       if (!(node instanceof final ConfigurationNode.Primitive primitive)) {
         throw new DeserializationException(
             String.format("Unable to deserialize value into %s", name));
@@ -115,7 +115,7 @@ public interface Deserializer<T> {
   static Deserializer<List<?>> list(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (type, node) ->
+    return (node, type) ->
         switch (node) {
           case ConfigurationNode.List list when type.isRaw() -> list.values();
           case ConfigurationNode.List list -> {
@@ -140,7 +140,7 @@ public interface Deserializer<T> {
   static Deserializer<Map<?, ?>> map(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (type, node) ->
+    return (node, type) ->
         switch (node) {
           case ConfigurationNode.Map map when type.isRaw() -> map.values();
           case ConfigurationNode.Map map -> {
@@ -169,7 +169,7 @@ public interface Deserializer<T> {
   static Deserializer<Optional<?>> optional(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (type, node) ->
+    return (node, type) ->
         switch (node) {
           case ConfigurationNode.Nil nil -> Optional.empty();
           case ConfigurationNode __ when type.isRaw() -> Optional.of(node);

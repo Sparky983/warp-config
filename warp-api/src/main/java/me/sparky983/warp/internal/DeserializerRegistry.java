@@ -66,7 +66,7 @@ public final class DeserializerRegistry {
 
     final Optional<Deserializer<T>> deserializer = get(type.rawType());
     if (deserializer.isPresent()) {
-      return deserializer.get().deserialize(type, serialized);
+      return deserializer.get().deserialize(serialized, type);
     }
     throw new DeserializationException(String.format("No deserializer of type %s", type));
   }
@@ -79,7 +79,9 @@ public final class DeserializerRegistry {
    * @param <T> the type
    */
   @SuppressWarnings("unchecked")
-  private <T> Optional<Deserializer<T>> get(final Class<T> type) {
+  public <T> Optional<Deserializer<T>> get(final Class<T> type) {
+    Objects.requireNonNull(type, "type cannot be null");
+
     return Optional.ofNullable((Deserializer<T>) deserializers.get(type));
   }
 }

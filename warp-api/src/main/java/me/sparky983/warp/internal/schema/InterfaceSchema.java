@@ -18,6 +18,7 @@ import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializationException;
+import me.sparky983.warp.internal.Deserializer;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
 /**
@@ -78,6 +79,7 @@ final class InterfaceSchema<T> implements Schema<T> {
             invocationHandler);
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
   public T create(
       final DeserializerRegistry deserializers,
@@ -87,24 +89,32 @@ final class InterfaceSchema<T> implements Schema<T> {
     Objects.requireNonNull(configurations, "configurations cannot be null");
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
     Objects.requireNonNull(defaults, "defaults cannot be null");
+    configurations.forEach(Objects::requireNonNull);
 
     final java.util.Map<String, Object> mappedConfiguration = new HashMap<>();
     final Set<ConfigurationError> violations = new LinkedHashSet<>();
 
     for (final Property property : properties) {
+      final Deserializer deserializer =
+          deserializers
+              .get(property.type().rawType())
+              .orElseThrow(
+                  () ->
+                      new IllegalStateException(
+                          String.format(
+                              "Property \"%s\" required a deserializer of type %s"
+                                  + ", but none was found",
+                              property, property.type())));
       boolean isAbsent = true;
       for (final Map configuration : configurations) {
-        Objects.requireNonNull(configuration);
-
         final Optional<ConfigurationNode> node = get(property.path(), configuration);
         if (node.isEmpty()) {
           continue;
         }
 
         isAbsent = false;
-
         try {
-          final Object deserialized = deserializers.deserialize(node.get(), property.type());
+          final Object deserialized = deserializer.deserialize(node.get(), property.type());
           mappedConfiguration.putIfAbsent(property.path(), deserialized);
         } catch (final DeserializationException e) {
           violations.add(new SchemaViolation(e.getMessage()));

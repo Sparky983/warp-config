@@ -25,6 +25,7 @@ public interface Schema<T> {
    * @param configurations the configurations
    * @return a list of the configurations in order of precedence
    * @throws ConfigurationException if any configurations were not compliant with this schema.
+   * @throws IllegalStateException if a type can not be deserialized.
    * @throws NullPointerException if the configurations is {@code null} or contains {@code null}.
    */
   T create(DeserializerRegistry deserializers, DefaultsRegistry defaults, List<? extends Map> configurations)
