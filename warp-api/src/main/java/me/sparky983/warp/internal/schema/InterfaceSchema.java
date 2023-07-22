@@ -83,7 +83,7 @@ final class InterfaceSchema<T> implements Schema<T> {
     final var violations = new LinkedHashSet<ConfigurationError>();
 
     for (final Property property : properties) {
-      boolean isSet = false;
+      boolean isAbsent = true;
       for (final Map configuration : configurations) {
         Objects.requireNonNull(configuration);
 
@@ -92,7 +92,7 @@ final class InterfaceSchema<T> implements Schema<T> {
           continue;
         }
 
-        isSet = true;
+        isAbsent = false;
 
         try {
           final Object deserialized = deserializers.deserialize(node.get(), property.type());
@@ -101,7 +101,7 @@ final class InterfaceSchema<T> implements Schema<T> {
           violations.add(new SchemaViolation(e.getMessage()));
         }
       }
-      if (!isSet) {
+      if (isAbsent) {
         final Optional<ConfigurationNode> defaultNode = defaults.get(property.type().rawType());
         if (defaultNode.isEmpty()) {
           violations.add(
