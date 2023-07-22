@@ -17,3 +17,7 @@ dependencies {
     implementation("org.junit.jupiter:junit-jupiter-api")
     implementation("org.junit.jupiter:junit-jupiter-engine")
 }
+
+kotlin {
+    jvmToolchain(17)
+}
