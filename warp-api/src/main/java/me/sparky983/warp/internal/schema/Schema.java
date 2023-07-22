@@ -59,14 +59,14 @@ public interface Schema<T> {
     /**
      * Returns the path of this property.
      *
-     * @return the path.
+     * @return the path
      */
     String path();
 
     /**
      * Returns the type of this property.
      *
-     * @return the path.
+     * @return the path
      */
     ParameterizedType<?> type();
   }
