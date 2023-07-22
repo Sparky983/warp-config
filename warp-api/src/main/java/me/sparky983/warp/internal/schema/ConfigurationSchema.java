@@ -43,6 +43,7 @@ public interface ConfigurationSchema<T> {
    *
    * @param configurationClass the configuration class
    * @return the schema
+   * @param <T> the type of the configuration class
    * @throws NullPointerException if the configuration class is {@code null}.
    * @throws IllegalArgumentException if the configuration class is invalid or not an interface.
    */
