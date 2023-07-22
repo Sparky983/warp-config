@@ -82,7 +82,7 @@ final class InterfaceSchema<T> implements Schema<T> {
   public T create(
       final DeserializerRegistry deserializers,
       final DefaultsRegistry defaults,
-      final List<Map> configurations)
+      final List<? extends Map> configurations)
       throws ConfigurationException {
     Objects.requireNonNull(configurations, "configurations cannot be null");
     Objects.requireNonNull(deserializers, "deserializers cannot be null");

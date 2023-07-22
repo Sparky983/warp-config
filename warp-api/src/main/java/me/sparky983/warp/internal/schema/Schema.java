@@ -27,7 +27,7 @@ public interface Schema<T> {
    * @throws ConfigurationException if any configurations were not compliant with this schema.
    * @throws NullPointerException if the configuration is {@code null}.
    */
-  T create(DeserializerRegistry deserializers, DefaultsRegistry defaults, List<Map> configuration)
+  T create(DeserializerRegistry deserializers, DefaultsRegistry defaults, List<? extends Map> configuration)
       throws ConfigurationException;
 
   /**
