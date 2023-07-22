@@ -12,6 +12,7 @@ import org.intellij.lang.annotations.Pattern;
  * Marks a method of an {@link Configuration @Configuration} class as a property.
  *
  * <p>Property methods must:
+ *
  * <ul>
  *   <li>Be {@code public}
  *   <li>Not be {@code static}
@@ -32,12 +33,13 @@ import org.intellij.lang.annotations.Pattern;
  * </ul>
  *
  * <h2>Implementation Requirements</h2>
+ *
  * Implementations of methods annotated with this annotation must:
+ *
  * <ul>
  *   <li>Never return {@code null}
  *   <li>Never throw an exception
  * </ul>
- *
  *
  * @since 0.1
  */
