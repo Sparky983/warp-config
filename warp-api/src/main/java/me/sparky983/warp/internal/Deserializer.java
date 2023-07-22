@@ -21,13 +21,6 @@ import org.jspecify.annotations.NullMarked;
 @FunctionalInterface
 @NullMarked
 public interface Deserializer<T> {
-  /**
-   * An identity deserializer.
-   *
-   * <p>The value result is the same as the input.
-   */
-  Deserializer<ConfigurationNode> IDENTITY = (type, node) -> node;
-
   /** A {@link Byte} deserializer */
   Deserializer<Byte> BYTE = number(Byte::valueOf, "byte");
 
