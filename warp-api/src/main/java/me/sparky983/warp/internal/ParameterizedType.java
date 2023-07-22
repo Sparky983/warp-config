@@ -100,25 +100,23 @@ public final class ParameterizedType<T> {
    *     arguments are {@code null}.
    */
   public static ParameterizedType<?> of(final Type type) {
-    if (type instanceof Class<?> cls) {
-      return of(cls);
-    } else if (type instanceof java.lang.reflect.ParameterizedType parameterizedType) {
-      return new ParameterizedType<>(
+    return switch (type) {
+      case Class<?> cls -> of(cls);
+      case java.lang.reflect.ParameterizedType parameterizedType ->
           // This is actually safe - https://bugs.openjdk.org/browse/JDK-6255169
-          (Class<?>) parameterizedType.getRawType(),
-          Stream.of(parameterizedType.getActualTypeArguments())
-              .<ParameterizedType<?>>map(ParameterizedType::of)
-              .toList());
-    } else if (type instanceof WildcardType wildcardType) {
+          new ParameterizedType<>(
+            (Class<?>) parameterizedType.getRawType(),
+            Stream.of(parameterizedType.getActualTypeArguments())
+                .<ParameterizedType<?>>map(ParameterizedType::of)
+                .toList());
       // Currently Java only supports a single bound
-      return of(wildcardType.getUpperBounds()[0]);
-    } else if (type instanceof GenericArrayType genericArrayType) {
-      return of(of(genericArrayType.getGenericComponentType()).rawType().arrayType());
-    } else if (type instanceof TypeVariable<?>) {
-      throw new IllegalArgumentException("Type variables are not allowed in ParameterizedType");
-    } else {
-      throw new IllegalArgumentException(String.format("Unexpected type %s", type.getTypeName()));
-    }
+      case WildcardType wildcardType -> of(wildcardType.getUpperBounds()[0]);
+      case GenericArrayType genericArrayType ->
+          of(of(genericArrayType.getGenericComponentType()).rawType().arrayType());
+      case TypeVariable<?> __ ->
+          throw new IllegalArgumentException("Type variables are not allowed in ParameterizedType");
+      default -> throw new IllegalArgumentException(String.format("Unexpected type %s", type.getTypeName()));
+    };
   }
 
   /**
