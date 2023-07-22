@@ -12,7 +12,7 @@ final class MethodProperty implements SchemaProperty {
 
   private MethodProperty(final Method method) {
     Objects.requireNonNull(method, "method cannot be null");
-    final var property = method.getAnnotation(Property.class);
+    final Property property = method.getAnnotation(Property.class);
     if (property == null) {
       throw new IllegalArgumentException(
           String.format("Method %s must be annotated with @%s", method, Property.class.getName()));

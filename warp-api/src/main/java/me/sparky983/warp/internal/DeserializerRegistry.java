@@ -68,7 +68,7 @@ public final class DeserializerRegistry {
     Objects.requireNonNull(serialized, "serialized cannot be null");
     Objects.requireNonNull(type, "type cannot be null");
 
-    final var deserializer = get(type.rawType());
+    final Optional<Deserializer<T>> deserializer = get(type.rawType());
     if (deserializer.isPresent()) {
       return deserializer.get().deserialize(type, serialized);
     }

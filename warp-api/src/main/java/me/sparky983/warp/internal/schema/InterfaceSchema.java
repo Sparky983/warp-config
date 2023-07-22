@@ -2,14 +2,8 @@ package me.sparky983.warp.internal.schema;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -46,9 +40,9 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
   private static Optional<ConfigurationNode> get(
       final String path, final ConfigurationNode.Map configuration) {
     ConfigurationNode currentNode = configuration;
-    final var keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
+    final Queue<String> keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
     while (currentNode instanceof ConfigurationNode.Map map) {
-      final var node = map.get(keys.poll());
+      final Optional<ConfigurationNode> node = map.get(keys.poll());
       if (node.isEmpty()) {
         return Optional.empty();
       }
@@ -90,12 +84,12 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
     final var mappedConfiguration = new HashMap<String, Object>();
     final var violations = new LinkedHashSet<ConfigurationError>();
 
-    for (final var property : properties) {
+    for (final SchemaProperty property : properties) {
       boolean isSet = false;
-      for (final var configuration : configurations) {
+      for (final Map configuration : configurations) {
         Objects.requireNonNull(configuration);
 
-        final var node = get(property.path(), configuration);
+        final Optional<ConfigurationNode> node = get(property.path(), configuration);
         if (node.isEmpty()) {
           continue;
         }
@@ -103,7 +97,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
         isSet = true;
 
         try {
-          final var deserialized = deserializers.deserialize(node.get(), property.type());
+          final Object deserialized = deserializers.deserialize(node.get(), property.type());
           mappedConfiguration.putIfAbsent(property.path(), deserialized);
         } catch (final DeserializationException e) {
           violations.add(new SchemaViolation(e.getMessage()));
@@ -118,7 +112,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
                       "Property \"%s\" was not present in any sources", property)));
         } else {
           try {
-            final var deserialized = deserializers.deserialize(defaultNode.get(), property.type());
+            final Object deserialized = deserializers.deserialize(defaultNode.get(), property.type());
             mappedConfiguration.putIfAbsent(property.path(), deserialized);
           } catch (final DeserializationException e) {
             violations.add(new SchemaViolation(e.getMessage()));
@@ -136,7 +130,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
           if (method.getDeclaringClass().equals(Object.class)) {
             return method.invoke(proxy, args);
           }
-          final var property = method.getAnnotation(Property.class);
+          final Property property = method.getAnnotation(Property.class);
           assert property != null : "Expected property annotation";
           return mappedConfiguration.get(property.value());
         });

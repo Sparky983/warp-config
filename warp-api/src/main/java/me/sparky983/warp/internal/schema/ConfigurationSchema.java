@@ -54,7 +54,7 @@ public interface ConfigurationSchema<T> {
               "Class %s must be annotated with @%s",
               configurationClass.getName(), Configuration.class.getName()));
     }
-    final var properties =
+    final Set<SchemaProperty> properties =
         Stream.of(configurationClass.getMethods())
             .map(MethodProperty::of)
             .collect(Collectors.toUnmodifiableSet());

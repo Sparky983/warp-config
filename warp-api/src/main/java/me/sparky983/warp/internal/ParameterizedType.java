@@ -171,8 +171,8 @@ public final class ParameterizedType<T> {
     if (isRaw()) {
       return rawType.getTypeName();
     }
-    final var joiner = new StringJoiner(", ", "<", ">");
-    for (final var typeArgument : typeArguments) {
+    final StringJoiner joiner = new StringJoiner(", ", "<", ">");
+    for (final ParameterizedType<?> typeArgument : typeArguments) {
       joiner.add(typeArgument.toString());
     }
     return rawType().getTypeName() + joiner;

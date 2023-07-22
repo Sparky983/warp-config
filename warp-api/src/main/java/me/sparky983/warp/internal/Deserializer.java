@@ -124,9 +124,9 @@ public interface Deserializer<T> {
     return (type, node) -> switch (node) {
       case ConfigurationNode.List list when type.isRaw() -> list.values();
       case ConfigurationNode.List list -> {
-        final var elementType = type.typeArguments().get(0);
-        final var deserializedList = new ArrayList<>();
-        for (final var element : list.values()) {
+        final ParameterizedType<?> elementType = type.typeArguments().get(0);
+        final List<Object> deserializedList = new ArrayList<>();
+        for (final ConfigurationNode element : list.values()) {
           deserializedList.add(deserializers.deserialize(element, elementType));
         }
         yield Collections.unmodifiableList(deserializedList);
@@ -149,13 +149,13 @@ public interface Deserializer<T> {
     return (type, node) -> switch (node) {
       case ConfigurationNode.Map map when type.isRaw() -> map.values();
       case ConfigurationNode.Map map -> {
-        final var keyType = type.typeArguments().get(0);
-        final var valueType = type.typeArguments().get(1);
-        final var deserializedMap = new HashMap<>();
-        for (final var entry : map.entries()) {
-          final var key =
+        final ParameterizedType<?> keyType = type.typeArguments().get(0);
+        final ParameterizedType<?> valueType = type.typeArguments().get(1);
+        final Map<Object, Object> deserializedMap = new HashMap<>();
+        for (final ConfigurationNode.Map.Entry entry : map.entries()) {
+          final Object key =
               deserializers.deserialize(ConfigurationNode.primitive(entry.key()), keyType);
-          final var value = deserializers.deserialize(entry.value(), valueType);
+          final Object value = deserializers.deserialize(entry.value(), valueType);
           deserializedMap.put(key, value);
         }
         yield Collections.unmodifiableMap(deserializedMap);
