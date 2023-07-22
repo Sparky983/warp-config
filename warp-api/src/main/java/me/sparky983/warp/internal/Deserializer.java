@@ -17,7 +17,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @param <T> the deserialized type
  */
-@SuppressWarnings("OverlyLongLambda")
 @FunctionalInterface
 @NullMarked
 public interface Deserializer<T> {
