@@ -56,9 +56,9 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
    */
   private final Collection<ConfigurationSource> sources = new ArrayList<>(1);
 
-  private final Schema<T> schema;
+  private final Schema<? extends T> schema;
 
-  public DefaultConfigurationBuilder(final Schema<T> schema) {
+  public DefaultConfigurationBuilder(final Schema<? extends T> schema) {
     Objects.requireNonNull(schema, "schema cannot be null");
     this.schema = schema;
   }
