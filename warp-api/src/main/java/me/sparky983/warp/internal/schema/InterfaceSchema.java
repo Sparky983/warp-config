@@ -135,9 +135,4 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
           return mappedConfiguration.get(property.value());
         });
   }
-
-  @Override
-  public Set<SchemaProperty> properties() {
-    return properties;
-  }
 }

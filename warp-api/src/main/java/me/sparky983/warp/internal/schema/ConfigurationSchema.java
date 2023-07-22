@@ -32,13 +32,6 @@ public interface ConfigurationSchema<T> {
       throws ConfigurationException;
 
   /**
-   * Returns an unmodifiable set of the properties in this schema.
-   *
-   * @return the properties
-   */
-  Set<SchemaProperty> properties();
-
-  /**
    * Creates a schema for a given configuration interface
    *
    * @param configurationClass the configuration class
