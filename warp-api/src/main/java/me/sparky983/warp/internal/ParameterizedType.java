@@ -17,7 +17,7 @@ import org.jspecify.annotations.NullMarked;
  */
 @NullMarked
 public final class ParameterizedType<T> {
-  // Note: this class cannot represent generic arrays
+  // Note: this class cannot represent arrays with generic component types
 
   private final Class<T> rawType;
   private final List<ParameterizedType<?>> typeArguments;
