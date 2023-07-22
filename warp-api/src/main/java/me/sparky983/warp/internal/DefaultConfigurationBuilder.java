@@ -20,34 +20,30 @@ import org.jspecify.annotations.NullMarked;
  */
 @NullMarked
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
-  // Too much typing
-  private static final Class<ConfigurationNode> NODE = ConfigurationNode.class;
-  private static final Class<ConfigurationNode.Primitive> PRIMITIVE =
-      ConfigurationNode.Primitive.class;
-  private static final Class<ConfigurationNode.List> LIST = ConfigurationNode.List.class;
-  private static final Class<ConfigurationNode.Map> MAP = ConfigurationNode.Map.class;
-
   /** The default deserializer registry. */
   private static final DeserializerRegistry DESERIALIZERS =
       DeserializerRegistry.create()
-          .register(PRIMITIVE, Byte.class, Deserializer.BYTE)
-          .register(PRIMITIVE, byte.class, Deserializer.BYTE)
-          .register(PRIMITIVE, Short.class, Deserializer.SHORT)
-          .register(PRIMITIVE, short.class, Deserializer.SHORT)
-          .register(PRIMITIVE, Integer.class, Deserializer.INTEGER)
-          .register(PRIMITIVE, int.class, Deserializer.INTEGER)
-          .register(PRIMITIVE, Long.class, Deserializer.LONG)
-          .register(PRIMITIVE, long.class, Deserializer.LONG)
-          .register(PRIMITIVE, Float.class, Deserializer.FLOAT)
-          .register(PRIMITIVE, float.class, Deserializer.FLOAT)
-          .register(PRIMITIVE, Double.class, Deserializer.DOUBLE)
-          .register(PRIMITIVE, double.class, Deserializer.DOUBLE)
-          .register(PRIMITIVE, Boolean.class, Deserializer.BOOLEAN)
-          .register(PRIMITIVE, boolean.class, Deserializer.BOOLEAN)
-          .register(PRIMITIVE, Character.class, Deserializer.CHARACTER)
-          .register(PRIMITIVE, char.class, Deserializer.CHARACTER)
-          .register(PRIMITIVE, String.class, Deserializer.STRING)
-          .register(PRIMITIVE, CharSequence.class, Deserializer.STRING);
+          .register(Byte.class, Deserializer.BYTE)
+          .register(byte.class, Deserializer.BYTE)
+          .register(Short.class, Deserializer.SHORT)
+          .register(short.class, Deserializer.SHORT)
+          .register(Integer.class, Deserializer.INTEGER)
+          .register(int.class, Deserializer.INTEGER)
+          .register(Long.class, Deserializer.LONG)
+          .register(long.class, Deserializer.LONG)
+          .register(Float.class, Deserializer.FLOAT)
+          .register(float.class, Deserializer.FLOAT)
+          .register(Double.class, Deserializer.DOUBLE)
+          .register(double.class, Deserializer.DOUBLE)
+          .register(Boolean.class, Deserializer.BOOLEAN)
+          .register(boolean.class, Deserializer.BOOLEAN)
+          .register(Character.class, Deserializer.CHARACTER)
+          .register(char.class, Deserializer.CHARACTER)
+          .register(String.class, Deserializer.STRING)
+          .register(CharSequence.class, Deserializer.STRING)
+          .register(Optional.class, Deserializer::optional)
+          .register(List.class, Deserializer::list)
+          .register(Map.class, Deserializer::map);
 
   /** The default defaults registry */
   private static final DefaultsRegistry DEFAULTS =
@@ -55,12 +51,6 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .register(Optional.class, ConfigurationNode.nil())
           .register(List.class, ConfigurationNode.list())
           .register(Map.class, ConfigurationNode.map().build());
-
-  static {
-    DESERIALIZERS.register(NODE, Optional.class, Deserializer.optional(DESERIALIZERS));
-    DESERIALIZERS.register(LIST, List.class, Deserializer.list(DESERIALIZERS));
-    DESERIALIZERS.register(MAP, Map.class, Deserializer.map(DESERIALIZERS));
-  }
 
   /**
    * The configuration sources. Initial capacity is set to {@code 1} because 99% of the time only 1

@@ -7,98 +7,55 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+
 import me.sparky983.warp.ConfigurationNode;
 import org.jspecify.annotations.NullMarked;
 
 /**
  * A {@link ConfigurationNode} deserialize.
  *
- * @param <F> the type to deserialize
  * @param <T> the deserialized type
  */
+@SuppressWarnings("OverlyLongLambda")
 @FunctionalInterface
 @NullMarked
-public interface Deserializer<F extends ConfigurationNode, T> {
+public interface Deserializer<T> {
   /**
    * An identity deserializer.
    *
    * <p>The value result is the same as the input.
    */
-  Deserializer<ConfigurationNode, ConfigurationNode> IDENTITY = (type, node) -> node;
+  Deserializer<ConfigurationNode> IDENTITY = (type, node) -> node;
 
   /** A {@link Byte} deserializer */
-  Deserializer<ConfigurationNode.Primitive, Byte> BYTE =
-      (type, node) -> {
-        try {
-          return Byte.valueOf(node.value());
-        } catch (final NumberFormatException e) {
-          throw new DeserializationException(
-              String.format("\"%s\" is not a valid byte", node.value()));
-        }
-      };
+  Deserializer<Byte> BYTE = number(Byte::valueOf, "byte");
 
   /** A {@link Short} deserializer. */
-  Deserializer<ConfigurationNode.Primitive, Short> SHORT =
-      (type, node) -> {
-        try {
-          return Short.valueOf(node.value());
-        } catch (final NumberFormatException e) {
-          throw new DeserializationException(
-              String.format("\"%s\" is not a valid short", node.value()));
-        }
-      };
+  Deserializer<Short> SHORT = number(Short::valueOf, "short");
 
   /** A {@link Integer} deserializer. */
-  Deserializer<ConfigurationNode.Primitive, Integer> INTEGER =
-      (type, node) -> {
-        try {
-          return Integer.valueOf(node.value());
-        } catch (final NumberFormatException e) {
-          throw new DeserializationException(
-              String.format("\"%s\" is not a valid integer", node.value()));
-        }
-      };
+  Deserializer<Integer> INTEGER = number(Integer::valueOf, "integer");
 
   /** A {@link Long} deserializer. */
-  Deserializer<ConfigurationNode.Primitive, Long> LONG =
-      (type, node) -> {
-        try {
-          return Long.valueOf(node.value());
-        } catch (final NumberFormatException e) {
-          throw new DeserializationException(
-              String.format("\"%s\" is not a valid long", node.value()));
-        }
-      };
+  Deserializer<Long> LONG = number(Long::valueOf, "long");
 
   /** A {@link Float} deserializer. */
-  Deserializer<ConfigurationNode.Primitive, Float> FLOAT =
-      (type, node) -> {
-        try {
-          return Float.valueOf(node.value());
-        } catch (final NumberFormatException e) {
-          throw new DeserializationException(
-              String.format("\"%s\" is not a valid float", node.value()));
-        }
-      };
+  Deserializer<Float> FLOAT = number(Float::valueOf, "float");
 
   /** A {@link Double} deserializer. */
-  Deserializer<ConfigurationNode.Primitive, Double> DOUBLE =
-      (type, node) -> {
-        try {
-          return Double.valueOf(node.value());
-        } catch (final NumberFormatException e) {
-          throw new DeserializationException(
-              String.format("\"%s\" is not a valid double", node.value()));
-        }
-      };
+  Deserializer<Double> DOUBLE = number(Double::valueOf, "double");
 
   /** A {@link Boolean} deserializer. */
-  Deserializer<ConfigurationNode.Primitive, Boolean> BOOLEAN =
+  Deserializer<Boolean> BOOLEAN =
       (type, node) ->
-          switch (node.value().toLowerCase()) {
-            case "true" -> Boolean.TRUE;
-            case "false" -> Boolean.FALSE;
-            default -> throw new DeserializationException("Expected \"true\" or \"false\"");
+          switch (node) {
+            case ConfigurationNode.Primitive primitive -> switch (primitive.value()) {
+              case "true" -> Boolean.TRUE;
+              case "false" -> Boolean.FALSE;
+              default -> throw new DeserializationException("Expected \"true\" or \"false\"");
+            };
+            default -> throw new DeserializationException("Unable to deserialize value into boolean");
           };
 
   /**
@@ -106,12 +63,15 @@ public interface Deserializer<F extends ConfigurationNode, T> {
    *
    * <p>Only allows alphanumeric characters.
    */
-  Deserializer<ConfigurationNode.Primitive, Character> CHARACTER =
+  Deserializer<Character> CHARACTER =
       (type, node) -> {
-        if (node.value().length() != 1) {
+        if (!(node instanceof ConfigurationNode.Primitive primitive)) {
+          throw new DeserializationException("Unable to deserialize value into character");
+        }
+        if (primitive.value().length() != 1) {
           throw new DeserializationException("Expected a single character");
         }
-        final var character = node.value().charAt(0);
+        final var character = primitive.value().charAt(0);
         if (Character.isLetterOrDigit(character)) {
           return character;
         }
@@ -119,7 +79,10 @@ public interface Deserializer<F extends ConfigurationNode, T> {
       };
 
   /** A {@link String} deserializer. */
-  Deserializer<ConfigurationNode.Primitive, String> STRING = (type, node) -> node.value();
+  Deserializer<String> STRING = (type, node) -> switch (node) {
+    case ConfigurationNode.Primitive primitive -> primitive.value();
+    default -> throw new DeserializationException("Unable to deserialize value into string");
+  };
 
   /**
    * Deserializes the given node.
@@ -130,7 +93,22 @@ public interface Deserializer<F extends ConfigurationNode, T> {
    *     an empty optional
    * @throws DeserializationException if the node was unable to be deserialized.
    */
-  T deserialize(ParameterizedType<? extends T> type, F node) throws DeserializationException;
+  T deserialize(ParameterizedType<? extends T> type, ConfigurationNode node) throws DeserializationException;
+
+  private static <T> Deserializer<T> number(
+      final Function<? super String, ? extends T> parser,
+      final String name) {
+    return (type, node) -> {
+      if (!(node instanceof final ConfigurationNode.Primitive primitive)) {
+        throw new DeserializationException(String.format("Unable to deserialize value into %s", name));
+      }
+      try {
+        return parser.apply(primitive.value());
+      } catch (final NumberFormatException e) {
+        throw new DeserializationException(String.format("\"%s\" is not a valid %s", primitive.value(), name));
+      }
+    };
+  }
 
   /**
    * Creates a new list deserializer for the given deserializer registry.
@@ -139,21 +117,21 @@ public interface Deserializer<F extends ConfigurationNode, T> {
    * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static Deserializer<ConfigurationNode.List, List<?>> list(
+  static Deserializer<List<?>> list(
       final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (type, node) -> {
-      if (type.isRaw()) {
-        return node.values();
-      } else {
+    return (type, node) -> switch (node) {
+      case ConfigurationNode.List list when type.isRaw() -> list.values();
+      case ConfigurationNode.List list -> {
         final var elementType = type.typeArguments().get(0);
         final var deserializedList = new ArrayList<>();
-        for (final var element : node.values()) {
+        for (final var element : list.values()) {
           deserializedList.add(deserializers.deserialize(element, elementType));
         }
-        return Collections.unmodifiableList(deserializedList);
+        yield Collections.unmodifiableList(deserializedList);
       }
+      default -> throw new DeserializationException("Unable to deserialize value into list");
     };
   }
 
@@ -164,25 +142,25 @@ public interface Deserializer<F extends ConfigurationNode, T> {
    * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static Deserializer<ConfigurationNode.Map, Map<?, ?>> map(
+  static Deserializer<Map<?, ?>> map(
       final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (type, node) -> {
-      if (type.isRaw()) {
-        return node.values();
-      } else {
+    return (type, node) -> switch (node) {
+      case ConfigurationNode.Map map when type.isRaw() -> map.values();
+      case ConfigurationNode.Map map -> {
         final var keyType = type.typeArguments().get(0);
         final var valueType = type.typeArguments().get(1);
         final var deserializedMap = new HashMap<>();
-        for (final var entry : node.entries()) {
+        for (final var entry : map.entries()) {
           final var key =
               deserializers.deserialize(ConfigurationNode.primitive(entry.key()), keyType);
           final var value = deserializers.deserialize(entry.value(), valueType);
           deserializedMap.put(key, value);
         }
-        return Collections.unmodifiableMap(deserializedMap);
+        yield Collections.unmodifiableMap(deserializedMap);
       }
+      default -> throw new DeserializationException("Unable to deserialize value into map");
     };
   }
 
@@ -193,19 +171,14 @@ public interface Deserializer<F extends ConfigurationNode, T> {
    * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static Deserializer<ConfigurationNode, Optional<?>> optional(
+  static Deserializer<Optional<?>> optional(
       final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (type, node) -> {
-      if (node instanceof ConfigurationNode.Nil) {
-        return Optional.empty();
-      } else if (type.isRaw()) {
-        return Optional.of(node);
-      } else {
-        final var valueType = type.typeArguments().get(0);
-        return Optional.of(deserializers.deserialize(node, valueType));
-      }
+    return (type, node) -> switch (node) {
+      case ConfigurationNode.Nil nil -> Optional.empty();
+      case ConfigurationNode __ when type.isRaw() -> Optional.of(node);
+      default -> Optional.of(deserializers.deserialize(node, type.typeArguments().get(0)));
     };
   }
 }
