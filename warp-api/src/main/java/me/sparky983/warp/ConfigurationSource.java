@@ -9,7 +9,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @since 0.1
  */
-@NullMarked
 public interface ConfigurationSource {
   /**
    * Returns the configuration contained within this source.

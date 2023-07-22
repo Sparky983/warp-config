@@ -18,7 +18,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @param <T> the type of the configuration class
  */
-@NullMarked
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
   /** The default deserializer registry. */
   private static final DeserializerRegistry DESERIALIZERS =

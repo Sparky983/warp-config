@@ -18,7 +18,6 @@ import org.jspecify.annotations.NullMarked;
  * @param <T> the deserialized type
  */
 @FunctionalInterface
-@NullMarked
 public interface Deserializer<T> {
   /** A {@link Byte} deserializer */
   Deserializer<Byte> BYTE = number(Byte::valueOf, "byte");

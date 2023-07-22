@@ -42,7 +42,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @since 0.1
  */
-@NullMarked
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface Property {

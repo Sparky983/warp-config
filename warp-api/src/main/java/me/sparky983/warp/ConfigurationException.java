@@ -11,7 +11,6 @@ import org.jspecify.annotations.Nullable;
  *
  * @since 0.1
  */
-@NullMarked
 public final class ConfigurationException extends Exception {
   private final Set<ConfigurationError> errors;
 

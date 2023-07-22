@@ -9,7 +9,6 @@ import org.jspecify.annotations.NullMarked;
  * @param <T> the type of the configuration class
  * @since 0.1
  */
-@NullMarked
 public interface ConfigurationBuilder<T> {
   /**
    * Adds the given configuration source to the configuration.

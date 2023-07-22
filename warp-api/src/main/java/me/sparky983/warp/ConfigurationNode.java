@@ -24,7 +24,6 @@ import org.jspecify.annotations.NullMarked;
  * @since 0.1
  */
 @ApiStatus.Experimental
-@NullMarked
 public sealed interface ConfigurationNode {
   /**
    * Creates a new primitive node.

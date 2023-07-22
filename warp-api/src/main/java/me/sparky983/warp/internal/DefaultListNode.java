@@ -5,7 +5,6 @@ import me.sparky983.warp.ConfigurationNode;
 import org.jspecify.annotations.NullMarked;
 
 /** The default implementation of {@link List}. */
-@NullMarked
 public record DefaultListNode(@Override java.util.List<ConfigurationNode> values)
     implements ConfigurationNode.List {
   /**

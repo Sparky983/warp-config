@@ -8,7 +8,6 @@ import me.sparky983.warp.ConfigurationNode;
 import org.jspecify.annotations.NullMarked;
 
 /** A registry of defaults. */
-@NullMarked
 public final class DefaultsRegistry {
   private final Map<Class<?>, ConfigurationNode> defaults = new HashMap<>();
 

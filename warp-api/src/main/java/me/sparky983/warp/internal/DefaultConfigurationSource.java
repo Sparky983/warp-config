@@ -8,7 +8,6 @@ import me.sparky983.warp.ConfigurationSource;
 import org.jspecify.annotations.NullMarked;
 
 /** The default {@link ConfigurationSource} implementation. */
-@NullMarked
 public final class DefaultConfigurationSource implements ConfigurationSource {
   /** Lazily load {@link #EMPTY} via class loading. */
   public static final class Empty {

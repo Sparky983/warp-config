@@ -10,7 +10,6 @@ import me.sparky983.warp.ConfigurationNode;
 import org.jspecify.annotations.NullMarked;
 
 /** A registry of {@link Deserializer Deserializers}. */
-@NullMarked
 public final class DeserializerRegistry {
   private final Map<Class<?>, Deserializer<?>> deserializers = new HashMap<>();
 

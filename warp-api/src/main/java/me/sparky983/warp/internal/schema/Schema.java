@@ -17,7 +17,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @param <T> the type of the configuration class
  */
-@NullMarked
 public interface Schema<T> {
   /**
    * Creates a configuration compliant with this schema.

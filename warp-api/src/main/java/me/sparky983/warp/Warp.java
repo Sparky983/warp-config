@@ -10,7 +10,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @since 0.1
  */
-@NullMarked
 public final class Warp {
   /** Private constructor to prevent instantiation. */
   // TODO: (Sparky983): Consider protected access

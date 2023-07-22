@@ -7,7 +7,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @since 0.1
  */
-@NullMarked
 public interface ConfigurationError {
   /**
    * A description of the error.
