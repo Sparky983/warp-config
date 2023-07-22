@@ -32,6 +32,14 @@ import org.jspecify.annotations.NullMarked;
  *   <li>{@link String}
  * </ul>
  *
+ * <h2>Implementation Requirements</h2>
+ * Implementations of methods annotated with this annotation must:
+ * <ul>
+ *   <li>Never return {@code null}
+ *   <li>Never throw an exception
+ * </ul>
+ *
+ *
  * @since 0.1
  */
 @NullMarked
