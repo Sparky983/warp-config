@@ -24,7 +24,7 @@ public final class ParameterizedType<T> {
       final Class<T> rawType, final List<ParameterizedType<?>> typeArguments) {
     Objects.requireNonNull(rawType, "rawType cannot be null");
 
-    if (typeArguments.size() != 0 && rawType.getTypeParameters().length != typeArguments.size()) {
+    if (!typeArguments.isEmpty() && rawType.getTypeParameters().length != typeArguments.size()) {
       throw new IllegalArgumentException(
           String.format(
               "%s declares %s type parameters but found %s type arguments",
