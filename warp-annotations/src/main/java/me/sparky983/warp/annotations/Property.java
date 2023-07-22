@@ -7,7 +7,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.Optional;
 import org.intellij.lang.annotations.Pattern;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * Marks a method of an {@link Configuration @Configuration} class as a property.
@@ -42,7 +41,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @since 0.1
  */
-@NullMarked
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface Property {
