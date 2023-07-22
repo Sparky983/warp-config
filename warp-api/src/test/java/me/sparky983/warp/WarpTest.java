@@ -21,22 +21,22 @@ class WarpTest {
 
   @Test
   void testSource_Null() {
-    final var builder = Warp.builder(Configurations.Empty.class);
+    final ConfigurationBuilder<Configurations.Empty> builder = Warp.builder(Configurations.Empty.class);
 
     assertThrows(NullPointerException.class, () -> builder.source(null));
   }
 
   @Test
   void testHashCode_Self() {
-    final var configuration = Warp.builder(Configurations.Empty.class);
+    final ConfigurationBuilder<Configurations.Empty> configuration = Warp.builder(Configurations.Empty.class);
 
     assertEquals(configuration.hashCode(), configuration.hashCode());
   }
 
   @Test
   void testHashCode_Other() {
-    final var configuration1 = Warp.builder(Configurations.Empty.class);
-    final var configuration2 = Warp.builder(Configurations.Empty.class);
+    final ConfigurationBuilder<Configurations.Empty> configuration1 = Warp.builder(Configurations.Empty.class);
+    final ConfigurationBuilder<Configurations.Empty> configuration2 = Warp.builder(Configurations.Empty.class);
 
     assertNotEquals(configuration1.hashCode(), configuration2.hashCode());
   }
@@ -44,22 +44,22 @@ class WarpTest {
   @SuppressWarnings("EqualsWithItself")
   @Test
   void testEquals_Self() {
-    final var configuration = Warp.builder(Configurations.Empty.class);
+    final ConfigurationBuilder<Configurations.Empty> configuration = Warp.builder(Configurations.Empty.class);
 
     assertEquals(configuration, configuration);
   }
 
   @Test
   void testEquals_Other() {
-    final var configuration1 = Warp.builder(Configurations.Empty.class);
-    final var configuration2 = Warp.builder(Configurations.Empty.class);
+    final ConfigurationBuilder<Configurations.Empty> configuration1 = Warp.builder(Configurations.Empty.class);
+    final ConfigurationBuilder<Configurations.Empty> configuration2 = Warp.builder(Configurations.Empty.class);
 
     assertNotEquals(configuration1, configuration2);
   }
 
   @Test
   void testProperty_NotExists() {
-    final var builder =
+    final ConfigurationBuilder<Configurations.String> builder =
         Warp.builder(Configurations.String.class).source(ConfigurationSource.empty());
 
     assertThrows(ConfigurationException.class, builder::build);
@@ -68,7 +68,7 @@ class WarpTest {
   @Test
   // TODO(Sparky983): We definitely need more deserialization tests
   void testDeserialization() throws ConfigurationException {
-    final var configuration =
+    final Configurations.Int configuration =
         Warp.builder(Configurations.Int.class)
             .source(ConfigurationSource.of(map().entry("property", primitive("10")).build()))
             .build();
@@ -78,7 +78,7 @@ class WarpTest {
 
   @Test
   void testStringProperty() throws ConfigurationException {
-    final var configuration =
+    final Configurations.String configuration =
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(map().entry("property", primitive("Some value")).build()))

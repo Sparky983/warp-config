@@ -13,27 +13,27 @@ class ConfigurationSourceTest {
 
   @Test
   void testOf() throws ConfigurationException {
-    final var value =
+    final ConfigurationNode.Map value =
         ConfigurationNode.map()
             .entry("test", ConfigurationNode.primitive("value 1"))
             .entry("test-2", ConfigurationNode.primitive("value 2"))
             .build();
 
-    final var source = ConfigurationSource.of(value);
+    final ConfigurationSource source = ConfigurationSource.of(value);
 
     assertEquals(Optional.of(value), source.read());
   }
 
   @Test
   void testEmpty() throws ConfigurationException {
-    final var source = ConfigurationSource.empty();
+    final ConfigurationSource source = ConfigurationSource.empty();
 
     assertTrue(source.read().isEmpty());
   }
 
   @Test
   void testBlank() throws ConfigurationException {
-    final var blank = ConfigurationSource.blank();
+    final ConfigurationSource blank = ConfigurationSource.blank();
 
     assertEquals(Optional.of(ConfigurationNode.map().build()), blank.read());
   }
