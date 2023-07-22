@@ -2,11 +2,12 @@ package me.sparky983.warp.internal.schema;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
+
 import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.ParameterizedType;
 
-/** A {@link SchemaProperty} for a {@link Property @Property} method. */
-final class MethodProperty implements SchemaProperty {
+/** A {@link Schema.Property} for a {@link Property @Property} method. */
+final class MethodProperty implements Schema.Property {
   private final String path;
   private final ParameterizedType<?> type;
 
@@ -33,7 +34,7 @@ final class MethodProperty implements SchemaProperty {
    *     or the method's return type references a type variable.
    * @throws NullPointerException if the method is {@code null}.
    */
-  static SchemaProperty of(final Method method) {
+  static Schema.Property of(final Method method) {
     return new MethodProperty(method);
   }
 

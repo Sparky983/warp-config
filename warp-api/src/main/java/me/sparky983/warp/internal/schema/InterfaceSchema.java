@@ -8,7 +8,6 @@ import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationNode.Map;
-import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.DeserializerRegistry;
@@ -18,9 +17,9 @@ import me.sparky983.warp.internal.DeserializerRegistry;
  *
  * @param <T> the type of the configuration interface
  */
-final class InterfaceSchema<T> implements ConfigurationSchema<T> {
+final class InterfaceSchema<T> implements Schema<T> {
   private final Class<T> configurationClass;
-  private final Set<SchemaProperty> properties;
+  private final Set<Property> properties;
 
   /**
    * Constructs the configuration interface schema.
@@ -30,7 +29,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
    * @throws NullPointerException if the configuration class is {@code null}, the set of properties
    *     are {@code null} or one of the properties are {@code null}.
    */
-  InterfaceSchema(final Class<T> configurationClass, final Set<SchemaProperty> properties) {
+  InterfaceSchema(final Class<T> configurationClass, final Set<Property> properties) {
     Objects.requireNonNull(configurationClass, "configurationClass");
 
     this.configurationClass = configurationClass;
@@ -84,7 +83,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
     final var mappedConfiguration = new HashMap<String, Object>();
     final var violations = new LinkedHashSet<ConfigurationError>();
 
-    for (final SchemaProperty property : properties) {
+    for (final Property property : properties) {
       boolean isSet = false;
       for (final Map configuration : configurations) {
         Objects.requireNonNull(configuration);
@@ -130,7 +129,7 @@ final class InterfaceSchema<T> implements ConfigurationSchema<T> {
           if (method.getDeclaringClass().equals(Object.class)) {
             return method.invoke(proxy, args);
           }
-          final Property property = method.getAnnotation(Property.class);
+          final me.sparky983.warp.annotations.Property property = method.getAnnotation(me.sparky983.warp.annotations.Property.class);
           assert property != null : "Expected property annotation";
           return mappedConfiguration.get(property.value());
         });

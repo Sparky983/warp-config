@@ -10,7 +10,7 @@ import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
-import me.sparky983.warp.internal.schema.ConfigurationSchema;
+import me.sparky983.warp.internal.schema.Schema;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -58,9 +58,9 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
    */
   private final Collection<ConfigurationSource> sources = new ArrayList<>(1);
 
-  private final ConfigurationSchema<T> schema;
+  private final Schema<T> schema;
 
-  public DefaultConfigurationBuilder(final ConfigurationSchema<T> schema) {
+  public DefaultConfigurationBuilder(final Schema<T> schema) {
     Objects.requireNonNull(schema, "schema cannot be null");
     this.schema = schema;
   }

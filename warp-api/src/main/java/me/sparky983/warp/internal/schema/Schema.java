@@ -9,6 +9,7 @@ import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
+import me.sparky983.warp.internal.ParameterizedType;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -17,7 +18,7 @@ import org.jspecify.annotations.NullMarked;
  * @param <T> the type of the configuration class
  */
 @NullMarked
-public interface ConfigurationSchema<T> {
+public interface Schema<T> {
   /**
    * Creates a configuration compliant with this schema.
    *
@@ -40,18 +41,35 @@ public interface ConfigurationSchema<T> {
    * @throws NullPointerException if the configuration class is {@code null}.
    * @throws IllegalArgumentException if the configuration class is invalid or not an interface.
    */
-  static <T> ConfigurationSchema<T> interfaceSchema(final Class<T> configurationClass) {
+  static <T> Schema<T> interfaceSchema(final Class<T> configurationClass) {
     if (!configurationClass.isAnnotationPresent(Configuration.class)) {
       throw new IllegalArgumentException(
           String.format(
               "Class %s must be annotated with @%s",
               configurationClass.getName(), Configuration.class.getName()));
     }
-    final Set<SchemaProperty> properties =
+    final Set<Property> properties =
         Stream.of(configurationClass.getMethods())
             .map(MethodProperty::of)
             .collect(Collectors.toUnmodifiableSet());
 
     return new InterfaceSchema<>(configurationClass, properties);
+  }
+
+  /** A property in a schema. */
+  interface Property {
+    /**
+     * Returns the path of this property.
+     *
+     * @return the path.
+     */
+    String path();
+
+    /**
+     * Returns the type of this property.
+     *
+     * @return the path.
+     */
+    ParameterizedType<?> type();
   }
 }
