@@ -1,6 +1,7 @@
 package me.sparky983.warp.internal.schema;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.ParameterizedType;
@@ -12,17 +13,35 @@ final class MethodProperty implements Schema.Property {
 
   private MethodProperty(final Method method) {
     Objects.requireNonNull(method, "method cannot be null");
+
     final Property property = method.getAnnotation(Property.class);
     if (property == null) {
       throw new IllegalArgumentException(
           String.format("Method %s must be annotated with @%s", method, Property.class.getName()));
     }
-    this.path = property.value();
 
+    if (!Modifier.isPublic(method.getModifiers())) {
+      throw new IllegalArgumentException(String.format("Method %s must be public", method));
+    }
+
+    if (!Modifier.isAbstract(method.getModifiers())) {
+      throw new IllegalArgumentException(
+          String.format("Method %s must be abstract or default", method));
+    }
+
+    if (method.getParameterCount() != 0) {
+      throw new IllegalArgumentException(
+          String.format("Method %s must not declare any parameters", method));
+    }
+
+    if (method.getTypeParameters().length != 0) {
+      throw new IllegalArgumentException(
+          String.format("Method %s must not be generic", method));
+    }
+
+    this.path = property.value();
     this.type = ParameterizedType.of(method.getGenericReturnType());
   }
-
-  // TODO: document and include error thrown by ParameterizedType.of(Type)(
 
   /**
    * Creates a new method property.

@@ -1,6 +1,8 @@
 package me.sparky983.warp.internal.schema;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,11 +37,32 @@ final class InterfaceSchema<T> implements Schema<T> {
    *
    * @param configurationClass the configuration class
    * @param properties the properties in the schema
+   * @throws IllegalArgumentException if the configuration class is not valid.
    * @throws NullPointerException if the configuration class is {@code null}, the set of properties
    *     are {@code null} or one of the properties are {@code null}.
    */
   InterfaceSchema(final Class<T> configurationClass, final Set<Property> properties) {
     Objects.requireNonNull(configurationClass, "configurationClass");
+
+    if (!configurationClass.isInterface()) {
+      throw new IllegalArgumentException(
+          String.format("Class %s must be an interface", configurationClass.getName()));
+    }
+
+    if (!Modifier.isPublic(configurationClass.getModifiers())) {
+      throw new IllegalArgumentException(
+          String.format("Class %s must be public", configurationClass.getName()));
+    }
+
+    if (configurationClass.isSealed()) {
+      throw new IllegalArgumentException(
+          String.format("Class %s must not be sealed", configurationClass.getName()));
+    }
+
+    if (configurationClass.getTypeParameters().length != 0) {
+      throw new IllegalArgumentException(
+          String.format("Class %s must not be generic", configurationClass.getName()));
+    }
 
     this.configurationClass = configurationClass;
     this.properties = Set.copyOf(properties);
