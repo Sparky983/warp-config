@@ -2,6 +2,7 @@ package me.sparky983.warp;
 
 import java.util.Optional;
 import me.sparky983.warp.internal.DefaultConfigurationSource;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A configuration source.
@@ -27,6 +28,7 @@ public interface ConfigurationSource {
    * @throws NullPointerException if the map is {@code null}.
    * @since 0.1
    */
+  @ApiStatus.Experimental
   static ConfigurationSource of(final ConfigurationNode.Map map) {
     return new DefaultConfigurationSource(map);
   }
@@ -38,6 +40,7 @@ public interface ConfigurationSource {
    * @warp.implNote The returned source is cached, however this behaviour should not be depended on.
    * @since 0.1
    */
+  @ApiStatus.Experimental
   static ConfigurationSource empty() {
     return DefaultConfigurationSource.Empty.EMPTY;
   }
@@ -49,6 +52,7 @@ public interface ConfigurationSource {
    * @warp.apiNote The returned source is cached, however this behaviour should not be depended on.
    * @since 0.1
    */
+  @ApiStatus.Experimental
   static ConfigurationSource blank() {
     return DefaultConfigurationSource.Blank.BLANK;
   }
