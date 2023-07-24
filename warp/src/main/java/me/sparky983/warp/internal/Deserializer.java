@@ -44,6 +44,18 @@ public interface Deserializer<T> {
           };
 
   /**
+   * Deserializes the given node.
+   *
+   * @param node a non-null node
+   * @param type the type of the node
+   * @return an optional containing the deserialized node if it could not be deserialized, otherwise
+   *     an empty optional
+   * @throws DeserializationException if the node was unable to be deserialized.
+   */
+  T deserialize(ConfigurationNode node, ParameterizedType<? extends T> type)
+      throws DeserializationException;
+
+  /**
    * An {@link Character} deserializer.
    *
    * <p>Only allows alphanumeric characters.
@@ -168,16 +180,4 @@ public interface Deserializer<T> {
           default -> Optional.of(deserializers.deserialize(node, type.typeArguments().get(0)));
         };
   }
-
-  /**
-   * Deserializes the given node.
-   *
-   * @param node a non-null node
-   * @param type the type of the node
-   * @return an optional containing the deserialized node if it could not be deserialized, otherwise
-   *     an empty optional
-   * @throws DeserializationException if the node was unable to be deserialized.
-   */
-  T deserialize(ConfigurationNode node, ParameterizedType<? extends T> type)
-      throws DeserializationException;
 }
