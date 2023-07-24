@@ -11,7 +11,6 @@ import me.sparky983.warp.internal.schema.Schema;
  */
 public final class Warp {
   /** Private constructor to prevent instantiation. */
-  // TODO: (Sparky983): Consider protected access
   private Warp() {}
 
   /**
