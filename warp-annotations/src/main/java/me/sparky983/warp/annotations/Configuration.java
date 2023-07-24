@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  *   <li>Not be hidden
  *   <li>Not be generic
  *   <li>Declare only {@code private}, or {@code public abstract} methods (interface methods are
- *   implicitly {@code public abstract}) annotated with {@link Property @Property}.
+ *       implicitly {@code public abstract}) annotated with {@link Property @Property}.
  * </ul>
  *
  * @since 0.1
