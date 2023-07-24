@@ -4,7 +4,7 @@ import me.sparky983.warp.ConfigurationNode;
 
 /** The default implementation of {@link Nil}. */
 public record DefaultNilNode() implements ConfigurationNode.Nil {
-  /** The {@link me.sparky983.warp.ConfigurationNode.Nil} instance. */
+  /** The {@link ConfigurationNode.Nil} instance. */
   public static final Nil NIL = new DefaultNilNode();
 
   @Override
@@ -18,7 +18,7 @@ public record DefaultNilNode() implements ConfigurationNode.Nil {
   }
 
   @Override
-  public java.lang.String asString() {
+  public java.lang.String toString() {
     return "nil";
   }
 }

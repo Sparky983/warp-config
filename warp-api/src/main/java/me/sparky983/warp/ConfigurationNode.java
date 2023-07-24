@@ -40,10 +40,13 @@ public sealed interface ConfigurationNode {
      *
      * <p>Consumers may parse this however they please.
      *
+     * <p>This must be overridden by all {@code Primitive} implementations.
+     *
      * @return the value
      * @since 0.1
      */
-    java.lang.String asString();
+    @Override
+    java.lang.String toString();
   }
 
   /**
