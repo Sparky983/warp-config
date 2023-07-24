@@ -3,6 +3,7 @@ package me.sparky983.warp;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -25,7 +26,13 @@ public final class ConfigurationException extends Exception {
    */
   public ConfigurationException(
       final @Nullable String message, final Set<ConfigurationError> errors) {
-    super(message);
+    super(
+        String.format(
+            "%s: %s",
+            message,
+            errors.stream()
+                .map((error) -> String.format("\n - %s", error.description()))
+                .collect(Collectors.joining())));
     this.errors = Collections.unmodifiableSet(new LinkedHashSet<>(errors));
   }
 
