@@ -18,34 +18,29 @@ import me.sparky983.warp.ConfigurationNode;
 @FunctionalInterface
 public interface Deserializer<T> {
   /** A {@link Byte} deserializer */
-  Deserializer<Byte> BYTE = number(Byte::valueOf, "byte");
+  Deserializer<Byte> BYTE = integer(Byte.MIN_VALUE, Byte.MAX_VALUE, Number::byteValue);
 
   /** A {@link Short} deserializer. */
-  Deserializer<Short> SHORT = number(Short::valueOf, "short");
+  Deserializer<Short> SHORT = integer(Short.MIN_VALUE, Short.MAX_VALUE, Number::shortValue);
 
   /** A {@link Integer} deserializer. */
-  Deserializer<Integer> INTEGER = number(Integer::valueOf, "integer");
+  Deserializer<Integer> INTEGER = integer(Integer.MIN_VALUE, Integer.MAX_VALUE, Number::intValue);
 
   /** A {@link Long} deserializer. */
-  Deserializer<Long> LONG = number(Long::valueOf, "long");
+  Deserializer<Long> LONG = integer(Long.MIN_VALUE, Long.MAX_VALUE, Number::longValue);
 
   /** A {@link Float} deserializer. */
-  Deserializer<Float> FLOAT = number(Float::valueOf, "float");
+  Deserializer<Float> FLOAT = decimal(Number::floatValue);
 
   /** A {@link Double} deserializer. */
-  Deserializer<Double> DOUBLE = number(Double::valueOf, "double");
+  Deserializer<Double> DOUBLE = decimal(Number::doubleValue);
 
   /** A {@link Boolean} deserializer. */
   Deserializer<Boolean> BOOLEAN =
       (node, type) ->
           switch (node) {
-            case ConfigurationNode.Primitive primitive -> switch (primitive.value()) {
-              case "true" -> Boolean.TRUE;
-              case "false" -> Boolean.FALSE;
-              default -> throw new DeserializationException("Expected \"true\" or \"false\"");
-            };
-            default -> throw new DeserializationException(
-                "Unable to deserialize value into boolean");
+            case final ConfigurationNode.Bool bool -> bool.value();
+            default -> throw new DeserializationException("Expected a boolean");
           };
 
   /**
@@ -53,15 +48,13 @@ public interface Deserializer<T> {
    *
    * <p>Only allows alphanumeric characters.
    */
+  @SuppressWarnings("QuestionableName")
   Deserializer<Character> CHARACTER =
-      (node, type) -> {
-        if (!(node instanceof ConfigurationNode.Primitive primitive)) {
-          throw new DeserializationException("Unable to deserialize value into character");
-        }
-        if (primitive.value().length() != 1) {
+      (type, node) -> {
+        if (!(node instanceof final ConfigurationNode.String string) || string.value().length() != 1) {
           throw new DeserializationException("Expected a single character");
         }
-        final var character = primitive.value().charAt(0);
+        final char character = string.value().charAt(0);
         if (Character.isLetterOrDigit(character)) {
           return character;
         }
@@ -72,36 +65,35 @@ public interface Deserializer<T> {
   Deserializer<String> STRING =
       (node, type) ->
           switch (node) {
-            case ConfigurationNode.Primitive primitive -> primitive.value();
-            default -> throw new DeserializationException(
-                "Unable to deserialize value into string");
+            case final ConfigurationNode.Primitive primitive -> primitive.asString();
+            default -> throw new DeserializationException("Expected a string");
           };
 
-  /**
-   * Deserializes the given node.
-   *
-   * @param node a non-null node
-   * @param type the type of the node
-   * @return an optional containing the deserialized node if it could not be deserialized, otherwise
-   *     an empty optional
-   * @throws DeserializationException if the node was unable to be deserialized.
-   */
-  T deserialize(ConfigurationNode node, ParameterizedType<? extends T> type)
-      throws DeserializationException;
+  private static <T> Deserializer<T> integer(
+      final long min,
+      final long max,
+      final Function<? super Long, ? extends T> mapper) {
+    return (type, node) -> {
+      if (!(node instanceof final ConfigurationNode.Integer integer)) {
+        throw new DeserializationException("Expected an integer");
+      }
+      final long value = integer.value();
+      if (value < min || value > max) {
+        throw new DeserializationException(
+            String.format("Expected property to be between %s and %s (was %s)", min, max, value));
+      }
+      return mapper.apply(integer.value());
+    };
+  }
 
-  private static <T> Deserializer<T> number(
-      final Function<? super String, ? extends T> parser, final String name) {
-    return (node, type) -> {
-      if (!(node instanceof final ConfigurationNode.Primitive primitive)) {
-        throw new DeserializationException(
-            String.format("Unable to deserialize value into %s", name));
-      }
-      try {
-        return parser.apply(primitive.value());
-      } catch (final NumberFormatException e) {
-        throw new DeserializationException(
-            String.format("\"%s\" is not a valid %s", primitive.value(), name));
-      }
+  private static <T> Deserializer<T> decimal(final Function<? super Double, ? extends T> mapper) {
+    return (type, node) -> {
+      final double value = switch (node) {
+        case final ConfigurationNode.Integer integer -> integer.value();
+        case final ConfigurationNode.Decimal decimal -> decimal.value();
+        default -> throw new DeserializationException("Expected an decimal");
+      };
+      return mapper.apply(value);
     };
   }
 
@@ -126,7 +118,7 @@ public interface Deserializer<T> {
             }
             yield Collections.unmodifiableList(deserializedList);
           }
-          default -> throw new DeserializationException("Unable to deserialize value into list");
+          default -> throw new DeserializationException("Expected a list");
         };
   }
 
@@ -149,13 +141,13 @@ public interface Deserializer<T> {
             final Map<Object, Object> deserializedMap = new HashMap<>();
             for (final ConfigurationNode.Map.Entry entry : map.entries()) {
               final Object key =
-                  deserializers.deserialize(ConfigurationNode.primitive(entry.key()), keyType);
+                  deserializers.deserialize(ConfigurationNode.string(entry.key()), keyType);
               final Object value = deserializers.deserialize(entry.value(), valueType);
               deserializedMap.put(key, value);
             }
             yield Collections.unmodifiableMap(deserializedMap);
           }
-          default -> throw new DeserializationException("Unable to deserialize value into map");
+          default -> throw new DeserializationException("Expected a map");
         };
   }
 
@@ -176,4 +168,16 @@ public interface Deserializer<T> {
           default -> Optional.of(deserializers.deserialize(node, type.typeArguments().get(0)));
         };
   }
+
+  /**
+   * Deserializes the given node.
+   *
+   * @param type the type of the node
+   * @param node a non-null node
+   * @return an optional containing the deserialized node if it could not be deserialized, otherwise
+   *     an empty optional
+   * @throws DeserializationException if the node was unable to be deserialized.
+   */
+  T deserialize(ParameterizedType<? extends T> type, ConfigurationNode node)
+      throws DeserializationException;
 }

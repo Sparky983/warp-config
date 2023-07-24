@@ -1,4 +1,4 @@
-package me.sparky983.warp.internal;
+package me.sparky983.warp.internal.node;
 
 import me.sparky983.warp.ConfigurationNode;
 
@@ -15,5 +15,10 @@ public record DefaultNilNode() implements ConfigurationNode.Nil {
   @Override
   public boolean equals(final Object other) {
     return other instanceof Nil;
+  }
+
+  @Override
+  public java.lang.String asString() {
+    return "nil";
   }
 }

@@ -1,4 +1,4 @@
-package me.sparky983.warp.internal;
+package me.sparky983.warp.internal.node;
 
 import java.util.Iterator;
 import me.sparky983.warp.ConfigurationNode;

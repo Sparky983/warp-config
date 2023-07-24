@@ -15,8 +15,8 @@ class ConfigurationSourceTest {
   void testOf() throws ConfigurationException {
     final ConfigurationNode.Map value =
         ConfigurationNode.map()
-            .entry("test", ConfigurationNode.primitive("value 1"))
-            .entry("test-2", ConfigurationNode.primitive("value 2"))
+            .entry("test", ConfigurationNode.string("value 1"))
+            .entry("test-2", ConfigurationNode.string("value 2"))
             .build();
 
     final ConfigurationSource source = ConfigurationSource.of(value);

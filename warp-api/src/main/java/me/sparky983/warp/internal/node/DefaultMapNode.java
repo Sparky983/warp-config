@@ -1,4 +1,4 @@
-package me.sparky983.warp.internal;
+package me.sparky983.warp.internal.node;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -7,7 +7,7 @@ import java.util.Optional;
 import me.sparky983.warp.ConfigurationNode;
 
 /** The default implementation of {@link Map}. */
-public record DefaultMapNode(@Override java.util.Map<String, ConfigurationNode> values)
+public record DefaultMapNode(@Override java.util.Map<java.lang.String, ConfigurationNode> values)
     implements ConfigurationNode.Map {
   /**
    * Constructs the map values.
@@ -16,12 +16,12 @@ public record DefaultMapNode(@Override java.util.Map<String, ConfigurationNode> 
    * @throws NullPointerException if the values map is {@code null} or has an entry that contains
    *     {@code null}.
    */
-  public DefaultMapNode(final java.util.Map<String, ConfigurationNode> values) {
+  public DefaultMapNode(final java.util.Map<java.lang.String, ConfigurationNode> values) {
     this.values = Collections.unmodifiableMap(new LinkedHashMap<>(values));
   }
 
   @Override
-  public Optional<ConfigurationNode> get(final String key) {
+  public Optional<ConfigurationNode> get(final java.lang.String key) {
     return Optional.ofNullable(values.get(key));
   }
 
@@ -35,10 +35,10 @@ public record DefaultMapNode(@Override java.util.Map<String, ConfigurationNode> 
 
   /** The default implementation of {@link Builder}. */
   public static final class DefaultBuilder implements Builder {
-    private final java.util.Map<String, ConfigurationNode> values = new LinkedHashMap<>();
+    private final java.util.Map<java.lang.String, ConfigurationNode> values = new LinkedHashMap<>();
 
     @Override
-    public Builder entry(final String key, final ConfigurationNode value) {
+    public Builder entry(final java.lang.String key, final ConfigurationNode value) {
       Objects.requireNonNull(key, "key cannot be null");
       Objects.requireNonNull(value, "value cannot be null");
       values.put(key, value);
@@ -51,6 +51,6 @@ public record DefaultMapNode(@Override java.util.Map<String, ConfigurationNode> 
     }
   }
 
-  public record DefaultEntry(@Override String key, @Override ConfigurationNode value)
+  public record DefaultEntry(@Override java.lang.String key, @Override ConfigurationNode value)
       implements Entry {}
 }

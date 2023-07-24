@@ -2,10 +2,14 @@ package me.sparky983.warp;
 
 import java.util.Arrays;
 import java.util.Optional;
-import me.sparky983.warp.internal.DefaultListNode;
-import me.sparky983.warp.internal.DefaultMapNode;
-import me.sparky983.warp.internal.DefaultNilNode;
-import me.sparky983.warp.internal.DefaultPrimitiveNode;
+
+import me.sparky983.warp.internal.node.DefaultBoolNode;
+import me.sparky983.warp.internal.node.DefaultDecimalNode;
+import me.sparky983.warp.internal.node.DefaultIntegerNode;
+import me.sparky983.warp.internal.node.DefaultListNode;
+import me.sparky983.warp.internal.node.DefaultMapNode;
+import me.sparky983.warp.internal.node.DefaultNilNode;
+import me.sparky983.warp.internal.node.DefaultStringNode;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -14,7 +18,8 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>There are three possible variants:
  *
  * <ul>
- *   <li>{@link Primitive} - represents a primitive value such as a string or number
+ *   <li>{@link Decimal} - represents a decimal number
+ *   <li>{@link Integer} - represents an integer number
  *   <li>{@link List} - represents a list of values
  *   <li>{@link Map} - represents a map of keys to values
  *   <li>{@link Nil} - represents no value
@@ -25,23 +30,11 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Experimental
 public sealed interface ConfigurationNode {
   /**
-   * Creates a new primitive node.
-   *
-   * @param value the string representation of the value
-   * @return the new primitive value
-   * @throws NullPointerException if the value is {@code null}.
-   * @since 0.1
-   */
-  static Primitive primitive(final String value) {
-    return new DefaultPrimitiveNode(value);
-  }
-
-  /**
    * The primitive configuration node.
    *
    * @since 0.1
    */
-  non-sealed interface Primitive extends ConfigurationNode {
+  sealed interface Primitive extends ConfigurationNode permits String, Decimal, Integer, Bool, Nil {
     /**
      * Returns a string representation of this node.
      *
@@ -50,8 +43,135 @@ public sealed interface ConfigurationNode {
      * @return the value
      * @since 0.1
      */
-    String value();
+    java.lang.String asString();
   }
+
+  /**
+   * Creates a new string primitive node.
+   *
+   * @param value the value
+   * @return the new string primitive value
+   * @throws NullPointerException if the value is {@code null}.
+   * @since 0.1
+   */
+  static String string(final java.lang.String value) {
+    return new DefaultStringNode(value);
+  }
+
+  /**
+   * The string primitive configuration node.
+   *
+   * @since 0.1
+   */
+  non-sealed interface String extends Primitive {
+    /**
+     * Returns the value of this node.
+     *
+     * @return the value
+     * @since 0.1
+     */
+    java.lang.String value();
+  }
+
+  /**
+   * Creates a new decimal primitive node.
+   *
+   * @param value the value
+   * @return the new decimal primitive value
+   * @since 0.1
+   */
+  static Decimal decimal(final double value) {
+    return new DefaultDecimalNode(value);
+  }
+
+  /**
+   * The decimal primitive configuration node.
+   *
+   * @since 0.1
+   */
+  non-sealed interface Decimal extends Primitive {
+    /**
+     * Returns the value of this node.
+     *
+     * @return the value
+     * @since 0.1
+     */
+    double value();
+  }
+
+  /**
+   * Creates a new integer primitive node.
+   *
+   * @param value the value
+   * @return the new integer primitive value
+   * @since 0.1
+   */
+  static Integer integer(final long value) {
+    return new DefaultIntegerNode(value);
+  }
+
+  /**
+   * The integer primitive configuration node.
+   *
+   * @since 0.1
+   */
+  non-sealed interface Integer extends Primitive {
+    /**
+     * Returns the value of this node.
+     *
+     * @return the value
+     * @since 0.1
+     */
+    long value();
+  }
+
+  /**
+   * Creates a new boolean primitive node.
+   *
+   * @param value the value
+   * @return the new boolean primitive value
+   * @since 0.1
+   */
+  static Bool bool(final boolean value) {
+    if (value) {
+      return DefaultBoolNode.TRUE;
+    } else {
+      return DefaultBoolNode.FALSE;
+    }
+  }
+
+  /**
+   * The boolean primitive configuration node.
+   *
+   * @since 0.1
+   */
+  non-sealed interface Bool extends Primitive {
+    /**
+     * Returns the value of this node.
+     *
+     * @return the value
+     * @since 0.1
+     */
+    boolean value();
+  }
+
+  /**
+   * Returns a nil node.
+   *
+   * @return the nil node
+   * @since 0.1
+   * @warp.implNote The returned nil is cached, however this behaviour should not be depended on.
+   */
+  static Nil nil() {
+    return DefaultNilNode.NIL;
+  }
+
+  /**
+   * The nil configuration node.
+   *
+   * @since 0.1
+   */
+  non-sealed interface Nil extends Primitive {}
 
   /**
    * Creates a list of values.
@@ -111,7 +231,7 @@ public sealed interface ConfigurationNode {
        * @throws NullPointerException if the key or the value are {@code null}.
        * @since 0.1
        */
-      Builder entry(String key, ConfigurationNode value);
+      Builder entry(java.lang.String key, ConfigurationNode value);
 
       /**
        * Builds the map.
@@ -128,7 +248,7 @@ public sealed interface ConfigurationNode {
      * @return the values
      * @since 0.1
      */
-    java.util.Map<String, ConfigurationNode> values();
+    java.util.Map<java.lang.String, ConfigurationNode> values();
 
     /**
      * Returns the value for the given key.
@@ -139,7 +259,7 @@ public sealed interface ConfigurationNode {
      * @throws NullPointerException if the key is {@code null}.
      * @since 0.1
      */
-    Optional<ConfigurationNode> get(String key);
+    Optional<ConfigurationNode> get(java.lang.String key);
 
     /**
      * Returns an iterator over the entries.
@@ -158,7 +278,7 @@ public sealed interface ConfigurationNode {
      * @throws NullPointerException if the key or the value are {@code null}.
      * @since 0.1
      */
-    static Entry entry(final String key, final ConfigurationNode value) {
+    static Entry entry(final java.lang.String key, final ConfigurationNode value) {
       return new DefaultMapNode.DefaultEntry(key, value);
     }
 
@@ -174,7 +294,7 @@ public sealed interface ConfigurationNode {
        * @return the key
        * @since 0.1
        */
-      String key();
+      java.lang.String key();
 
       /**
        * Returns the value.
@@ -185,22 +305,4 @@ public sealed interface ConfigurationNode {
       ConfigurationNode value();
     }
   }
-
-  /**
-   * Returns a nil node.
-   *
-   * @return the nil node
-   * @since 0.1
-   * @warp.implNote The returned nil is cached, however this behaviour should not be depended on.
-   */
-  static Nil nil() {
-    return DefaultNilNode.NIL;
-  }
-
-  /**
-   * The nil configuration node.
-   *
-   * @since 0.1
-   */
-  non-sealed interface Nil extends ConfigurationNode {}
 }
