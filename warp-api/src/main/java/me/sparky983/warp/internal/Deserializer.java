@@ -50,7 +50,7 @@ public interface Deserializer<T> {
    */
   @SuppressWarnings("QuestionableName")
   Deserializer<Character> CHARACTER =
-      (type, node) -> {
+      (node, type) -> {
         if (!(node instanceof final ConfigurationNode.String string) || string.value().length() != 1) {
           throw new DeserializationException("Expected a single character");
         }
@@ -73,7 +73,7 @@ public interface Deserializer<T> {
       final long min,
       final long max,
       final Function<? super Long, ? extends T> mapper) {
-    return (type, node) -> {
+    return (node, type) -> {
       if (!(node instanceof final ConfigurationNode.Integer integer)) {
         throw new DeserializationException("Expected an integer");
       }
@@ -87,7 +87,7 @@ public interface Deserializer<T> {
   }
 
   private static <T> Deserializer<T> decimal(final Function<? super Double, ? extends T> mapper) {
-    return (type, node) -> {
+    return (node, type) -> {
       final double value = switch (node) {
         case final ConfigurationNode.Integer integer -> integer.value();
         case final ConfigurationNode.Decimal decimal -> decimal.value();
@@ -172,12 +172,12 @@ public interface Deserializer<T> {
   /**
    * Deserializes the given node.
    *
-   * @param type the type of the node
    * @param node a non-null node
+   * @param type the type of the node
    * @return an optional containing the deserialized node if it could not be deserialized, otherwise
    *     an empty optional
    * @throws DeserializationException if the node was unable to be deserialized.
    */
-  T deserialize(ParameterizedType<? extends T> type, ConfigurationNode node)
+  T deserialize(ConfigurationNode node, ParameterizedType<? extends T> type)
       throws DeserializationException;
 }
