@@ -65,7 +65,7 @@ public interface Deserializer<T> {
   Deserializer<String> STRING =
       (node, type) ->
           switch (node) {
-            case final ConfigurationNode.Primitive primitive -> primitive.asString();
+            case final ConfigurationNode.Primitive primitive -> primitive.toString();
             default -> throw new DeserializationException("Expected a string");
           };
 
