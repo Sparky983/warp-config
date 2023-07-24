@@ -2,7 +2,6 @@ package me.sparky983.warp;
 
 import java.util.Arrays;
 import java.util.Optional;
-
 import me.sparky983.warp.internal.node.DefaultBoolNode;
 import me.sparky983.warp.internal.node.DefaultDecimalNode;
 import me.sparky983.warp.internal.node.DefaultIntegerNode;

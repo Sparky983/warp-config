@@ -51,7 +51,8 @@ public interface Deserializer<T> {
   @SuppressWarnings("QuestionableName")
   Deserializer<Character> CHARACTER =
       (node, type) -> {
-        if (!(node instanceof final ConfigurationNode.String string) || string.value().length() != 1) {
+        if (!(node instanceof final ConfigurationNode.String string)
+            || string.value().length() != 1) {
           throw new DeserializationException("Expected a single character");
         }
         final char character = string.value().charAt(0);
@@ -70,9 +71,7 @@ public interface Deserializer<T> {
           };
 
   private static <T> Deserializer<T> integer(
-      final long min,
-      final long max,
-      final Function<? super Long, ? extends T> mapper) {
+      final long min, final long max, final Function<? super Long, ? extends T> mapper) {
     return (node, type) -> {
       if (!(node instanceof final ConfigurationNode.Integer integer)) {
         throw new DeserializationException("Expected an integer");
@@ -88,11 +87,12 @@ public interface Deserializer<T> {
 
   private static <T> Deserializer<T> decimal(final Function<? super Double, ? extends T> mapper) {
     return (node, type) -> {
-      final double value = switch (node) {
-        case final ConfigurationNode.Integer integer -> integer.value();
-        case final ConfigurationNode.Decimal decimal -> decimal.value();
-        default -> throw new DeserializationException("Expected an decimal");
-      };
+      final double value =
+          switch (node) {
+            case final ConfigurationNode.Integer integer -> integer.value();
+            case final ConfigurationNode.Decimal decimal -> decimal.value();
+            default -> throw new DeserializationException("Expected an decimal");
+          };
       return mapper.apply(value);
     };
   }

@@ -29,6 +29,7 @@ public interface ConfigurationBuilder<T> {
    *       <li>A node was unable to be parsed
    *       <li>One of the sources contained syntax error
    *     </ul>
+   *
    * @throws IllegalStateException if a type can not be deserialized.
    * @since 0.1
    */

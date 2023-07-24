@@ -28,7 +28,10 @@ public interface Schema<T> {
    * @throws IllegalStateException if a type can not be deserialized.
    * @throws NullPointerException if the configurations is {@code null} or contains {@code null}.
    */
-  T create(DeserializerRegistry deserializers, DefaultsRegistry defaults, List<? extends Map> configurations)
+  T create(
+      DeserializerRegistry deserializers,
+      DefaultsRegistry defaults,
+      List<? extends Map> configurations)
       throws ConfigurationException;
 
   /**

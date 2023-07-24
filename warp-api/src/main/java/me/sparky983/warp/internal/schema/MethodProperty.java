@@ -35,8 +35,7 @@ final class MethodProperty implements Schema.Property {
     }
 
     if (method.getTypeParameters().length != 0) {
-      throw new IllegalArgumentException(
-          String.format("Method %s must not be generic", method));
+      throw new IllegalArgumentException(String.format("Method %s must not be generic", method));
     }
 
     this.path = property.value();
