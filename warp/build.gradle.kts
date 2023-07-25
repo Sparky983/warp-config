@@ -12,7 +12,13 @@ java {
 }
 
 tasks {
-    withType<JavaCompile>() {
+    javadoc {
+        (options as CoreJavadocOptions).run {
+            addStringOption("source", "20")
+            addBooleanOption("-enable-preview", true)
+        }
+    }
+    withType<JavaCompile> {
         options.compilerArgs.add("--enable-preview")
     }
     test {
