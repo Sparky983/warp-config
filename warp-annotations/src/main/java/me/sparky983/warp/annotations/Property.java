@@ -41,7 +41,7 @@ public @interface Property {
   /**
    * The property's <a href="#path">path</a>.
    *
-   * <h2>Path</h2>
+   * <h4>Path</h4>
    * A path is a sequence of keys, each consisting of only alphanumeric character, hyphens ("-")
    * and underscores ("_"), delimited by the "." character.
    *
