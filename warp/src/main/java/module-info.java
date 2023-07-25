@@ -1,7 +1,7 @@
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-module me.sparky983.warp.api {
+module me.sparky983.warp {
   requires static org.jetbrains.annotations;
   requires static org.jspecify;
   requires transitive me.sparky983.warp.annotations;
