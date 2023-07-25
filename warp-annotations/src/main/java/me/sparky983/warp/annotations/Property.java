@@ -9,32 +9,24 @@ import java.util.Optional;
 import org.intellij.lang.annotations.Pattern;
 
 /**
- * Marks a method of an {@link Configuration @Configuration} class as a property.
+ * Marks the annotated method as a property method.
  *
- * <p>Property methods must:
+ * <h2>Requirements</h2>
  *
- * <ul>
- *   <li>Be {@code public}
- *   <li>Not be {@code static}
- *   <li>Not be generic
- *   <li>Have no additional parameters (an explicit receiver parameter is allowed)
- * </ul>
- *
- * <p>Properties can be declared optional by using an {@link Optional} return type.
- *
- * <p>Implementations must handle at least the following return types:
+ * <p>The following is a list of requirements for a property class:
  *
  * <ul>
- *   <li>{@code byte}, {@code short}, {@code int}, {@code long}
- *   <li>{@code float}, {@code double}
- *   <li>{@code boolean}
- *   <li>{@code char}
- *   <li>{@link String}
+ *   <li>A property method must be {@code public}
+ *   <li>A property method must not be {@code static}
+ *   <li>A property method must not be generic
+ *   <li>A property method must not declare any parameters (an explicit receiver parameter is
+ *       allowed)
+ *   <li>A property method must be a member of a {@link Configuration configuration class}
  * </ul>
  *
  * <h2>Implementation Requirements</h2>
  *
- * Implementations of methods annotated with this annotation must:
+ * Implementations of methods property methods must:
  *
  * <ul>
  *   <li>Never return {@code null}
@@ -47,9 +39,11 @@ import org.intellij.lang.annotations.Pattern;
 @Target(METHOD)
 public @interface Property {
   /**
-   * The property's path, delimited by ".".
+   * The property's <a href="#path">path</a>.
    *
-   * <p>The path can only consist of alphanumeric characters, "-" and "_".
+   * <h2>Path</h2>
+   * A path is a sequence of keys, each consisting of only alphanumeric character, hyphens ("-")
+   * and underscores ("_"), delimited by the "." character.
    *
    * @return the path
    * @since 0.1
