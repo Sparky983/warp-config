@@ -7,18 +7,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Marks a class as a configuration class.
+ * Marks the annotated class as a configuration class.
  *
- * <p>Configuration classes must:
+ * <h2>Requirements</h2>
+ * <p>The following is a list of requirements for a configuration class:
  *
  * <ul>
- *   <li>Be an {@code interface}
- *   <li>Be {@code public}
- *   <li>Not be {@code sealed}
- *   <li>Not be hidden
- *   <li>Not be generic
- *   <li>Declare only {@code private}, or {@code public abstract} methods (interface methods are
- *       implicitly {@code public abstract}) annotated with {@link Property @Property}.
+ *   <li>A configuration class must be be {@code public}
+ *   <li>A configuration class must be an {@code interface}
+ *   <li>A configuration class must not be {@link Class#isHidden() hidden}
+ *   <li>A configuration class must not be {@link Class#isSealed() sealed}
+ *   <li>A configuration class must not be generic
+ *   <li>All member methods of a configuration class must be one of the following:
+ *       <ul>
+ *           <li>A {@code private} instance method
+ *           <li>A {@code static} method
+ *           <li>A {@link Property property method}
+ *       </ul>
  * </ul>
  *
  * @since 0.1
