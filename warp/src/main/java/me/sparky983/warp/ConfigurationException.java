@@ -15,7 +15,7 @@ public final class ConfigurationException extends Exception {
   private final Set<ConfigurationError> errors;
 
   /**
-   * Constructs the exception.
+   * Constructs a {@code ConfigurationException}.
    *
    * @param message the message
    * @param errors a set of all the errors; changes to this set will not be reflected in the set

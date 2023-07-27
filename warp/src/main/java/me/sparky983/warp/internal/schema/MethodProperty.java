@@ -6,12 +6,19 @@ import java.util.Objects;
 import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.ParameterizedType;
 
-/** A {@link Schema.Property} for a {@link Property @Property} method. */
+/** The {@link Schema.Property} implementation for property methods. */
 final class MethodProperty implements Schema.Property {
   private final String path;
   private final ParameterizedType<?> type;
 
-  private MethodProperty(final Method method) {
+  /**
+   * Constructs a {@code MethodProperty} for the given method.
+   *
+   * @param method the method
+   * @throws IllegalArgumentException if the given method is not a valid property method.
+   * @throws NullPointerException if the method is {@code null}.
+   */
+  MethodProperty(final Method method) {
     Objects.requireNonNull(method, "method cannot be null");
 
     final Property property = method.getAnnotation(Property.class);
@@ -40,19 +47,6 @@ final class MethodProperty implements Schema.Property {
 
     this.path = property.value();
     this.type = ParameterizedType.of(method.getGenericReturnType());
-  }
-
-  /**
-   * Creates a new method property.
-   *
-   * @param method the method
-   * @return the new property
-   * @throws IllegalArgumentException if the method is not annotated with {@link Property @Property}
-   *     or the method's return type references a type variable.
-   * @throws NullPointerException if the method is {@code null}.
-   */
-  static Schema.Property of(final Method method) {
-    return new MethodProperty(method);
   }
 
   @Override

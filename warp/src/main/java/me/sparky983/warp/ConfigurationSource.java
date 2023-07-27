@@ -13,7 +13,7 @@ public interface ConfigurationSource {
   /**
    * Returns the configuration contained within this source.
    *
-   * @return an optional containing the configuration if one is present, otherwise {@link
+   * @return an {@link Optional} containing the configuration if one is present, otherwise {@link
    *     Optional#empty()}
    * @throws ConfigurationException if there was an error reading the configuration.
    * @since 0.1
@@ -21,7 +21,7 @@ public interface ConfigurationSource {
   Optional<ConfigurationNode.Map> read() throws ConfigurationException;
 
   /**
-   * Creates a new configuration source from the given map.
+   * Creates a new {@code ConfigurationSource} from the given map.
    *
    * @param map the map
    * @return the new source
@@ -34,7 +34,7 @@ public interface ConfigurationSource {
   }
 
   /**
-   * Returns an empty configuration source.
+   * Returns an empty {@code ConfigurationSource}.
    *
    * @return an empty source; it has no configuration
    * @since 0.1
@@ -46,7 +46,7 @@ public interface ConfigurationSource {
   }
 
   /**
-   * Returns a blank configuration source.
+   * Returns a blank {@code ConfigurationSource}.
    *
    * @return a blank source; a configuration is present, but it is blank
    * @since 0.1

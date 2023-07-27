@@ -7,10 +7,6 @@ dependencies {
     api(project(":warp-annotations"))
 }
 
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(20))
-}
-
 tasks {
     javadoc {
         (options as CoreJavadocOptions).run {

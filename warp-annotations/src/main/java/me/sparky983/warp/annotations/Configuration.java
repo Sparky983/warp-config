@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 
 /**
  * Marks the annotated class as a configuration class.
+ * <h2 id="requirements">Requirements</h2>
  *
- * <h2>Requirements</h2>
  * <p>The following is a list of requirements for a configuration class:
  *
  * <ul>

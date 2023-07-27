@@ -1,6 +1,7 @@
 package me.sparky983.warp;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Optional;
 import me.sparky983.warp.internal.node.DefaultBoolNode;
 import me.sparky983.warp.internal.node.DefaultDecimalNode;
@@ -12,16 +13,18 @@ import me.sparky983.warp.internal.node.DefaultStringNode;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * The configuration node.
+ * Represents a configuration value.
  *
  * <p>There are three possible variants:
  *
  * <ul>
+ *   <li>{@link String} - represents text
  *   <li>{@link Decimal} - represents a decimal number
  *   <li>{@link Integer} - represents an integer number
+ *   <li>{@link Bool} - represents a {@code true} or {@code false} value
+ *   <li>{@link Nil} - represents no value
  *   <li>{@link List} - represents a list of values
  *   <li>{@link Map} - represents a map of keys to values
- *   <li>{@link Nil} - represents no value
  * </ul>
  *
  * @since 0.1
@@ -29,13 +32,13 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Experimental
 public sealed interface ConfigurationNode {
   /**
-   * The primitive configuration node.
+   * A marker interface for primitive variants of {@link ConfigurationNode}.
    *
    * @since 0.1
    */
   sealed interface Primitive extends ConfigurationNode permits String, Decimal, Integer, Bool, Nil {
     /**
-     * Returns a string representation of this node.
+     * Returns a {@code java.util.String} representation of this node.
      *
      * <p>Consumers may parse this however they please.
      *
@@ -49,10 +52,10 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * Creates a new string primitive node.
+   * Creates a {@link String} node with the given value.
    *
    * @param value the value
-   * @return the new string primitive value
+   * @return the {@link String} node
    * @throws NullPointerException if the value is {@code null}.
    * @since 0.1
    */
@@ -61,7 +64,7 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * The string primitive configuration node.
+   * The string variant of {@link ConfigurationNode}.
    *
    * @since 0.1
    */
@@ -76,10 +79,10 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * Creates a new decimal primitive node.
+   * Returns a {@link Decimal} node with the given value.
    *
    * @param value the value
-   * @return the new decimal primitive value
+   * @return the {@link Decimal} node
    * @since 0.1
    */
   static Decimal decimal(final double value) {
@@ -87,7 +90,7 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * The decimal primitive configuration node.
+   * The decimal variant of {@link ConfigurationNode}.
    *
    * @since 0.1
    */
@@ -102,10 +105,10 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * Creates a new integer primitive node.
+   * Returns a {@link Integer} node with the given value.
    *
    * @param value the value
-   * @return the new integer primitive value
+   * @return the {@link Integer} node
    * @since 0.1
    */
   static Integer integer(final long value) {
@@ -113,7 +116,7 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * The integer primitive configuration node.
+   * The integer variant of {@link ConfigurationNode}.
    *
    * @since 0.1
    */
@@ -128,10 +131,10 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * Creates a new boolean primitive node.
+   * Returns a {@link Bool} node with the given value.
    *
    * @param value the value
-   * @return the new boolean primitive value
+   * @return the {@link Bool} node
    * @since 0.1
    */
   static Bool bool(final boolean value) {
@@ -143,7 +146,7 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * The boolean primitive configuration node.
+   * The boolean variant of {@link ConfigurationNode}.
    *
    * @since 0.1
    */
@@ -169,14 +172,14 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * The nil configuration node.
+   * The nil variant of {@link ConfigurationNode}.
    *
    * @since 0.1
    */
   non-sealed interface Nil extends Primitive {}
 
   /**
-   * Creates a list of values.
+   * Returns a {@link List} node of the given values.
    *
    * @param values the values; changes in this array will not be reflected in the created values
    * @return the new list of values
@@ -189,13 +192,15 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * A list of values.
+   * The list variant of {@link ConfigurationNode}.
+   *
+   * <p>Represents a sequence of {@link ConfigurationNode ConfigurationNodes}.
    *
    * @since 0.1
    */
   non-sealed interface List extends ConfigurationNode, Iterable<ConfigurationNode> {
     /**
-     * Returns an immutable {@link java.util.List} containing the values of this node.
+     * Returns an unmodifiable {@link java.util.List} containing the values of this node.
      *
      * @return the values
      * @since 0.1
@@ -204,9 +209,9 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * Creates a new map builder.
+   * Returns a new {@link Map.Builder}.
    *
-   * @return the new map builder
+   * @return the new {@link Map.Builder}
    * @since 0.1
    */
   static Map.Builder map() {
@@ -214,13 +219,16 @@ public sealed interface ConfigurationNode {
   }
 
   /**
-   * A map of string keys to values.
+   * The map variant of {@link ConfigurationNode}.
+   *
+   * <p>Represents a map of {@link java.lang.String} keys to
+   * {@link ConfigurationNode ConfigurationNodes}.
    *
    * @since 0.1
    */
   non-sealed interface Map extends ConfigurationNode {
     /**
-     * A map builder.
+     * A {@link Map} builder.
      *
      * @since 0.1
      */
@@ -231,21 +239,22 @@ public sealed interface ConfigurationNode {
        * @param key the key
        * @param value the value
        * @throws NullPointerException if the key or the value are {@code null}.
+       * @return this builder
        * @since 0.1
        */
       Builder entry(java.lang.String key, ConfigurationNode value);
 
       /**
-       * Builds the map.
+       * Builds the {@link Map}.
        *
-       * @return the built map
+       * @return the built {@link Map}
        * @since 0.1
        */
       Map build();
     }
 
     /**
-     * Returns a {@link java.util.Map} of the values in this node.
+     * Returns a {@link java.util.Map} representation of the values in this node.
      *
      * @return the values
      * @since 0.1
@@ -256,15 +265,15 @@ public sealed interface ConfigurationNode {
      * Returns the value for the given key.
      *
      * @param key the key.
-     * @return an optional containing the value associated with the key if one exists, otherwise an
-     *     {@link Optional#empty()}
+     * @return an {@link Optional} containing the value associated with the key if one exists, otherwise
+     *     an {@link Optional#empty()}
      * @throws NullPointerException if the key is {@code null}.
      * @since 0.1
      */
     Optional<ConfigurationNode> get(java.lang.String key);
 
     /**
-     * Returns an iterator over the entries.
+     * Returns an {@link Iterator} over the entries.
      *
      * @return the entries in this map
      * @since 0.1
@@ -272,11 +281,11 @@ public sealed interface ConfigurationNode {
     Iterable<Entry> entries();
 
     /**
-     * Creates an entry for the given key and value.
+     * Returns a {@link Entry} for the given key and value.
      *
-     * @param key the key.
-     * @param value the value.
-     * @return the entry.
+     * @param key the key
+     * @param value the value
+     * @return the {@link Entry}
      * @throws NullPointerException if the key or the value are {@code null}.
      * @since 0.1
      */
@@ -285,13 +294,13 @@ public sealed interface ConfigurationNode {
     }
 
     /**
-     * Represents an entry in a map.
+     * Represents an entry in a {@link Map}.
      *
      * @since 0.1
      */
     interface Entry {
       /**
-       * Returns they key.
+       * Returns the key.
        *
        * @return the key
        * @since 0.1

@@ -1,6 +1,5 @@
 package me.sparky983.warp.internal;
 
-import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationNode.Map;
@@ -24,20 +23,18 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // an optimization
   private final Optional<Map> configuration;
 
-  /** A constructor for the empty configuration source. */
+  /** Constructs an empty {@code DefaultConfigurationSource}. */
   private DefaultConfigurationSource() {
     this.configuration = Optional.empty();
   }
 
   /**
-   * Constructs the configuration source from the given map.
+   * Constructs a {@code DefaultConfigurationSource} from the given map.
    *
    * @param configuration the map
    * @throws NullPointerException if the configuration is {@code null}.
    */
   public DefaultConfigurationSource(final Map configuration) {
-    // More accurate exception message than Optional.of
-    Objects.requireNonNull(configuration, "configuration cannot be null");
     this.configuration = Optional.of(configuration);
   }
 

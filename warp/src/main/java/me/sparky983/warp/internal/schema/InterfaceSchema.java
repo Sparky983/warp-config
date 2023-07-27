@@ -12,35 +12,43 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationNode.Map;
+import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.Deserializer;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
 /**
- * The schema implementation for configuration interfaces.
+ * The {@link Schema} implementation for configuration classes.
  *
- * @param <T> the type of the configuration interface
+ * @param <T> the type of the configuration classes
  */
 final class InterfaceSchema<T> implements Schema<T> {
   private final Class<T> configurationClass;
   private final Set<Property> properties;
 
   /**
-   * Constructs the configuration interface schema.
+   * Constructs an {@code InterfaceSchema}.
    *
    * @param configurationClass the configuration class
-   * @param properties the properties in the schema
    * @throws IllegalArgumentException if the configuration class is not valid.
-   * @throws NullPointerException if the configuration class is {@code null}, the set of properties
-   *     are {@code null} or one of the properties are {@code null}.
+   * @throws NullPointerException if the configuration class is {@code null}.
    */
-  InterfaceSchema(final Class<T> configurationClass, final Set<Property> properties) {
+  InterfaceSchema(final Class<T> configurationClass) {
     Objects.requireNonNull(configurationClass, "configurationClass");
+
+    if (!configurationClass.isAnnotationPresent(Configuration.class)) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Class %s must be annotated with @%s",
+              configurationClass.getName(), Configuration.class.getName()));
+    }
 
     if (!configurationClass.isInterface()) {
       throw new IllegalArgumentException(
@@ -62,8 +70,11 @@ final class InterfaceSchema<T> implements Schema<T> {
           String.format("Class %s must not be generic", configurationClass.getName()));
     }
 
+    properties = Stream.of(configurationClass.getMethods())
+            .map(MethodProperty::new)
+            .collect(Collectors.toUnmodifiableSet());
+
     this.configurationClass = configurationClass;
-    this.properties = Set.copyOf(properties);
   }
 
   private static Optional<ConfigurationNode> get(
@@ -86,7 +97,7 @@ final class InterfaceSchema<T> implements Schema<T> {
   /**
    * Creates a new proxy.
    *
-   * <p>So the {@code SuppressWarnings} only covers the proxy.
+   * <p>So the {@code SuppressWarnings} only covers the {@code Proxy.newProxyInstance(...)} call.
    *
    * @param invocationHandler the invocation handler
    * @throws NullPointerException if the invocation handler is {@code null}.

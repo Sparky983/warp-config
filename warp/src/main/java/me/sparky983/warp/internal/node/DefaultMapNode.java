@@ -10,7 +10,7 @@ import me.sparky983.warp.ConfigurationNode;
 public record DefaultMapNode(@Override java.util.Map<java.lang.String, ConfigurationNode> values)
     implements ConfigurationNode.Map {
   /**
-   * Constructs the map values.
+   * Constructs a {@code DefaultMapNode}.
    *
    * @param values the values
    * @throws NullPointerException if the values map is {@code null} or has an entry that contains

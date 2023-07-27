@@ -7,7 +7,7 @@ import me.sparky983.warp.ConfigurationNode;
 public record DefaultStringNode(@Override java.lang.String value)
     implements ConfigurationNode.String {
   /**
-   * Constructs the string node.
+   * Constructs a {@code DefaultStringNode}.
    *
    * @param value the value
    * @throws NullPointerException if the value is {@code null}.

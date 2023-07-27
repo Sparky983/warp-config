@@ -14,7 +14,7 @@ public final class DeserializerRegistry {
   private DeserializerRegistry() {}
 
   /**
-   * Creates a new deserializer registry.
+   * Creates a {@code DeserializerRegistry}.
    *
    * @return the new deserializer registry
    */
@@ -23,7 +23,7 @@ public final class DeserializerRegistry {
   }
 
   /**
-   * Registers the given deserializer.
+   * Registers the given {@link Deserializer}.
    *
    * @param deserializedType the type to deserialize to
    * @param deserializer the serializer

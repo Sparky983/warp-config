@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public record ConfigurationError(String description) {
   /**
-   * Constructs a new configuration error.
+   * Constructs a {@code ConfigurationError}.
    *
    * @param description a human-readable description of the error
    * @throws NullPointerException if the description is {@code null}.
@@ -20,9 +20,10 @@ public record ConfigurationError(String description) {
   }
 
   /**
-   * Creates a new configuration error with the given description.
+   * Returns a {@code ConfigurationError} with the given description.
    *
    * @param description a human-readable description of the error
+   * @return the {@code ConfigurationError}
    * @throws NullPointerException if the description is {@code null}.
    * @since 0.1
    */

@@ -11,7 +11,7 @@ import java.util.function.Function;
 import me.sparky983.warp.ConfigurationNode;
 
 /**
- * A {@link ConfigurationNode} deserialize.
+ * A {@link ConfigurationNode} deserializer.
  *
  * @param <T> the deserialized type
  */
@@ -46,9 +46,9 @@ public interface Deserializer<T> {
   /**
    * Deserializes the given node.
    *
-   * @param node a non-null node
+   * @param node the node
    * @param type the type of the node
-   * @return an optional containing the deserialized node if it could not be deserialized, otherwise
+   * @return an {@link Optional} containing the deserialized node if it could not be deserialized, otherwise
    *     an empty optional
    * @throws DeserializationException if the node was unable to be deserialized.
    */

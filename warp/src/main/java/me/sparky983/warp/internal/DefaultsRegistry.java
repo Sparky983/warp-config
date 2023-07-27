@@ -13,9 +13,9 @@ public final class DefaultsRegistry {
   private DefaultsRegistry() {}
 
   /**
-   * Creates a new registry of defaults.
+   * Creates a {@code DefaultsRegistry}.
    *
-   * @return the new defaults registry
+   * @return the {@code DefaultsRegistry}
    */
   static DefaultsRegistry create() {
     return new DefaultsRegistry();
@@ -25,8 +25,8 @@ public final class DefaultsRegistry {
    * Returns the default for the given type.
    *
    * @param type the type
-   * @return an optional containing the default for the specified type if one exists, otherwise an
-   *     empty optional.
+   * @return an {@link Optional} containing the default for the specified type if one exists,
+   *     otherwise an empty optional.
    * @throws NullPointerException if the type is {@code null}.
    */
   public Optional<ConfigurationNode> get(final Class<?> type) {

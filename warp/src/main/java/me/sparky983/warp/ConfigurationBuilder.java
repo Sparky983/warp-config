@@ -1,32 +1,31 @@
 package me.sparky983.warp;
 
-import me.sparky983.warp.annotations.Configuration;
 
 /**
- * A builder for an {@link Configuration @Configuration} class.
+ * A configuration class builder.
  *
  * @param <T> the type of the configuration class
  * @since 0.1
  */
 public interface ConfigurationBuilder<T> {
   /**
-   * Adds the given configuration source to the configuration.
+   * Adds the given {@link ConfigurationSource} to the configuration class.
    *
-   * @param source the configuration source
-   * @return this builder
+   * @param source the {@link ConfigurationSource}
+   * @return this {@code ConfigurationBuilder}
    * @throws NullPointerException if the source is {@code null}.
    * @since 0.1
    */
   ConfigurationBuilder<T> source(ConfigurationSource source);
 
   /**
-   * Builds the configuration.
+   * Builds the configuration class.
    *
    * @return the built configuration
    * @throws ConfigurationException if there was an error with the configuration. Possible causes:
    *     <ul>
    *       <li>A required property was missing
-   *       <li>A node was unable to be parsed
+   *       <li>A there was an error deserializing a property
    *       <li>One of the sources contained syntax error
    *     </ul>
    *

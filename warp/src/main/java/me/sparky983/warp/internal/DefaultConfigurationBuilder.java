@@ -51,13 +51,19 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .register(Map.class, ConfigurationNode.map().build());
 
   /**
-   * The configuration sources. Initial capacity is set to {@code 1} because 99% of the time only 1
-   * source is needed.
+   * The configuration sources. Initial capacity is set to {@code 1} because usually there is only
+   * one source.
    */
   private final Collection<ConfigurationSource> sources = new ArrayList<>(1);
 
   private final Schema<? extends T> schema;
 
+  /**
+   * Constructs a {@code DefaultConfigurationBuilder} for the given {@link Schema}.
+   *
+   * @param schema the schema
+   * @throws NullPointerException if the {@link Schema} is {@code null}.
+   */
   public DefaultConfigurationBuilder(final Schema<? extends T> schema) {
     Objects.requireNonNull(schema, "schema cannot be null");
     this.schema = schema;

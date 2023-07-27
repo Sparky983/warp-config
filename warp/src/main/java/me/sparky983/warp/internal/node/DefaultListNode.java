@@ -7,7 +7,7 @@ import me.sparky983.warp.ConfigurationNode;
 public record DefaultListNode(@Override java.util.List<ConfigurationNode> values)
     implements ConfigurationNode.List {
   /**
-   * Constructs the list of values.
+   * Constructs a {@code DefaultListNode}.
    *
    * @param values the list of values; changes in this list will not be reflected in the created
    *     values

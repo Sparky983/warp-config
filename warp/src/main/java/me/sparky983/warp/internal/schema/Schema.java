@@ -1,12 +1,8 @@
 package me.sparky983.warp.internal.schema;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode.Map;
-import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;
@@ -35,26 +31,15 @@ public interface Schema<T> {
       throws ConfigurationException;
 
   /**
-   * Creates a schema for a given configuration interface
+   * Creates a {@code Schema} for the given configuration class.
    *
    * @param configurationClass the configuration class
    * @return the schema
    * @param <T> the type of the configuration class
-   * @throws NullPointerException if the configuration class is {@code null}.
    * @throws IllegalArgumentException if the configuration class is invalid or not an interface.
+   * @throws NullPointerException if the configuration class is {@code null}.
    */
-  static <T> Schema<T> interfaceSchema(final Class<T> configurationClass) {
-    if (!configurationClass.isAnnotationPresent(Configuration.class)) {
-      throw new IllegalArgumentException(
-          String.format(
-              "Class %s must be annotated with @%s",
-              configurationClass.getName(), Configuration.class.getName()));
-    }
-    final Set<Property> properties =
-        Stream.of(configurationClass.getMethods())
-            .map(MethodProperty::of)
-            .collect(Collectors.toUnmodifiableSet());
-
+  static <T> Schema<T> fromClass(final Class<T> configurationClass) {
     return new InterfaceSchema<>(configurationClass, properties);
   }
 
