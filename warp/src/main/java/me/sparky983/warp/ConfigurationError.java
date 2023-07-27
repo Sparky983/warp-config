@@ -5,6 +5,7 @@ import java.util.Objects;
 /**
  * Represents a configuration error.
  *
+ * @param description a human-readable description of the error
  * @since 0.1
  */
 public record ConfigurationError(String description) {

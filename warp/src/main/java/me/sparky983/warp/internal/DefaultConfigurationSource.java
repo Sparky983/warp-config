@@ -11,6 +11,8 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
   public static final class Empty {
     /** A cached empty instance. */
     public static final ConfigurationSource EMPTY = new DefaultConfigurationSource();
+
+    private Empty() {}
   }
 
   /** Lazily load {@link #BLANK} via class loading. */
@@ -18,6 +20,8 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
     /** A cached blank instance. */
     public static final ConfigurationSource BLANK =
         new DefaultConfigurationSource(ConfigurationNode.map().build());
+
+    private Blank() {}
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // an optimization

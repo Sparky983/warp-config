@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
  * @since 0.1
  */
 public final class ConfigurationException extends Exception {
+  /** An unmodifiable set of the errors with a configuration. */
   private final Set<ConfigurationError> errors;
 
   /**
