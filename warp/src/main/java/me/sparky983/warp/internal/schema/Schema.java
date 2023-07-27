@@ -40,7 +40,7 @@ public interface Schema<T> {
    * @throws NullPointerException if the configuration class is {@code null}.
    */
   static <T> Schema<T> fromClass(final Class<T> configurationClass) {
-    return new InterfaceSchema<>(configurationClass, properties);
+    return new InterfaceSchema<>(configurationClass);
   }
 
   /** A property in a schema. */
