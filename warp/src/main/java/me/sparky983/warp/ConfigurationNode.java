@@ -221,8 +221,8 @@ public sealed interface ConfigurationNode {
   /**
    * The map variant of {@link ConfigurationNode}.
    *
-   * <p>Represents a map of {@link java.lang.String} keys to
-   * {@link ConfigurationNode ConfigurationNodes}.
+   * <p>Represents a map of {@link java.lang.String} keys to {@link ConfigurationNode
+   * ConfigurationNodes}.
    *
    * @since 0.1
    */
@@ -265,8 +265,8 @@ public sealed interface ConfigurationNode {
      * Returns the value for the given key.
      *
      * @param key the key.
-     * @return an {@link Optional} containing the value associated with the key if one exists, otherwise
-     *     an {@link Optional#empty()}
+     * @return an {@link Optional} containing the value associated with the key if one exists,
+     *     otherwise an {@link Optional#empty()}
      * @throws NullPointerException if the key is {@code null}.
      * @since 0.1
      */

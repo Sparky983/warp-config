@@ -1,6 +1,5 @@
 package me.sparky983.warp;
 
-
 /**
  * A configuration class builder.
  *

@@ -6,16 +6,18 @@ import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationNode;
 
-/** The default implementation of {@link Map}.
+/**
+ * The default implementation of {@link Map}.
  *
- * @param values the values*/
+ * @param values the values
+ */
 public record DefaultMapNode(@Override java.util.Map<java.lang.String, ConfigurationNode> values)
     implements ConfigurationNode.Map {
   /**
    * Constructs a {@code DefaultMapNode}.
    *
-   * @param values the values; changes in this map will not be reflected in the constructed
-   * {@code DefaultMapNode}
+   * @param values the values; changes in this map will not be reflected in the constructed {@code
+   *     DefaultMapNode}
    * @throws NullPointerException if the values map is {@code null} or has an entry that contains
    *     {@code null}.
    */
@@ -40,9 +42,7 @@ public record DefaultMapNode(@Override java.util.Map<java.lang.String, Configura
   public static final class DefaultBuilder implements Builder {
     private final java.util.Map<java.lang.String, ConfigurationNode> values = new LinkedHashMap<>();
 
-/**
-* Constructs a {@code DefaultBuilder}.
-*/
+    /** Constructs a {@code DefaultBuilder}. */
     public DefaultBuilder() {}
 
     @Override
@@ -59,22 +59,24 @@ public record DefaultMapNode(@Override java.util.Map<java.lang.String, Configura
     }
   }
 
-/**
-* The default implementation of {@link Entry}.
- * @param key the key
- * @param value the value
-*/
+  /**
+   * The default implementation of {@link Entry}.
+   *
+   * @param key the key
+   * @param value the value
+   */
   public record DefaultEntry(@Override java.lang.String key, @Override ConfigurationNode value)
       implements Entry {
-/**
-* Constructs a {@code DefaultMapNode.DefaultEntry}.
- * @param key the key
- * @param value the value
- *              @throws NullPointerException if the key or value are {@code null}.
-*/
+    /**
+     * Constructs a {@code DefaultMapNode.DefaultEntry}.
+     *
+     * @param key the key
+     * @param value the value
+     * @throws NullPointerException if the key or value are {@code null}.
+     */
     public DefaultEntry {
       Objects.requireNonNull(key, "key cannot be null");
       Objects.requireNonNull(value, "value cannot be null");
     }
-}
+  }
 }

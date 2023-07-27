@@ -70,7 +70,8 @@ final class InterfaceSchema<T> implements Schema<T> {
           String.format("Class %s must not be generic", configurationClass.getName()));
     }
 
-    properties = Stream.of(configurationClass.getMethods())
+    properties =
+        Stream.of(configurationClass.getMethods())
             .map(MethodProperty::new)
             .collect(Collectors.toUnmodifiableSet());
 

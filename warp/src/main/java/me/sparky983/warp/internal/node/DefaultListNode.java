@@ -3,16 +3,18 @@ package me.sparky983.warp.internal.node;
 import java.util.Iterator;
 import me.sparky983.warp.ConfigurationNode;
 
-/** The default implementation of {@link List}.
+/**
+ * The default implementation of {@link List}.
  *
- * @param values the list of values*/
+ * @param values the list of values
+ */
 public record DefaultListNode(@Override java.util.List<ConfigurationNode> values)
     implements ConfigurationNode.List {
   /**
    * Constructs a {@code DefaultListNode}.
    *
    * @param values the list of values; changes in this list will not be reflected in the constructed
-   *               {@code DefaultListNode}
+   *     {@code DefaultListNode}
    * @throws NullPointerException if the values list is {@code null} or one of the values are {@code
    *     null}.
    */
