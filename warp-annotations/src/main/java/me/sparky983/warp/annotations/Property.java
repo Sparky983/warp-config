@@ -5,7 +5,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.Optional;
 import org.intellij.lang.annotations.Pattern;
 
 /**
@@ -42,8 +41,9 @@ public @interface Property {
    * The property's <a href="#path">path</a>.
    *
    * <h4>Path</h4>
-   * A path is a sequence of keys, each consisting of only alphanumeric character, hyphens ("-")
-   * and underscores ("_"), delimited by the "." character.
+   *
+   * A path is a sequence of keys, each consisting of only alphanumeric character, hyphens ("-") and
+   * underscores ("_"), delimited by the "." character.
    *
    * @return the path
    * @since 0.1

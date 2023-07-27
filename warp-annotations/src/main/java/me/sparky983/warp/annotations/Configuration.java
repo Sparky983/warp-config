@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 
 /**
  * Marks the annotated class as a configuration class.
- * <h2 id="requirements">Requirements</h2>
+ *
+ * <h2>Requirements</h2>
  *
  * <p>The following is a list of requirements for a configuration class:
  *
@@ -20,9 +21,9 @@ import java.lang.annotation.Target;
  *   <li>A configuration class must not be generic
  *   <li>All member methods of a configuration class must be one of the following:
  *       <ul>
- *           <li>A {@code private} instance method
- *           <li>A {@code static} method
- *           <li>A {@link Property property method}
+ *         <li>A {@code private} instance method
+ *         <li>A {@code static} method
+ *         <li>A {@link Property property method}
  *       </ul>
  * </ul>
  *
