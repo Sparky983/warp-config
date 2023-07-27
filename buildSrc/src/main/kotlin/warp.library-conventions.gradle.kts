@@ -26,7 +26,7 @@ java {
 
 spotless {
     java {
-//        googleJavaFormat("1.17.0")
+        // googleJavaFormat("1.17.0")
         formatAnnotations()
     }
 }
