@@ -81,8 +81,8 @@ class WarpTest {
   @Test
   // TODO(Sparky983): We definitely need more deserialization tests
   void testDeserialization() throws ConfigurationException {
-    final Configurations.Int configuration =
-        Warp.builder(Configurations.Int.class)
+    final Configurations.Integer configuration =
+        Warp.builder(Configurations.Integer.class)
             .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", ConfigurationNode.integer(10)).build()))
             .build();
 

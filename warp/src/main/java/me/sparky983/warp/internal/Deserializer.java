@@ -84,6 +84,9 @@ public interface Deserializer<T> {
   private static <T> Deserializer<T> integer(
       final long min, final long max, final Function<? super Long, ? extends T> mapper) {
     return (node, type) -> {
+      Objects.requireNonNull(node, "node cannot be null");
+      Objects.requireNonNull(type, "type cannot be null");
+
       if (!(node instanceof final ConfigurationNode.Integer integer)) {
         throw new DeserializationException("Expected an integer");
       }

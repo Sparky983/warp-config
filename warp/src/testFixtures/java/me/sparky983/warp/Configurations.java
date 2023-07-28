@@ -13,9 +13,27 @@ public final class Configurations {
   public interface Empty {}
 
   @Configuration
-  public interface Int {
+  public interface Byte {
+    @Property("property")
+    byte property();
+  }
+
+  @Configuration
+  public interface Short {
+    @Property("property")
+    short property();
+  }
+
+  @Configuration
+  public interface Integer {
     @Property("property")
     int property();
+  }
+
+  @Configuration
+  public interface Long {
+    @Property("property")
+    long property();
   }
 
   @Configuration
