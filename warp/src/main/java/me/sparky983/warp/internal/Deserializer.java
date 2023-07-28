@@ -60,7 +60,6 @@ public interface Deserializer<T> {
    *
    * <p>Only allows alphanumeric characters.
    */
-  @SuppressWarnings("QuestionableName")
   Deserializer<Character> CHARACTER =
       (node, type) -> {
         if (!(node instanceof final ConfigurationNode.String string)
