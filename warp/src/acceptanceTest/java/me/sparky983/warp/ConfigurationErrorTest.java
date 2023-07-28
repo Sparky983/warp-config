@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 
 class ConfigurationErrorTest {
   @Test
-  void testOfWhenDescriptionIsNull() {
+  void testOf_Null() {
     assertThrows(NullPointerException.class, () -> ConfigurationError.of(null));
   }
 
   @Test
-  void testDescription() {
+  void testOf() {
     final ConfigurationError error = ConfigurationError.of("test description");
 
     assertEquals("test description", error.description());
