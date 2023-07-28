@@ -3,6 +3,11 @@ plugins {
     id("com.diffplug.spotless")
 }
 
+val acceptanceTest: SourceSet by sourceSets.creating
+
+configurations[acceptanceTest.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
+configurations[acceptanceTest.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
+
 repositories {
     mavenCentral()
 }
@@ -32,6 +37,16 @@ spotless {
 }
 
 tasks {
+    val acceptanceTestTask = tasks.register<Test>("acceptanceTest") {
+        description = "Runs acceptance tests."
+        group = "verification"
+        useJUnitPlatform()
+
+        testClassesDirs = acceptanceTest.output.classesDirs
+        classpath = configurations[acceptanceTest.runtimeClasspathConfigurationName] + acceptanceTest.output
+
+        shouldRunAfter(tasks.test)
+    }
     javadoc {
         options {
             (this as StandardJavadocDocletOptions).run {
@@ -39,6 +54,9 @@ tasks {
                 tags("warp.apiNote:a:API Note:")
             }
         }
+    }
+    check {
+        dependsOn(acceptanceTestTask)
     }
     test {
         useJUnitPlatform()
