@@ -14,18 +14,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 class LongDeserializerTest {
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(
-        NullPointerException.class,
-        () -> LONG.deserialize(null, ParameterizedTypes.LONG));
+    assertThrows(NullPointerException.class, () -> LONG.deserialize(null, ParameterizedTypes.LONG));
   }
 
   @Test
   void testDeserialize_NullType() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
-        NullPointerException.class,
-        () -> LONG.deserialize(node, null));
+    assertThrows(NullPointerException.class, () -> LONG.deserialize(node, null));
   }
 
   @Test
@@ -33,8 +29,7 @@ class LongDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.nil();
 
     assertThrows(
-        DeserializationException.class,
-        () -> LONG.deserialize(node, ParameterizedTypes.LONG));
+        DeserializationException.class, () -> LONG.deserialize(node, ParameterizedTypes.LONG));
   }
 
   @ParameterizedTest

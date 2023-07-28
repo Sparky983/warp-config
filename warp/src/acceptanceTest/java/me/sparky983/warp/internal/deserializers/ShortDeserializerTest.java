@@ -47,7 +47,9 @@ class ShortDeserializerTest {
     assertEquals(
         Set.of(
             ConfigurationError.of(
-                String.format("Expected property to be between %s and %s (was %s)", Short.MIN_VALUE, Short.MAX_VALUE, value))),
+                String.format(
+                    "Expected property to be between %s and %s (was %s)",
+                    Short.MIN_VALUE, Short.MAX_VALUE, value))),
         thrown.errors());
   }
 

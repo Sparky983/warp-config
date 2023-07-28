@@ -14,18 +14,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 class ByteDeserializerTest {
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(
-        NullPointerException.class,
-        () -> BYTE.deserialize(null, ParameterizedTypes.BYTE));
+    assertThrows(NullPointerException.class, () -> BYTE.deserialize(null, ParameterizedTypes.BYTE));
   }
 
   @Test
   void testDeserialize_NullType() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
-        NullPointerException.class,
-        () -> BYTE.deserialize(node, null));
+    assertThrows(NullPointerException.class, () -> BYTE.deserialize(node, null));
   }
 
   @Test
@@ -33,8 +29,7 @@ class ByteDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.nil();
 
     assertThrows(
-        DeserializationException.class,
-        () -> BYTE.deserialize(node, ParameterizedTypes.BYTE));
+        DeserializationException.class, () -> BYTE.deserialize(node, ParameterizedTypes.BYTE));
   }
 
   @ParameterizedTest
@@ -42,11 +37,15 @@ class ByteDeserializerTest {
   void testDeserialize_OutOfRange(final int value) {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final DeserializationException thrown = assertThrows(
-        DeserializationException.class,
-        () -> BYTE.deserialize(node, ParameterizedTypes.BYTE));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> BYTE.deserialize(node, ParameterizedTypes.BYTE));
 
-    assertEquals(String.format("Expected property to be between %s and %s (was %s)", Byte.MIN_VALUE, Byte.MAX_VALUE, value), thrown.getMessage());
+    assertEquals(
+        String.format(
+            "Expected property to be between %s and %s (was %s)",
+            Byte.MIN_VALUE, Byte.MAX_VALUE, value),
+        thrown.getMessage());
   }
 
   @ParameterizedTest

@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import me.sparky983.warp.ConfigurationNode;
 
 /**

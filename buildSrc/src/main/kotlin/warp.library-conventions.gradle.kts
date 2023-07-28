@@ -40,7 +40,8 @@ idea {
 
 spotless {
     java {
-        // googleJavaFormat("1.17.0")
+        targetExclude("src/main/java/me/sparky983/warp/internal/Deserializer.java") // uses preview features
+        googleJavaFormat("1.17.0")
         formatAnnotations()
     }
 }

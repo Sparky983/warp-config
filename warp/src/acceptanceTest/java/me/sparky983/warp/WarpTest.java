@@ -83,7 +83,11 @@ class WarpTest {
   void testDeserialization() throws ConfigurationException {
     final Configurations.Integer configuration =
         Warp.builder(Configurations.Integer.class)
-            .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", ConfigurationNode.integer(10)).build()))
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry("property", ConfigurationNode.integer(10))
+                        .build()))
             .build();
 
     assertEquals(10, configuration.property());
@@ -93,7 +97,11 @@ class WarpTest {
   void testStringProperty() throws ConfigurationException {
     final Configurations.String configuration =
         Warp.builder(Configurations.String.class)
-            .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", ConfigurationNode.string("Some value")).build()))
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry("property", ConfigurationNode.string("Some value"))
+                        .build()))
             .build();
 
     assertEquals("Some value", configuration.property());

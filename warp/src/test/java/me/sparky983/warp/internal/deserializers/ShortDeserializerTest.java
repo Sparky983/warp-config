@@ -15,17 +15,14 @@ class ShortDeserializerTest {
   @Test
   void testDeserialize_NullNode() {
     assertThrows(
-        NullPointerException.class,
-        () -> SHORT.deserialize(null, ParameterizedTypes.SHORT));
+        NullPointerException.class, () -> SHORT.deserialize(null, ParameterizedTypes.SHORT));
   }
 
   @Test
   void testDeserialize_NullType() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
-        NullPointerException.class,
-        () -> SHORT.deserialize(node, null));
+    assertThrows(NullPointerException.class, () -> SHORT.deserialize(node, null));
   }
 
   @Test
@@ -33,8 +30,7 @@ class ShortDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.nil();
 
     assertThrows(
-        DeserializationException.class,
-        () -> SHORT.deserialize(node, ParameterizedTypes.SHORT));
+        DeserializationException.class, () -> SHORT.deserialize(node, ParameterizedTypes.SHORT));
   }
 
   @ParameterizedTest
@@ -42,11 +38,16 @@ class ShortDeserializerTest {
   void testDeserialize_OutOfRange(final int value) {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final DeserializationException thrown = assertThrows(
-        DeserializationException.class,
-        () -> SHORT.deserialize(node, ParameterizedTypes.SHORT));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class,
+            () -> SHORT.deserialize(node, ParameterizedTypes.SHORT));
 
-    assertEquals(String.format("Expected property to be between %s and %s (was %s)", Short.MIN_VALUE, Short.MAX_VALUE, value), thrown.getMessage());
+    assertEquals(
+        String.format(
+            "Expected property to be between %s and %s (was %s)",
+            Short.MIN_VALUE, Short.MAX_VALUE, value),
+        thrown.getMessage());
   }
 
   @ParameterizedTest

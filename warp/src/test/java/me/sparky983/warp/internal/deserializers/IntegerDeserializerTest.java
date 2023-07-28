@@ -15,17 +15,14 @@ class IntegerDeserializerTest {
   @Test
   void testDeserialize_NullNode() {
     assertThrows(
-        NullPointerException.class,
-        () -> INTEGER.deserialize(null, ParameterizedTypes.INTEGER));
+        NullPointerException.class, () -> INTEGER.deserialize(null, ParameterizedTypes.INTEGER));
   }
 
   @Test
   void testDeserialize_NullType() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
-        NullPointerException.class,
-        () -> INTEGER.deserialize(node, null));
+    assertThrows(NullPointerException.class, () -> INTEGER.deserialize(node, null));
   }
 
   @Test
@@ -42,11 +39,16 @@ class IntegerDeserializerTest {
   void testDeserialize_OutOfRange(final long value) {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final DeserializationException thrown = assertThrows(
-        DeserializationException.class,
-        () -> INTEGER.deserialize(node, ParameterizedTypes.INTEGER));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class,
+            () -> INTEGER.deserialize(node, ParameterizedTypes.INTEGER));
 
-    assertEquals(String.format("Expected property to be between %s and %s (was %s)", Integer.MIN_VALUE, Integer.MAX_VALUE, value), thrown.getMessage());
+    assertEquals(
+        String.format(
+            "Expected property to be between %s and %s (was %s)",
+            Integer.MIN_VALUE, Integer.MAX_VALUE, value),
+        thrown.getMessage());
   }
 
   @ParameterizedTest

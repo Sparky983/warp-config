@@ -2,7 +2,6 @@ package me.sparky983.warp.internal.node;
 
 import java.util.Iterator;
 import java.util.stream.Collectors;
-
 import me.sparky983.warp.ConfigurationNode;
 
 /**
@@ -31,8 +30,6 @@ public record DefaultListNode(@Override java.util.List<ConfigurationNode> values
 
   @Override
   public java.lang.String toString() {
-    return values.stream()
-        .map(Object::toString)
-        .collect(Collectors.joining(", ", "[", "]"));
+    return values.stream().map(Object::toString).collect(Collectors.joining(", ", "[", "]"));
   }
 }
