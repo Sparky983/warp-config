@@ -121,8 +121,8 @@ public interface Deserializer<T> {
 
     return (node, type) ->
         switch (node) {
-          case ConfigurationNode.List list when type.isRaw() -> list.values();
-          case ConfigurationNode.List list -> {
+          case final ConfigurationNode.List list when type.isRaw() -> list.values();
+          case final ConfigurationNode.List list -> {
             final ParameterizedType<?> elementType = type.typeArguments().get(0);
             final List<Object> deserializedList = new ArrayList<>();
             for (final ConfigurationNode element : list.values()) {
@@ -146,8 +146,8 @@ public interface Deserializer<T> {
 
     return (node, type) ->
         switch (node) {
-          case ConfigurationNode.Map map when type.isRaw() -> map.values();
-          case ConfigurationNode.Map map -> {
+          case final ConfigurationNode.Map map when type.isRaw() -> map.values();
+          case final ConfigurationNode.Map map -> {
             final ParameterizedType<?> keyType = type.typeArguments().get(0);
             final ParameterizedType<?> valueType = type.typeArguments().get(1);
             final Map<Object, Object> deserializedMap = new HashMap<>();
