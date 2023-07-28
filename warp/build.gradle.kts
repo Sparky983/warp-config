@@ -7,6 +7,13 @@ dependencies {
     api(project(":warp-annotations"))
 }
 
+idea {
+    module {
+        sourceDirs.remove(file("src/testFixtures/java"))
+        testSources.from("src/testFixtures/java")
+    }
+}
+
 tasks {
     javadoc {
         (options as CoreJavadocOptions).run {

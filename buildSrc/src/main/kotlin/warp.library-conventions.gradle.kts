@@ -1,5 +1,6 @@
 plugins {
     `java-library`
+    idea
     id("com.diffplug.spotless")
 }
 
@@ -27,6 +28,13 @@ java {
     }
     withJavadocJar()
     withSourcesJar()
+}
+
+idea {
+    module {
+        sourceDirs.remove(file("src/acceptanceTest/java"))
+        testSources.from("src/acceptanceTest/java")
+    }
 }
 
 spotless {
