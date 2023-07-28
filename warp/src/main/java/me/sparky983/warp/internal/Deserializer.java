@@ -44,18 +44,6 @@ public interface Deserializer<T> {
           };
 
   /**
-   * Deserializes the given node.
-   *
-   * @param node the node
-   * @param type the type of the node
-   * @return an {@link Optional} containing the deserialized node if it could not be deserialized, otherwise
-   *     an empty optional
-   * @throws DeserializationException if the node was unable to be deserialized.
-   */
-  T deserialize(ConfigurationNode node, ParameterizedType<? extends T> type)
-      throws DeserializationException;
-
-  /**
    * An {@link Character} deserializer.
    *
    * <p>Only allows alphanumeric characters.
@@ -80,6 +68,18 @@ public interface Deserializer<T> {
             case final ConfigurationNode.Primitive primitive -> primitive.toString();
             default -> throw new DeserializationException("Expected a string");
           };
+
+  /**
+   * Deserializes the given node.
+   *
+   * @param node the node
+   * @param type the type of the node
+   * @return an {@link Optional} containing the deserialized node if it could not be deserialized, otherwise
+   *     an empty optional
+   * @throws DeserializationException if the node was unable to be deserialized.
+   */
+  T deserialize(ConfigurationNode node, ParameterizedType<? extends T> type)
+      throws DeserializationException;
 
   private static <T> Deserializer<T> integer(
       final long min, final long max, final Function<? super Long, ? extends T> mapper) {
