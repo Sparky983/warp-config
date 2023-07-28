@@ -1,8 +1,5 @@
 package me.sparky983.warp;
 
-import static me.sparky983.warp.ConfigurationNode.integer;
-import static me.sparky983.warp.ConfigurationNode.map;
-import static me.sparky983.warp.ConfigurationNode.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -86,7 +83,7 @@ class WarpTest {
   void testDeserialization() throws ConfigurationException {
     final Configurations.Int configuration =
         Warp.builder(Configurations.Int.class)
-            .source(ConfigurationSource.of(map().entry("property", integer(10)).build()))
+            .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", ConfigurationNode.integer(10)).build()))
             .build();
 
     assertEquals(10, configuration.property());
@@ -96,7 +93,7 @@ class WarpTest {
   void testStringProperty() throws ConfigurationException {
     final Configurations.String configuration =
         Warp.builder(Configurations.String.class)
-            .source(ConfigurationSource.of(map().entry("property", string("Some value")).build()))
+            .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", ConfigurationNode.string("Some value")).build()))
             .build();
 
     assertEquals("Some value", configuration.property());
