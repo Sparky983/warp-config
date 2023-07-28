@@ -29,7 +29,7 @@ public final class ConfigurationException extends Exception {
       final @Nullable String message, final Set<ConfigurationError> errors) {
     super(
         String.format(
-            "%s: %s",
+            "%s:%s",
             message,
             errors.stream()
                 .map((error) -> String.format("\n - %s", error.description()))
