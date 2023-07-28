@@ -4,26 +4,28 @@ import java.util.Random;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.annotations.Property;
 
-public interface Configurations {
-  interface Invalid {}
+public final class Configurations {
+  private Configurations() {}
+
+  public interface Invalid {}
 
   @Configuration
-  interface Empty {}
+  public interface Empty {}
 
   @Configuration
-  interface Int {
+  public interface Int {
     @Property("property")
     int property();
   }
 
   @Configuration
-  interface String {
+  public interface String {
     @Property("property")
     java.lang.String property();
   }
 
   @Configuration
-  interface Unserializable {
+  public interface Unserializable {
     @Property("property")
     Random property();
   }
