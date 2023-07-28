@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import me.sparky983.warp.ConfigurationNode;
 
 /**
@@ -36,6 +38,13 @@ public record DefaultMapNode(@Override java.util.Map<java.lang.String, Configura
         values.entrySet().stream()
             .map((entry) -> Map.entry(entry.getKey(), entry.getValue()))
             .iterator();
+  }
+
+  @Override
+  public java.lang.String toString() {
+    return values.entrySet().stream()
+        .map((entry) -> java.lang.String.format("%s=%s", entry.getKey(), entry.getValue()))
+        .collect(Collectors.joining(", ", "{", "}"));
   }
 
   /** The default implementation of {@link Builder}. */
@@ -77,6 +86,11 @@ public record DefaultMapNode(@Override java.util.Map<java.lang.String, Configura
     public DefaultEntry {
       Objects.requireNonNull(key, "key cannot be null");
       Objects.requireNonNull(value, "value cannot be null");
+    }
+
+    @Override
+    public java.lang.String toString() {
+      return java.lang.String.format("%s=%s", key, value);
     }
   }
 }

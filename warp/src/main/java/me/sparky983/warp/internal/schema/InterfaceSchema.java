@@ -135,8 +135,7 @@ final class InterfaceSchema<T> implements Schema<T> {
                   () ->
                       new IllegalStateException(
                           String.format(
-                              "Property \"%s\" required a deserializer of type %s"
-                                  + ", but none was found",
+                              "Property \"%s\" required a deserializer of type %s, but none was found",
                               property, property.type())));
       boolean isAbsent = true;
       for (final Map configuration : configurations) {
