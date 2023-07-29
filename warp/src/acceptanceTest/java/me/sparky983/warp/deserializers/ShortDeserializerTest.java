@@ -54,8 +54,8 @@ class ShortDeserializerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {Short.MIN_VALUE, 0, Short.MAX_VALUE})
-  void testDeserialize(final int value) throws ConfigurationException {
+  @ValueSource(shorts = {Short.MIN_VALUE, 0, Short.MAX_VALUE})
+  void testDeserialize(final short value) throws ConfigurationException {
     final ConfigurationBuilder<Configurations.Short> builder =
         Warp.builder(Configurations.Short.class)
             .source(

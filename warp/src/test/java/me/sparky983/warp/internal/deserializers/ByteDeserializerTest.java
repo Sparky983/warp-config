@@ -49,8 +49,8 @@ class ByteDeserializerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {-128, 0, 127})
-  void testDeserialize(final int value) throws DeserializationException {
+  @ValueSource(bytes = {-128, 0, 127})
+  void testDeserialize(final byte value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
     final byte result = BYTE.deserialize(node, ParameterizedTypes.BYTE);

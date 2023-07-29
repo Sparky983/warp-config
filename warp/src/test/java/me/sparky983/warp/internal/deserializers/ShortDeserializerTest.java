@@ -51,7 +51,7 @@ class ShortDeserializerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {Short.MIN_VALUE, 0, Short.MAX_VALUE})
+  @ValueSource(shorts = {Short.MIN_VALUE, 0, Short.MAX_VALUE})
   void testDeserialize(final int value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 

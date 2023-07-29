@@ -54,8 +54,8 @@ class ByteDeserializerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {Byte.MIN_VALUE, 0, Byte.MAX_VALUE})
-  void testDeserialize(final int value) throws ConfigurationException {
+  @ValueSource(bytes = {Byte.MIN_VALUE, 0, Byte.MAX_VALUE})
+  void testDeserialize(final byte value) throws ConfigurationException {
     final ConfigurationBuilder<Configurations.Byte> builder =
         Warp.builder(Configurations.Byte.class)
             .source(
