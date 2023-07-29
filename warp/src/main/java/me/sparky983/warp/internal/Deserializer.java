@@ -101,11 +101,14 @@ public interface Deserializer<T> {
 
   private static <T> Deserializer<T> decimal(final Function<? super Double, ? extends T> mapper) {
     return (node, type) -> {
+      Objects.requireNonNull(node, "node cannot be null");
+      Objects.requireNonNull(type, "type cannot be null");
+
       final double value =
           switch (node) {
             case final ConfigurationNode.Integer integer -> integer.value();
             case final ConfigurationNode.Decimal decimal -> decimal.value();
-            default -> throw new DeserializationException("Expected an decimal");
+            default -> throw new DeserializationException("Expected a number");
           };
       return mapper.apply(value);
     };

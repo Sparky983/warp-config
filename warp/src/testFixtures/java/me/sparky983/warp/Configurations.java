@@ -78,6 +78,18 @@ public final class Configurations {
   }
 
   @Configuration
+  public interface Float {
+    @Property("property")
+    float property();
+  }
+
+  @Configuration
+  public interface Double {
+    @Property("property")
+    double property();
+  }
+
+  @Configuration
   public interface String {
     @Property("property")
     java.lang.String property();
