@@ -21,7 +21,7 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
   }
 
   @Override
-  public Optional<Map> read() {
+  public Optional<Map> configuration() {
     return Optional.of(configuration);
   }
 

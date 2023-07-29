@@ -15,10 +15,10 @@ public interface ConfigurationSource {
    *
    * @return an {@link Optional} containing the configuration if one is present, otherwise {@link
    *     Optional#empty()}
-   * @throws ConfigurationException if there was an error reading the configuration.
+   * @throws ConfigurationException if there was an error with the configuration.
    * @since 0.1
    */
-  Optional<ConfigurationNode.Map> read() throws ConfigurationException;
+  Optional<ConfigurationNode.Map> configuration() throws ConfigurationException;
 
   /**
    * Creates a new {@code ConfigurationSource} from the given map.

@@ -78,7 +78,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   public T build() throws ConfigurationException {
     final List<ConfigurationNode.Map> configurations = new ArrayList<>(sources.size());
     for (final ConfigurationSource source : sources) {
-      source.read().ifPresent(configurations::add);
+      source.configuration().ifPresent(configurations::add);
     }
     return schema.create(DESERIALIZERS, DEFAULTS, configurations);
   }

@@ -22,7 +22,7 @@ class ConfigurationSourceTest {
 
     final ConfigurationSource source = ConfigurationSource.of(value);
 
-    assertEquals(Optional.of(value), source.read());
+    assertEquals(Optional.of(value), source.configuration());
   }
 
   @Test
