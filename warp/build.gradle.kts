@@ -5,8 +5,6 @@ plugins {
 
 dependencies {
     api(project(":warp-annotations"))
-
-    testImplementation("org.mockito:mockito-junit-jupiter:5.4.0")
 }
 
 idea {

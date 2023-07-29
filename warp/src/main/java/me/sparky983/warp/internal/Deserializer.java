@@ -37,9 +37,8 @@ public interface Deserializer<T> {
 
   /** A {@link Boolean} deserializer. */
   Deserializer<Boolean> BOOLEAN =
-      (node, type) -> {
+      (node) -> {
           Objects.requireNonNull(node, "node cannot be null");
-          Objects.requireNonNull(type, "type cannot be null");
 
           return switch (node) {
             case final ConfigurationNode.Bool bool -> bool.value();
@@ -49,9 +48,8 @@ public interface Deserializer<T> {
 
   /** A {@link String} deserializer. */
   Deserializer<String> STRING =
-      (node, type) -> {
+      (node) -> {
           Objects.requireNonNull(node, "node cannot be null");
-          Objects.requireNonNull(type, "type cannot be null");
 
           return switch (node) {
             case final ConfigurationNode.String string -> string.value();
@@ -61,9 +59,8 @@ public interface Deserializer<T> {
 
   private static <T> Deserializer<T> integer(
       final long min, final long max, final Function<? super Long, ? extends T> mapper) {
-    return (node, type) -> {
+    return (node) -> {
       Objects.requireNonNull(node, "node cannot be null");
-      Objects.requireNonNull(type, "type cannot be null");
 
       if (!(node instanceof final ConfigurationNode.Integer integer)) {
         throw new DeserializationException("Expected an integer");
@@ -77,9 +74,8 @@ public interface Deserializer<T> {
   }
 
   private static <T> Deserializer<T> decimal(final Function<? super Double, ? extends T> mapper) {
-    return (node, type) -> {
+    return (node) -> {
       Objects.requireNonNull(node, "node cannot be null");
-      Objects.requireNonNull(type, "type cannot be null");
 
       final double value =
           switch (node) {
@@ -94,27 +90,23 @@ public interface Deserializer<T> {
   /**
    * Creates a new list deserializer for the given deserializer registry.
    *
-   * @param deserializers the deserializer registry.
+   * @param elementDeserializer the deserializer for the elements
    * @return the list deserializer
+   * @param <E> the element type
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
-  static Deserializer<List> list(final DeserializerRegistry deserializers) {
-    Objects.requireNonNull(deserializers, "deserializers cannot be null");
+  static <E> Deserializer<List<E>> list(final Deserializer<? extends E> elementDeserializer) {
+    Objects.requireNonNull(elementDeserializer, "elementDeserializer cannot be null");
 
-    return (node, type) -> {
+    return (node) -> {
       Objects.requireNonNull(node, "node cannot be null");
-      Objects.requireNonNull(type, "type cannot be null");
 
       return switch (node) {
-        case final ConfigurationNode.List list when type.isRaw() -> list.values();
         case final ConfigurationNode.List list -> {
-          final ParameterizedType<?> elementType = type.typeArguments().get(0);
-          final Deserializer elementDeserializer = deserializers.get(elementType.rawType())
-              .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the elements of %s not found", type)));
           final List deserializedList = new ArrayList<>();
           for (final ConfigurationNode element : list.values()) {
-            deserializedList.add(elementDeserializer.deserialize(element, elementType));
+            deserializedList.add(elementDeserializer.deserialize(element));
           }
           yield Collections.unmodifiableList(deserializedList);
         }
@@ -126,31 +118,26 @@ public interface Deserializer<T> {
   /**
    * Creates a new map deserializer for the given deserializer registry.
    *
-   * @param deserializers the deserializer registry.
+   * @param keyDeserializer the deserializer for the keys
+   * @param valueDeserializer the deserializer for the values
    * @return the list deserializer
+   * @param <K> the key type
+   * @param <V> the value type
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  static Deserializer<Map> map(final DeserializerRegistry deserializers) {
-    Objects.requireNonNull(deserializers, "deserializers cannot be null");
+  static <K, V> Deserializer<Map<K, V>> map(final Deserializer<? extends K> keyDeserializer, final Deserializer<? extends V> valueDeserializer) {
+    Objects.requireNonNull(keyDeserializer, "keyDeserializer cannot be null");
+    Objects.requireNonNull(valueDeserializer, "valueDeserializer cannot be null");
 
-    return (node, type) -> {
+    return (node) -> {
       Objects.requireNonNull(node, "node cannot be null");
-      Objects.requireNonNull(type, "type cannot be null");
 
       return switch (node) {
-        case final ConfigurationNode.Map map when type.isRaw() -> map.values();
         case final ConfigurationNode.Map map -> {
-          final ParameterizedType<?> keyType = type.typeArguments().get(0);
-          final ParameterizedType<?> valueType = type.typeArguments().get(1);
-          final Deserializer keyDeserializer = deserializers.get(keyType.rawType())
-              .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the keys of %s not found", type)));
-          final Deserializer valueDeserializer = deserializers.get(valueType.rawType())
-              .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the values of %s not found", type)));
-          final Map deserializedMap = new HashMap<>();
+          final Map<K, V> deserializedMap = new HashMap<>();
           for (final ConfigurationNode.Map.Entry entry : map.entries()) {
-            final Object key = keyDeserializer.deserialize(ConfigurationNode.string(entry.key()), keyType);
-            final Object value = valueDeserializer.deserialize(entry.value(), valueType);
+            final K key = keyDeserializer.deserialize(ConfigurationNode.string(entry.key()));
+            final V value = valueDeserializer.deserialize(entry.value());
             deserializedMap.put(key, value);
           }
           yield Collections.unmodifiableMap(deserializedMap);
@@ -163,27 +150,20 @@ public interface Deserializer<T> {
   /**
    * Creates a new optional deserializer for the given deserializer registry.
    *
-   * @param deserializers the deserializer registry.
+   * @param valueDeserializer the deserializer for the value.
    * @return the list deserializer
+   * @param <T> the value type
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  static Deserializer<Optional> optional(final DeserializerRegistry deserializers) {
-    Objects.requireNonNull(deserializers, "deserializers cannot be null");
+  static <T> Deserializer<Optional<T>> optional(final Deserializer<? extends T> valueDeserializer) {
+    Objects.requireNonNull(valueDeserializer, "valueDeserializer cannot be null");
 
-    return (node, type) -> {
+    return (node) -> {
       Objects.requireNonNull(node, "node cannot be null");
-      Objects.requireNonNull(type, "type cannot be null");
 
       return switch (node) {
         case final ConfigurationNode.Nil nil -> Optional.empty();
-        case final ConfigurationNode __ when type.isRaw() -> Optional.of(node);
-        default -> {
-          final ParameterizedType<?> valueType = type.typeArguments().get(0);
-          final Deserializer valueDeserializer = deserializers.get(valueType.rawType())
-              .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the value of %s not found", type)));
-          yield Optional.of(valueDeserializer.deserialize(node, valueType));
-        }
+        default -> Optional.of(valueDeserializer.deserialize(node));
       };
     };
   }
@@ -192,11 +172,9 @@ public interface Deserializer<T> {
    * Deserializes the given node.
    *
    * @param node the node; never {@code null}
-   * @param type the type of the node; never {@code null}
    * @return an {@link Optional} containing the deserialized node if it could not be deserialized, otherwise
    *     an empty optional
    * @throws DeserializationException if the node was unable to be deserialized.
    */
-  T deserialize(ConfigurationNode node, ParameterizedType<? extends T> type)
-      throws DeserializationException;
+  T deserialize(ConfigurationNode node) throws DeserializationException;
 }

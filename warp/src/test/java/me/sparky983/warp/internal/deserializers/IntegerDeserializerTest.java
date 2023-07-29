@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import me.sparky983.warp.ConfigurationNode;
-import me.sparky983.warp.ParameterizedTypes;
 import me.sparky983.warp.internal.DeserializationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,24 +13,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 class IntegerDeserializerTest {
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(
-        NullPointerException.class, () -> INTEGER.deserialize(null, ParameterizedTypes.INTEGER));
-  }
-
-  @Test
-  void testDeserialize_NullType() {
-    final ConfigurationNode node = ConfigurationNode.nil();
-
-    assertThrows(NullPointerException.class, () -> INTEGER.deserialize(node, null));
+    assertThrows(NullPointerException.class, () -> INTEGER.deserialize(null));
   }
 
   @Test
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
-        DeserializationException.class,
-        () -> INTEGER.deserialize(node, ParameterizedTypes.INTEGER));
+    assertThrows(DeserializationException.class, () -> INTEGER.deserialize(node));
   }
 
   @ParameterizedTest
@@ -40,9 +29,7 @@ class IntegerDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
     final DeserializationException thrown =
-        assertThrows(
-            DeserializationException.class,
-            () -> INTEGER.deserialize(node, ParameterizedTypes.INTEGER));
+        assertThrows(DeserializationException.class, () -> INTEGER.deserialize(node));
 
     assertEquals(
         String.format(
@@ -55,7 +42,7 @@ class IntegerDeserializerTest {
   void testDeserialize(final int value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final int result = INTEGER.deserialize(node, ParameterizedTypes.INTEGER);
+    final int result = INTEGER.deserialize(node);
 
     assertEquals(value, result);
   }

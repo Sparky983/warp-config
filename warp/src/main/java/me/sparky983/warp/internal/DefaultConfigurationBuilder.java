@@ -37,9 +37,66 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .register(boolean.class, Deserializer.BOOLEAN)
           .register(String.class, Deserializer.STRING)
           .register(CharSequence.class, Deserializer.STRING)
-          .register(Optional.class, Deserializer::optional)
-          .register(List.class, Deserializer::list)
-          .register(Map.class, Deserializer::map);
+          .register(
+              Optional.class,
+              (deserializers, type) -> {
+                if (type.isRaw()) {
+                  throw new IllegalStateException("Optional must have a type argument");
+                }
+                final ParameterizedType<?> valueType = type.typeArguments().get(0);
+                final Deserializer<?> deserializer =
+                    deserializers
+                        .get(valueType)
+                        .orElseThrow(
+                            () ->
+                                new IllegalStateException(
+                                    String.format(
+                                        "Deserializer for the value of %s not found", type)));
+                return Deserializer.optional(deserializer);
+              })
+          .register(
+              Map.class,
+              (deserializers, type) -> {
+                if (type.isRaw()) {
+                  throw new IllegalStateException("Map must have two type arguments");
+                }
+                final ParameterizedType<?> keyType = type.typeArguments().get(0);
+                final ParameterizedType<?> valueType = type.typeArguments().get(1);
+                final Deserializer<?> keyDeserializer =
+                    deserializers
+                        .get(keyType)
+                        .orElseThrow(
+                            () ->
+                                new IllegalStateException(
+                                    String.format(
+                                        "Deserializer for the keys of %s not found", type)));
+                final Deserializer<?> valueDeserializer =
+                    deserializers
+                        .get(valueType)
+                        .orElseThrow(
+                            () ->
+                                new IllegalStateException(
+                                    String.format(
+                                        "Deserializer for the values of %s not found", type)));
+                return Deserializer.map(keyDeserializer, valueDeserializer);
+              })
+          .register(
+              List.class,
+              (deserializers, type) -> {
+                if (type.isRaw()) {
+                  throw new IllegalStateException("List must have a type argument");
+                }
+                final ParameterizedType<?> valueType = type.typeArguments().get(0);
+                final Deserializer<?> deserializer =
+                    deserializers
+                        .get(valueType)
+                        .orElseThrow(
+                            () ->
+                                new IllegalStateException(
+                                    String.format(
+                                        "Deserializer for the elements of %s not found", type)));
+                return Deserializer.list(deserializer);
+              });
 
   /** The default defaults registry */
   private static final DefaultsRegistry DEFAULTS =

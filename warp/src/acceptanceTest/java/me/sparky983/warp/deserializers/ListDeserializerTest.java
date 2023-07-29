@@ -16,6 +16,22 @@ import org.junit.jupiter.api.Test;
 
 class ListDeserializerTest {
   @Test
+  void testFactory_NonDeserializableElement() {
+    final ConfigurationBuilder<Configurations.NonDeserializableList> builder =
+        Warp.builder(Configurations.NonDeserializableList.class);
+
+    assertThrows(IllegalStateException.class, builder::build);
+  }
+
+  @Test
+  void testFactory_Raw() {
+    final ConfigurationBuilder<Configurations.RawList> builder =
+        Warp.builder(Configurations.RawList.class);
+
+    assertThrows(IllegalStateException.class, builder::build);
+  }
+
+  @Test
   void testDeserialize_NonList() {
     final ConfigurationBuilder<Configurations.StringList> builder =
         Warp.builder(Configurations.StringList.class)
@@ -27,42 +43,6 @@ class ListDeserializerTest {
         assertThrows(ConfigurationException.class, builder::build);
 
     assertEquals(Set.of(ConfigurationError.of("Must be a list")), thrown.errors());
-  }
-
-  @Test
-  void testDeserialize_NonDeserializableElement() {
-    final ConfigurationBuilder<Configurations.NonDeserializableList> builder =
-        Warp.builder(Configurations.NonDeserializableList.class);
-
-    final ConfigurationException thrown =
-        assertThrows(ConfigurationException.class, builder::build);
-
-    assertEquals(
-        Set.of(
-            ConfigurationError.of(
-                "Deserializer for the elements of java.util.List<java.util.Random> not found")),
-        thrown.errors());
-  }
-
-  @Test
-  void testDeserialize_Raw() throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.RawList> builder =
-        Warp.builder(Configurations.RawList.class)
-            .source(
-                ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry(
-                            "property",
-                            ConfigurationNode.list(
-                                ConfigurationNode.string("element 1"),
-                                ConfigurationNode.string("element 2")))
-                        .build()));
-
-    final Configurations.RawList configuration = builder.build();
-
-    assertEquals(
-        List.of(ConfigurationNode.string("element 1"), ConfigurationNode.string("element 2")),
-        configuration.property());
   }
 
   @Test

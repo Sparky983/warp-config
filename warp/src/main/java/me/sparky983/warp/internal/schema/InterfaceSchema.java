@@ -122,7 +122,7 @@ final class InterfaceSchema<T> implements Schema<T> {
             invocationHandler);
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
+  @SuppressWarnings("rawtypes")
   @Override
   public T create(
       final DeserializerRegistry deserializers,
@@ -140,7 +140,7 @@ final class InterfaceSchema<T> implements Schema<T> {
     for (final Property property : properties) {
       final Deserializer deserializer =
           deserializers
-              .get(property.type().rawType())
+              .get(property.type())
               .orElseThrow(
                   () ->
                       new IllegalStateException(
@@ -156,8 +156,7 @@ final class InterfaceSchema<T> implements Schema<T> {
 
         isAbsent = false;
         try {
-          final Object deserialized = deserializer.deserialize(node.get(), property.type());
-          mappedConfiguration.putIfAbsent(property.path(), deserialized);
+          mappedConfiguration.putIfAbsent(property.path(), deserializer.deserialize(node.get()));
         } catch (final DeserializationException e) {
           violations.add(ConfigurationError.of(e.getMessage()));
         }
@@ -170,9 +169,8 @@ final class InterfaceSchema<T> implements Schema<T> {
                   String.format("Property \"%s\" was not present in any sources", property)));
         } else {
           try {
-            final Object deserialized =
-                deserializer.deserialize(defaultNode.get(), property.type());
-            mappedConfiguration.putIfAbsent(property.path(), deserialized);
+            mappedConfiguration.putIfAbsent(
+                property.path(), deserializer.deserialize(defaultNode.get()));
           } catch (final DeserializationException e) {
             violations.add(ConfigurationError.of(e.getMessage()));
           }

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import me.sparky983.warp.ConfigurationNode;
-import me.sparky983.warp.ParameterizedTypes;
 import me.sparky983.warp.internal.DeserializationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,22 +13,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 class ByteDeserializerTest {
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> BYTE.deserialize(null, ParameterizedTypes.BYTE));
-  }
-
-  @Test
-  void testDeserialize_NullType() {
-    final ConfigurationNode node = ConfigurationNode.nil();
-
-    assertThrows(NullPointerException.class, () -> BYTE.deserialize(node, null));
+    assertThrows(NullPointerException.class, () -> BYTE.deserialize(null));
   }
 
   @Test
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
-        DeserializationException.class, () -> BYTE.deserialize(node, ParameterizedTypes.BYTE));
+    assertThrows(DeserializationException.class, () -> BYTE.deserialize(node));
   }
 
   @ParameterizedTest
@@ -38,8 +29,7 @@ class ByteDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
     final DeserializationException thrown =
-        assertThrows(
-            DeserializationException.class, () -> BYTE.deserialize(node, ParameterizedTypes.BYTE));
+        assertThrows(DeserializationException.class, () -> BYTE.deserialize(node));
 
     assertEquals(
         String.format("Must be between %s and %s (both inclusive)", Byte.MIN_VALUE, Byte.MAX_VALUE),
@@ -51,7 +41,7 @@ class ByteDeserializerTest {
   void testDeserialize(final byte value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final byte result = BYTE.deserialize(node, ParameterizedTypes.BYTE);
+    final byte result = BYTE.deserialize(node);
 
     assertEquals((byte) value, result);
   }
