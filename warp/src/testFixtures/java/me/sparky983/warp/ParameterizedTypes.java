@@ -2,6 +2,7 @@ package me.sparky983.warp;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import me.sparky983.warp.internal.ParameterizedType;
 
 public final class ParameterizedTypes {
@@ -27,6 +28,14 @@ public final class ParameterizedTypes {
   @SuppressWarnings({"unchecked", "rawtypes"})
   public static final ParameterizedType<Map<String, String>> INTEGER_STRING_MAP =
       (ParameterizedType) ParameterizedType.of(Map.class, Integer.class, String.class);
+
+  @SuppressWarnings("rawtypes")
+  public static final ParameterizedType<Optional> RAW_OPTIONAL =
+      ParameterizedType.of(Optional.class);
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public static final ParameterizedType<Optional<String>> STRING_OPTIONAL =
+      (ParameterizedType) ParameterizedType.of(Optional.class, String.class);
 
   private ParameterizedTypes() {}
 }

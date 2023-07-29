@@ -1,6 +1,7 @@
 package me.sparky983.warp;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.annotations.Property;
@@ -144,6 +145,25 @@ public final class Configurations {
   public interface RawMap {
     @Property("property")
     java.util.Map property();
+  }
+
+  @Configuration
+  public interface StringOptional {
+    @Property("property")
+    Optional<java.lang.String> property();
+  }
+
+  @Configuration
+  public interface NonDeserializableOptional {
+    @Property("property")
+    Optional<Random> property();
+  }
+
+  @SuppressWarnings("rawtypes")
+  @Configuration
+  public interface RawOptional {
+    @Property("property")
+    Optional property();
   }
 
   @Configuration

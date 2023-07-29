@@ -172,17 +172,21 @@ public interface Deserializer<T> {
   static Deserializer<Optional> optional(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (node, type) ->
-        switch (node) {
-          case ConfigurationNode.Nil nil -> Optional.empty();
-          case ConfigurationNode __ when type.isRaw() -> Optional.of(node);
-          default -> {
-            final ParameterizedType<?> valueType = type.typeArguments().get(0);
-            final Deserializer valueDeserializer = deserializers.get(valueType.rawType())
-                .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the value of %s not found", type)));
-            yield Optional.of(valueDeserializer.deserialize(node, valueType));
-          }
-        };
+    return (node, type) -> {
+      Objects.requireNonNull(node, "node cannot be null");
+      Objects.requireNonNull(type, "type cannot be null");
+
+      return switch (node) {
+        case final ConfigurationNode.Nil nil -> Optional.empty();
+        case final ConfigurationNode __ when type.isRaw() -> Optional.of(node);
+        default -> {
+          final ParameterizedType<?> valueType = type.typeArguments().get(0);
+          final Deserializer valueDeserializer = deserializers.get(valueType.rawType())
+              .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the value of %s not found", type)));
+          yield Optional.of(valueDeserializer.deserialize(node, valueType));
+        }
+      };
+    };
   }
 
   /**
