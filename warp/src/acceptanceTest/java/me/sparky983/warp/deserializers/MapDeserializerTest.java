@@ -32,8 +32,7 @@ class MapDeserializerTest {
   @Test
   void testDeserialize_NonDeserializableKey() {
     final ConfigurationBuilder<Configurations.NonDeserializableKeyMap> builder =
-        Warp.builder(Configurations.NonDeserializableKeyMap.class)
-            .source(ConfigurationSource.blank());
+        Warp.builder(Configurations.NonDeserializableKeyMap.class);
 
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
@@ -48,8 +47,7 @@ class MapDeserializerTest {
   @Test
   void testDeserialize_NonDeserializableValue() {
     final ConfigurationBuilder<Configurations.NonDeserializableValueMap> builder =
-        Warp.builder(Configurations.NonDeserializableValueMap.class)
-            .source(ConfigurationSource.blank());
+        Warp.builder(Configurations.NonDeserializableValueMap.class);
 
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);

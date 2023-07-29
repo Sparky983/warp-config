@@ -130,8 +130,7 @@ class WarpTest {
 
   @Test
   void testProperty_NotExists() {
-    final ConfigurationBuilder<Configurations.String> builder =
-        Warp.builder(Configurations.String.class).source(ConfigurationSource.empty());
+    final ConfigurationBuilder<Configurations.String> builder = Warp.builder(Configurations.String.class);
 
     assertThrows(ConfigurationException.class, builder::build);
   }
