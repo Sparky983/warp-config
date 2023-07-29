@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationNode;
@@ -29,8 +28,8 @@ class MapDeserializerTest {
   }
 
   @Test
-  void testList_Null() {
-    assertThrows(NullPointerException.class, () -> Deserializer.list(null));
+  void testMap_Null() {
+    assertThrows(NullPointerException.class, () -> Deserializer.map(null));
   }
 
   @Test
@@ -48,7 +47,7 @@ class MapDeserializerTest {
   }
 
   @Test
-  void testDeserialize_NonList() {
+  void testDeserialize_NonMap() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
     assertThrows(
