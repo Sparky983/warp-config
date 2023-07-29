@@ -13,7 +13,7 @@ class WarpTest {
   }
 
   @Test
-  void testBuilder_NotConfigurationClass() {
+  void testBuilder_InvalidConfigurationClass() {
     assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.Invalid.class));
   }
 
