@@ -19,9 +19,14 @@ class OptionalDeserializerTest {
   void testDeserialize_NonDeserializableValue() {
     final ConfigurationBuilder<Configurations.NonDeserializableOptional> builder =
         Warp.builder(Configurations.NonDeserializableOptional.class)
-            .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", ConfigurationNode.string("value")).build()));
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry("property", ConfigurationNode.string("value"))
+                        .build()));
 
-    final ConfigurationException thrown = assertThrows(ConfigurationException.class, builder::build);
+    final ConfigurationException thrown =
+        assertThrows(ConfigurationException.class, builder::build);
 
     assertEquals(
         Set.of(

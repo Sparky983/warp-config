@@ -2,7 +2,6 @@ package me.sparky983.warp.internal;
 
 import java.util.Objects;
 import java.util.Optional;
-import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.ConfigurationSource;
 
