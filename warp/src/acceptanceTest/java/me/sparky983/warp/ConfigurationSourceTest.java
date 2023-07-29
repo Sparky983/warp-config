@@ -27,27 +27,6 @@ class ConfigurationSourceTest {
   }
 
   @Test
-  void testEmpty() throws ConfigurationException {
-    final ConfigurationSource source = ConfigurationSource.empty();
-
-    assertTrue(source.read().isEmpty());
-  }
-
-  @Test
-  void testBlank() throws ConfigurationException {
-    final ConfigurationSource blank = ConfigurationSource.blank();
-
-    assertEquals(Optional.of(ConfigurationNode.map().build()), blank.read());
-  }
-
-  @Test
-  void testToString_Empty() {
-    final ConfigurationSource source = ConfigurationSource.empty();
-
-    assertEquals("DefaultConfigurationSource.EMPTY", source.toString());
-  }
-
-  @Test
   void testToString() {
     final ConfigurationSource source =
         ConfigurationSource.of(

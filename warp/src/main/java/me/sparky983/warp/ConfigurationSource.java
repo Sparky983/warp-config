@@ -32,28 +32,4 @@ public interface ConfigurationSource {
   static ConfigurationSource of(final ConfigurationNode.Map map) {
     return new DefaultConfigurationSource(map);
   }
-
-  /**
-   * Returns an empty {@code ConfigurationSource}.
-   *
-   * @return an empty source; it has no configuration
-   * @since 0.1
-   * @warp.implNote The returned source is cached, however this behaviour should not be depended on.
-   */
-  @ApiStatus.Experimental
-  static ConfigurationSource empty() {
-    return DefaultConfigurationSource.Empty.EMPTY;
-  }
-
-  /**
-   * Returns a blank {@code ConfigurationSource}.
-   *
-   * @return a blank source; a configuration is present, but it is blank
-   * @since 0.1
-   * @warp.apiNote The returned source is cached, however this behaviour should not be depended on.
-   */
-  @ApiStatus.Experimental
-  static ConfigurationSource blank() {
-    return DefaultConfigurationSource.Blank.BLANK;
-  }
 }
