@@ -90,6 +90,12 @@ public final class Configurations {
   }
 
   @Configuration
+  public interface Boolean {
+    @Property("property")
+    boolean property();
+  }
+
+  @Configuration
   public interface String {
     @Property("property")
     java.lang.String property();
