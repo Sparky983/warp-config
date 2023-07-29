@@ -37,11 +37,15 @@ public interface Deserializer<T> {
 
   /** A {@link Boolean} deserializer. */
   Deserializer<Boolean> BOOLEAN =
-      (node, type) ->
-          switch (node) {
+      (node, type) -> {
+          Objects.requireNonNull(node, "node cannot be null");
+          Objects.requireNonNull(type, "type cannot be null");
+
+          return switch (node) {
             case final ConfigurationNode.Bool bool -> bool.value();
             default -> throw new DeserializationException("Expected a boolean");
           };
+      };
 
   /**
    * An {@link Character} deserializer.
@@ -68,18 +72,6 @@ public interface Deserializer<T> {
             case final ConfigurationNode.Primitive primitive -> primitive.toString();
             default -> throw new DeserializationException("Expected a string");
           };
-
-  /**
-   * Deserializes the given node.
-   *
-   * @param node the node
-   * @param type the type of the node
-   * @return an {@link Optional} containing the deserialized node if it could not be deserialized, otherwise
-   *     an empty optional
-   * @throws DeserializationException if the node was unable to be deserialized.
-   */
-  T deserialize(ConfigurationNode node, ParameterizedType<? extends T> type)
-      throws DeserializationException;
 
   private static <T> Deserializer<T> integer(
       final long min, final long max, final Function<? super Long, ? extends T> mapper) {
@@ -185,4 +177,16 @@ public interface Deserializer<T> {
           default -> Optional.of(deserializers.deserialize(node, type.typeArguments().get(0)));
         };
   }
+
+  /**
+   * Deserializes the given node.
+   *
+   * @param node the node
+   * @param type the type of the node
+   * @return an {@link Optional} containing the deserialized node if it could not be deserialized, otherwise
+   *     an empty optional
+   * @throws DeserializationException if the node was unable to be deserialized.
+   */
+  T deserialize(ConfigurationNode node, ParameterizedType<? extends T> type)
+      throws DeserializationException;
 }
