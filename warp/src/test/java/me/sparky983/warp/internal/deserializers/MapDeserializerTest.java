@@ -2,6 +2,8 @@ package me.sparky983.warp.internal.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
@@ -11,6 +13,7 @@ import me.sparky983.warp.ParameterizedTypes;
 import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.Deserializer;
 import me.sparky983.warp.internal.DeserializerRegistry;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -25,6 +28,11 @@ class MapDeserializerTest {
   @BeforeEach
   void setUp() {
     deserializer = Deserializer.map(deserializerRegistry);
+  }
+
+  @AfterEach
+  void tearDown() {
+    verifyNoMoreInteractions(deserializerRegistry);
   }
 
   @Test
@@ -64,6 +72,7 @@ class MapDeserializerTest {
     assertThrows(
         DeserializationException.class,
         () -> deserializer.deserialize(node, ParameterizedTypes.INTEGER_STRING_MAP));
+    verify(deserializerRegistry).get(Integer.class);
   }
 
   @Test
@@ -76,6 +85,7 @@ class MapDeserializerTest {
     assertThrows(
         DeserializationException.class,
         () -> deserializer.deserialize(node, ParameterizedTypes.INTEGER_STRING_MAP));
+    verify(deserializerRegistry).get(Integer.class);
   }
 
   @Test
@@ -109,5 +119,6 @@ class MapDeserializerTest {
     final Map result = deserializer.deserialize(node, ParameterizedTypes.INTEGER_STRING_MAP);
 
     assertEquals(Map.of(1, "value 1 deserialized", 2, "value 2 deserialized"), result);
+    verify(deserializerRegistry).get(Integer.class);
   }
 }

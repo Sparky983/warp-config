@@ -2,6 +2,8 @@ package me.sparky983.warp.internal.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -11,6 +13,7 @@ import me.sparky983.warp.ParameterizedTypes;
 import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.Deserializer;
 import me.sparky983.warp.internal.DeserializerRegistry;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -25,6 +28,11 @@ class ListDeserializerTest {
   @BeforeEach
   void setUp() {
     deserializer = Deserializer.list(deserializerRegistry);
+  }
+
+  @AfterEach
+  void tearDown() {
+    verifyNoMoreInteractions(deserializerRegistry);
   }
 
   @Test
@@ -64,6 +72,7 @@ class ListDeserializerTest {
     assertThrows(
         DeserializationException.class,
         () -> deserializer.deserialize(node, ParameterizedTypes.STRING_LIST));
+    verify(deserializerRegistry).get(String.class);
   }
 
   @Test
@@ -91,5 +100,6 @@ class ListDeserializerTest {
     final List result = deserializer.deserialize(node, ParameterizedTypes.STRING_LIST);
 
     assertEquals(List.of("element 1 deserialized", "element 2 deserialized"), result);
+    verify(deserializerRegistry).get(String.class);
   }
 }

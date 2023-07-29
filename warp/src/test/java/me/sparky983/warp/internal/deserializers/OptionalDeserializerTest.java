@@ -2,6 +2,8 @@ package me.sparky983.warp.internal.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -10,6 +12,7 @@ import me.sparky983.warp.ParameterizedTypes;
 import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.Deserializer;
 import me.sparky983.warp.internal.DeserializerRegistry;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -24,6 +27,11 @@ class OptionalDeserializerTest {
   @BeforeEach
   void setUp() {
     deserializer = Deserializer.optional(deserializerRegistry);
+  }
+
+  @AfterEach
+  void tearDown() {
+    verifyNoMoreInteractions(deserializerRegistry);
   }
 
   @Test
@@ -54,6 +62,7 @@ class OptionalDeserializerTest {
     assertThrows(
         DeserializationException.class,
         () -> deserializer.deserialize(node, ParameterizedTypes.STRING_OPTIONAL));
+    verify(deserializerRegistry).get(String.class);
   }
 
   @Test
@@ -82,5 +91,6 @@ class OptionalDeserializerTest {
     final Optional result = deserializer.deserialize(node, ParameterizedTypes.STRING_OPTIONAL);
 
     assertEquals(Optional.of("value deserialized"), result);
+    verify(deserializerRegistry).get(String.class);
   }
 }
