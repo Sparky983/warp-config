@@ -49,7 +49,9 @@ class ConfigurationSourceTest {
 
   @Test
   void testToString() {
-    final ConfigurationSource source = ConfigurationSource.of(ConfigurationNode.map().entry("key", ConfigurationNode.string("value")).build());
+    final ConfigurationSource source =
+        ConfigurationSource.of(
+            ConfigurationNode.map().entry("key", ConfigurationNode.string("value")).build());
 
     assertEquals("{key=value}", source.toString());
   }

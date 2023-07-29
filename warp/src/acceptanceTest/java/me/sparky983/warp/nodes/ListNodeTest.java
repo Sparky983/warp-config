@@ -1,10 +1,10 @@
 package me.sparky983.warp.nodes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import java.util.List;
 import me.sparky983.warp.ConfigurationNode;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import org.junit.jupiter.api.Test;
 
 class ListNodeTest {
@@ -25,7 +25,8 @@ class ListNodeTest {
         ConfigurationNode.list(
             ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value"));
 
-    assertIterableEquals(List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")), list);
+    assertIterableEquals(
+        List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")), list);
   }
 
   @Test

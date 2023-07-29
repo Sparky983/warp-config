@@ -1,12 +1,12 @@
 package me.sparky983.warp.internal.deserializers;
 
-import me.sparky983.warp.ConfigurationNode;
-import me.sparky983.warp.internal.DeserializationException;
 import static me.sparky983.warp.internal.Deserializer.BOOLEAN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ParameterizedTypes;
+import me.sparky983.warp.internal.DeserializationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -14,7 +14,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 class BooleanDeserializerTest {
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> BOOLEAN.deserialize(null, ParameterizedTypes.BOOLEAN));
+    assertThrows(
+        NullPointerException.class, () -> BOOLEAN.deserialize(null, ParameterizedTypes.BOOLEAN));
   }
 
   @Test
@@ -28,7 +29,9 @@ class BooleanDeserializerTest {
   void testDeserialize_NonBoolean() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> BOOLEAN.deserialize(node, ParameterizedTypes.BOOLEAN));
+    assertThrows(
+        DeserializationException.class,
+        () -> BOOLEAN.deserialize(node, ParameterizedTypes.BOOLEAN));
   }
 
   @ParameterizedTest
