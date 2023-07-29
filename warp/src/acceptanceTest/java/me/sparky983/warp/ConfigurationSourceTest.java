@@ -39,4 +39,18 @@ class ConfigurationSourceTest {
 
     assertEquals(Optional.of(ConfigurationNode.map().build()), blank.read());
   }
+
+  @Test
+  void testToString_Empty() {
+    final ConfigurationSource source = ConfigurationSource.empty();
+
+    assertEquals("DefaultConfigurationSource.EMPTY", source.toString());
+  }
+
+  @Test
+  void testToString() {
+    final ConfigurationSource source = ConfigurationSource.of(ConfigurationNode.map().entry("key", ConfigurationNode.string("value")).build());
+
+    assertEquals("{key=value}", source.toString());
+  }
 }
