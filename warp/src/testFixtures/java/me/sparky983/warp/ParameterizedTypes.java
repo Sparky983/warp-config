@@ -10,6 +10,7 @@ public final class ParameterizedTypes {
   public static final ParameterizedType<Float> FLOAT = ParameterizedType.of(float.class);
   public static final ParameterizedType<Double> DOUBLE = ParameterizedType.of(double.class);
   public static final ParameterizedType<Boolean> BOOLEAN = ParameterizedType.of(boolean.class);
+  public static final ParameterizedType<String> STRING = ParameterizedType.of(String.class);
 
   private ParameterizedTypes() {}
 }

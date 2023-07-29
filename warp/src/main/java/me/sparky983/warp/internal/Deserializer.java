@@ -49,11 +49,15 @@ public interface Deserializer<T> {
 
   /** A {@link String} deserializer. */
   Deserializer<String> STRING =
-      (node, type) ->
-          switch (node) {
-            case final ConfigurationNode.Primitive primitive -> primitive.toString();
+      (node, type) -> {
+          Objects.requireNonNull(node, "node cannot be null");
+          Objects.requireNonNull(type, "type cannot be null");
+
+          return switch (node) {
+            case final ConfigurationNode.String string -> string.value();
             default -> throw new DeserializationException("Expected a string");
           };
+      };
 
   private static <T> Deserializer<T> integer(
       final long min, final long max, final Function<? super Long, ? extends T> mapper) {
