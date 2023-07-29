@@ -48,8 +48,8 @@ class IntegerDeserializerTest {
         Set.of(
             ConfigurationError.of(
                 String.format(
-                    "Expected property to be between %s and %s (was %s)",
-                    Integer.MIN_VALUE, Integer.MAX_VALUE, value))),
+                    "Must be between %s and %s (both inclusive)",
+                    Integer.MIN_VALUE, Integer.MAX_VALUE))),
         thrown.errors());
   }
 

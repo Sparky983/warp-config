@@ -55,7 +55,7 @@ public interface Deserializer<T> {
 
           return switch (node) {
             case final ConfigurationNode.String string -> string.value();
-            default -> throw new DeserializationException("Expected a string");
+            default -> throw new DeserializationException("Must be a string");
           };
       };
 
@@ -70,8 +70,7 @@ public interface Deserializer<T> {
       }
       final long value = integer.value();
       if (value < min || value > max) {
-        throw new DeserializationException(
-            String.format("Expected property to be between %s and %s (was %s)", min, max, value));
+        throw new DeserializationException(String.format("Must be between %s and %s (both inclusive)", min, max));
       }
       return mapper.apply(integer.value());
     };
@@ -86,7 +85,7 @@ public interface Deserializer<T> {
           switch (node) {
             case final ConfigurationNode.Integer integer -> integer.value();
             case final ConfigurationNode.Decimal decimal -> decimal.value();
-            default -> throw new DeserializationException("Expected a number");
+            default -> throw new DeserializationException("Must be a number");
           };
       return mapper.apply(value);
     };
@@ -119,7 +118,7 @@ public interface Deserializer<T> {
           }
           yield Collections.unmodifiableList(deserializedList);
         }
-        default -> throw new DeserializationException("Expected a list");
+        default -> throw new DeserializationException("Must be a list");
       };
     };
   }
@@ -156,7 +155,7 @@ public interface Deserializer<T> {
           }
           yield Collections.unmodifiableMap(deserializedMap);
         }
-        default -> throw new DeserializationException("Expected a map");
+        default -> throw new DeserializationException("Must be a map");
       };
     };
   }

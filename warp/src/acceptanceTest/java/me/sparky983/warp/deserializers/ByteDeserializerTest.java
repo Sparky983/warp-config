@@ -48,8 +48,7 @@ class ByteDeserializerTest {
         Set.of(
             ConfigurationError.of(
                 String.format(
-                    "Expected property to be between %s and %s (was %s)",
-                    Byte.MIN_VALUE, Byte.MAX_VALUE, value))),
+                    "Must be between %s and %s (both inclusive)", Byte.MIN_VALUE, Byte.MAX_VALUE))),
         thrown.errors());
   }
 

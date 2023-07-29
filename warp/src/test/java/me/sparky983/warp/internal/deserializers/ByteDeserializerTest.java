@@ -42,9 +42,7 @@ class ByteDeserializerTest {
             DeserializationException.class, () -> BYTE.deserialize(node, ParameterizedTypes.BYTE));
 
     assertEquals(
-        String.format(
-            "Expected property to be between %s and %s (was %s)",
-            Byte.MIN_VALUE, Byte.MAX_VALUE, value),
+        String.format("Must be between %s and %s (both inclusive)", Byte.MIN_VALUE, Byte.MAX_VALUE),
         thrown.getMessage());
   }
 
