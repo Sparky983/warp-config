@@ -181,8 +181,8 @@ public interface Deserializer<T> {
   /**
    * Deserializes the given node.
    *
-   * @param node the node
-   * @param type the type of the node
+   * @param node the node; never {@code null}
+   * @param type the type of the node; never {@code null}
    * @return an {@link Optional} containing the deserialized node if it could not be deserialized, otherwise
    *     an empty optional
    * @throws DeserializationException if the node was unable to be deserialized.
