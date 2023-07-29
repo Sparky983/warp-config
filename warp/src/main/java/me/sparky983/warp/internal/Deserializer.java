@@ -113,7 +113,7 @@ public interface Deserializer<T> {
           final ParameterizedType<?> elementType = type.typeArguments().get(0);
           final Deserializer elementDeserializer = deserializers.get(elementType.rawType())
               .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the elements of %s not found", type)));
-          final List<Object> deserializedList = new ArrayList<>();
+          final List deserializedList = new ArrayList<>();
           for (final ConfigurationNode element : list.values()) {
             deserializedList.add(elementDeserializer.deserialize(element, elementType));
           }
@@ -132,7 +132,7 @@ public interface Deserializer<T> {
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
-  static Deserializer<Map<?, ?>> map(final DeserializerRegistry deserializers) {
+  static Deserializer<Map> map(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
     return (node, type) ->
@@ -145,7 +145,7 @@ public interface Deserializer<T> {
                 .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the keys of %s not found", type)));
             final Deserializer valueDeserializer = deserializers.get(valueType.rawType())
                 .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the values of %s not found", type)));
-            final Map<Object, Object> deserializedMap = new HashMap<>();
+            final Map deserializedMap = new HashMap<>();
             for (final ConfigurationNode.Map.Entry entry : map.entries()) {
               final Object key = keyDeserializer.deserialize(ConfigurationNode.string(entry.key()), keyType);
               final Object value = valueDeserializer.deserialize(entry.value(), valueType);
@@ -165,7 +165,7 @@ public interface Deserializer<T> {
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
-  static Deserializer<Optional<?>> optional(final DeserializerRegistry deserializers) {
+  static Deserializer<Optional> optional(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
     return (node, type) ->
