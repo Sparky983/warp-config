@@ -35,8 +35,6 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .register(double.class, Deserializer.DOUBLE)
           .register(Boolean.class, Deserializer.BOOLEAN)
           .register(boolean.class, Deserializer.BOOLEAN)
-          .register(Character.class, Deserializer.CHARACTER)
-          .register(char.class, Deserializer.CHARACTER)
           .register(String.class, Deserializer.STRING)
           .register(CharSequence.class, Deserializer.STRING)
           .register(Optional.class, Deserializer::optional)
