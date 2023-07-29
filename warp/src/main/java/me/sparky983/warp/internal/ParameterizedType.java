@@ -102,13 +102,13 @@ public final class ParameterizedType<T> {
     return switch (type) {
       case final Class<?> cls -> of(cls);
       case final java.lang.reflect.ParameterizedType parameterizedType ->
-      // This is actually safe - https://bugs.openjdk.org/browse/JDK-6255169
       new ParameterizedType<>(
+          // This cast is safe actually safe - https://bugs.openjdk.org/browse/JDK-6255169
           (Class<?>) parameterizedType.getRawType(),
           Stream.of(parameterizedType.getActualTypeArguments())
               .<ParameterizedType<?>>map(ParameterizedType::of)
               .toList());
-        // Currently Java only supports a single bound
+      // Currently Java only supports a single bound
       case final WildcardType wildcardType -> of(wildcardType.getUpperBounds()[0]);
       case final GenericArrayType genericArrayType -> of(
           of(genericArrayType.getGenericComponentType()).rawType().arrayType());
