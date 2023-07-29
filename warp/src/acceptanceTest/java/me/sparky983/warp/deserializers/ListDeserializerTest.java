@@ -33,9 +33,7 @@ class ListDeserializerTest {
   void testDeserialize_NonDeserializableElement() {
     final ConfigurationBuilder<Configurations.NonDeserializableList> builder =
         Warp.builder(Configurations.NonDeserializableList.class)
-            .source(
-                ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.list()).build()));
+            .source(ConfigurationSource.blank());
 
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
