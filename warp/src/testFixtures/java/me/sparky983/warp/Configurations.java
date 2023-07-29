@@ -18,9 +18,7 @@ public final class Configurations {
   @Configuration
   public sealed interface Sealed {}
 
-  /**
-  * Sealed classes must permit at least 1 subclass.
-  */
+  /** Sealed classes must permit at least 1 subclass. */
   @Configuration
   private non-sealed interface Permitted extends Sealed {}
 

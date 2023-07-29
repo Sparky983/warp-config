@@ -78,7 +78,10 @@ final class InterfaceSchema<T> implements Schema<T> {
 
     properties =
         Stream.of(configurationClass.getMethods())
-            .filter((method) -> method.isAnnotationPresent(me.sparky983.warp.annotations.Property.class) || Modifier.isAbstract(method.getModifiers()))
+            .filter(
+                (method) ->
+                    method.isAnnotationPresent(me.sparky983.warp.annotations.Property.class)
+                        || Modifier.isAbstract(method.getModifiers()))
             .map(MethodProperty::new)
             .collect(Collectors.toUnmodifiableSet());
 
