@@ -1,4 +1,4 @@
-package me.sparky983.warp.internal.node;
+package me.sparky983.warp.nodes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -6,7 +6,7 @@ import java.util.List;
 import me.sparky983.warp.ConfigurationNode;
 import org.junit.jupiter.api.Test;
 
-class DefaultListNodeTest {
+class ListNodeTest {
   @Test
   void testValues() {
     final ConfigurationNode.List list =

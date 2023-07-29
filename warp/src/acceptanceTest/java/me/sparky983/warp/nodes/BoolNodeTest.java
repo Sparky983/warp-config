@@ -1,4 +1,4 @@
-package me.sparky983.warp.internal.node;
+package me.sparky983.warp.nodes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import me.sparky983.warp.ConfigurationNode;
 import org.junit.jupiter.api.Test;
 
-class DefaultBoolNodeTest {
+class BoolNodeTest {
   @Test
   void testValueTrue() {
     final ConfigurationNode.Bool bool = ConfigurationNode.bool(true);

@@ -1,4 +1,4 @@
-package me.sparky983.warp.internal.node;
+package me.sparky983.warp.nodes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import me.sparky983.warp.ConfigurationNode;
 import org.junit.jupiter.api.Test;
 
-class DefaultStringNodeTest {
+class StringNodeTest {
   @Test
   void testString_Null() {
     assertThrows(NullPointerException.class, () -> ConfigurationNode.string(null));

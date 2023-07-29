@@ -1,4 +1,4 @@
-package me.sparky983.warp.internal.deserializers;
+package me.sparky983.warp.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class ByteDeserializerTest {
+class ShortDeserializerTest {
   @Test
   void testDeserialize_NonInteger() {
-    final ConfigurationBuilder<Configurations.Byte> builder =
-        Warp.builder(Configurations.Byte.class)
+    final ConfigurationBuilder<Configurations.Short> builder =
+        Warp.builder(Configurations.Short.class)
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()));
@@ -31,10 +31,10 @@ class ByteDeserializerTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {-129, 128})
+  @ValueSource(ints = {-32769, 32768})
   void testDeserialize_OutOfRange(final int value) {
-    final ConfigurationBuilder<Configurations.Byte> builder =
-        Warp.builder(Configurations.Byte.class)
+    final ConfigurationBuilder<Configurations.Short> builder =
+        Warp.builder(Configurations.Short.class)
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()
@@ -49,22 +49,22 @@ class ByteDeserializerTest {
             ConfigurationError.of(
                 String.format(
                     "Expected property to be between %s and %s (was %s)",
-                    Byte.MIN_VALUE, Byte.MAX_VALUE, value))),
+                    Short.MIN_VALUE, Short.MAX_VALUE, value))),
         thrown.errors());
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {Byte.MIN_VALUE, 0, Byte.MAX_VALUE})
+  @ValueSource(ints = {Short.MIN_VALUE, 0, Short.MAX_VALUE})
   void testDeserialize(final int value) throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.Byte> builder =
-        Warp.builder(Configurations.Byte.class)
+    final ConfigurationBuilder<Configurations.Short> builder =
+        Warp.builder(Configurations.Short.class)
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()
                         .entry("property", ConfigurationNode.integer(value))
                         .build()));
 
-    final Configurations.Byte configuration = builder.build();
+    final Configurations.Short configuration = builder.build();
 
     assertEquals(value, configuration.property());
   }
