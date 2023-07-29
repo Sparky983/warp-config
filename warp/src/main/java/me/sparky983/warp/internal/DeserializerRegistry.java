@@ -49,29 +49,6 @@ public final class DeserializerRegistry {
   }
 
   /**
-   * Deserializes the given node into the given type.
-   *
-   * @param serialized the serialized node
-   * @param type the type to deserialize the node into
-   * @return an optional containing the deserialized node if it could be deserialized, otherwise an
-   *     empty optional
-   * @param <T> the type to deserialize the node into
-   * @throws NullPointerException if the serialized node or the type is {@code null}.
-   * @throws DeserializationException if the node was unable to be deserialized.
-   */
-  public <T> T deserialize(final ConfigurationNode serialized, final ParameterizedType<T> type)
-      throws DeserializationException {
-    Objects.requireNonNull(serialized, "serialized cannot be null");
-    Objects.requireNonNull(type, "type cannot be null");
-
-    final Optional<Deserializer<T>> deserializer = get(type.rawType());
-    if (deserializer.isPresent()) {
-      return deserializer.get().deserialize(serialized, type);
-    }
-    throw new DeserializationException(String.format("No deserializer of type %s", type));
-  }
-
-  /**
    * Gets the deserializer for the given type and node type.
    *
    * @param type the type

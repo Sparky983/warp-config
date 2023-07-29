@@ -1,5 +1,6 @@
 package me.sparky983.warp;
 
+import java.util.List;
 import java.util.Random;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.annotations.Property;
@@ -102,7 +103,26 @@ public final class Configurations {
   }
 
   @Configuration
-  public interface Unserializable {
+  public interface StringList {
+    @Property("property")
+    List<java.lang.String> property();
+  }
+
+  @Configuration
+  public interface NonDeserializableList {
+    @Property("property")
+    List<Random> property();
+  }
+
+  @SuppressWarnings("rawtypes")
+  @Configuration
+  public interface RawList {
+    @Property("property")
+    List property();
+  }
+
+  @Configuration
+  public interface NonDeserializable {
     @Property("property")
     Random property();
   }

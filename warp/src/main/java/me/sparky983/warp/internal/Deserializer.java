@@ -99,22 +99,29 @@ public interface Deserializer<T> {
    * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static Deserializer<List<?>> list(final DeserializerRegistry deserializers) {
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  static Deserializer<List> list(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (node, type) ->
-        switch (node) {
-          case final ConfigurationNode.List list when type.isRaw() -> list.values();
-          case final ConfigurationNode.List list -> {
-            final ParameterizedType<?> elementType = type.typeArguments().get(0);
-            final List<Object> deserializedList = new ArrayList<>();
-            for (final ConfigurationNode element : list.values()) {
-              deserializedList.add(deserializers.deserialize(element, elementType));
-            }
-            yield Collections.unmodifiableList(deserializedList);
+    return (node, type) -> {
+      Objects.requireNonNull(node, "node cannot be null");
+      Objects.requireNonNull(type, "type cannot be null");
+
+      return switch (node) {
+        case final ConfigurationNode.List list when type.isRaw() -> list.values();
+        case final ConfigurationNode.List list -> {
+          final ParameterizedType<?> elementType = type.typeArguments().get(0);
+          final Deserializer elementDeserializer = deserializers.get(elementType.rawType())
+              .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the elements of %s not found", type)));
+          final List<Object> deserializedList = new ArrayList<>();
+          for (final ConfigurationNode element : list.values()) {
+            deserializedList.add(elementDeserializer.deserialize(element, elementType));
           }
-          default -> throw new DeserializationException("Expected a list");
-        };
+          yield Collections.unmodifiableList(deserializedList);
+        }
+        default -> throw new DeserializationException("Expected a list");
+      };
+    };
   }
 
   /**
@@ -124,6 +131,7 @@ public interface Deserializer<T> {
    * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
+  @SuppressWarnings({"rawtypes", "unchecked"})
   static Deserializer<Map<?, ?>> map(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
@@ -133,11 +141,14 @@ public interface Deserializer<T> {
           case final ConfigurationNode.Map map -> {
             final ParameterizedType<?> keyType = type.typeArguments().get(0);
             final ParameterizedType<?> valueType = type.typeArguments().get(1);
+            final Deserializer keyDeserializer = deserializers.get(keyType.rawType())
+                .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the keys of %s not found", type)));
+            final Deserializer valueDeserializer = deserializers.get(valueType.rawType())
+                .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the values of %s not found", type)));
             final Map<Object, Object> deserializedMap = new HashMap<>();
             for (final ConfigurationNode.Map.Entry entry : map.entries()) {
-              final Object key =
-                  deserializers.deserialize(ConfigurationNode.string(entry.key()), keyType);
-              final Object value = deserializers.deserialize(entry.value(), valueType);
+              final Object key = keyDeserializer.deserialize(ConfigurationNode.string(entry.key()), keyType);
+              final Object value = valueDeserializer.deserialize(entry.value(), valueType);
               deserializedMap.put(key, value);
             }
             yield Collections.unmodifiableMap(deserializedMap);
@@ -153,6 +164,7 @@ public interface Deserializer<T> {
    * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
+  @SuppressWarnings({"rawtypes", "unchecked"})
   static Deserializer<Optional<?>> optional(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
@@ -160,7 +172,12 @@ public interface Deserializer<T> {
         switch (node) {
           case ConfigurationNode.Nil nil -> Optional.empty();
           case ConfigurationNode __ when type.isRaw() -> Optional.of(node);
-          default -> Optional.of(deserializers.deserialize(node, type.typeArguments().get(0)));
+          default -> {
+            final ParameterizedType<?> valueType = type.typeArguments().get(0);
+            final Deserializer valueDeserializer = deserializers.get(valueType.rawType())
+                .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the value of %s not found", type)));
+            yield Optional.of(valueDeserializer.deserialize(node, valueType));
+          }
         };
   }
 

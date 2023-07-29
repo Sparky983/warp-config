@@ -138,8 +138,8 @@ class WarpTest {
 
   @Test
   void testUnserializableProperty() {
-    final ConfigurationBuilder<Configurations.Unserializable> builder =
-        Warp.builder(Configurations.Unserializable.class);
+    final ConfigurationBuilder<Configurations.NonDeserializable> builder =
+        Warp.builder(Configurations.NonDeserializable.class);
 
     assertThrows(IllegalStateException.class, builder::build);
   }
