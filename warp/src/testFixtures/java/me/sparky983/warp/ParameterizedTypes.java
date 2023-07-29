@@ -1,8 +1,6 @@
 package me.sparky983.warp;
 
 import java.util.List;
-import java.util.Random;
-
 import me.sparky983.warp.internal.ParameterizedType;
 
 public final class ParameterizedTypes {

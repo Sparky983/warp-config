@@ -1,6 +1,5 @@
 package me.sparky983.warp.deserializers;
 
-import me.sparky983.warp.internal.DeserializationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -36,13 +35,16 @@ class ListDeserializerTest {
         Warp.builder(Configurations.NonDeserializableList.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.list())
-                        .build()));
+                    ConfigurationNode.map().entry("property", ConfigurationNode.list()).build()));
 
-    final ConfigurationException thrown = assertThrows(ConfigurationException.class, builder::build);
+    final ConfigurationException thrown =
+        assertThrows(ConfigurationException.class, builder::build);
 
-    assertEquals(Set.of(ConfigurationError.of("Deserializer for the elements of java.util.List<java.util.Random> not found")), thrown.errors());
+    assertEquals(
+        Set.of(
+            ConfigurationError.of(
+                "Deserializer for the elements of java.util.List<java.util.Random> not found")),
+        thrown.errors());
   }
 
   @Test

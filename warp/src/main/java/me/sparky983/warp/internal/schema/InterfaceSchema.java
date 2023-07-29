@@ -170,7 +170,8 @@ final class InterfaceSchema<T> implements Schema<T> {
                   String.format("Property \"%s\" was not present in any sources", property)));
         } else {
           try {
-            final Object deserialized = deserializer.deserialize(defaultNode.get(), property.type());
+            final Object deserialized =
+                deserializer.deserialize(defaultNode.get(), property.type());
             mappedConfiguration.putIfAbsent(property.path(), deserialized);
           } catch (final DeserializationException e) {
             violations.add(ConfigurationError.of(e.getMessage()));

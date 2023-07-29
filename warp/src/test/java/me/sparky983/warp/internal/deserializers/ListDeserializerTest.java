@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ParameterizedTypes;
 import me.sparky983.warp.internal.DeserializationException;
@@ -86,7 +85,8 @@ class ListDeserializerTest {
         ConfigurationNode.list(
             ConfigurationNode.string("element 1"), ConfigurationNode.string("element 2"));
 
-    when(deserializerRegistry.get(String.class)).thenReturn(Optional.of((string, type) -> string + " deserialized"));
+    when(deserializerRegistry.get(String.class))
+        .thenReturn(Optional.of((string, type) -> string + " deserialized"));
 
     final List result = deserializer.deserialize(node, ParameterizedTypes.STRING_LIST);
 

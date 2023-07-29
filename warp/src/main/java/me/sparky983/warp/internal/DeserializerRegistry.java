@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import me.sparky983.warp.ConfigurationNode;
 
 /** A registry of {@link Deserializer Deserializers}. */
 public final class DeserializerRegistry {
