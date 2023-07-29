@@ -47,24 +47,6 @@ public interface Deserializer<T> {
           };
       };
 
-  /**
-   * An {@link Character} deserializer.
-   *
-   * <p>Only allows alphanumeric characters.
-   */
-  Deserializer<Character> CHARACTER =
-      (node, type) -> {
-        if (!(node instanceof final ConfigurationNode.String string)
-            || string.value().length() != 1) {
-          throw new DeserializationException("Expected a single character");
-        }
-        final char character = string.value().charAt(0);
-        if (Character.isLetterOrDigit(character)) {
-          return character;
-        }
-        throw new DeserializationException("Expected character to be a letter or digit");
-      };
-
   /** A {@link String} deserializer. */
   Deserializer<String> STRING =
       (node, type) ->
