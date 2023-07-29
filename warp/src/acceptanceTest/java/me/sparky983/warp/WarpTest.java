@@ -5,6 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 
 class WarpTest {
   @Test
@@ -13,8 +18,61 @@ class WarpTest {
   }
 
   @Test
-  void testBuilder_InvalidConfigurationClass() {
-    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.Invalid.class));
+  void testBuilder_NotAnnotated() {
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.MissingAnnotation.class));
+  }
+
+  @Test
+  void testBuilder_NotPublic() {
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.Private.class));
+  }
+
+  @Test
+  void testBuilder_NotInterface() {
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.Class.class));
+  }
+
+  @Test
+  void testBuilder_Hidden() throws Exception {
+    final InputStream inputStream = Configurations.Hidden.class
+        .getClassLoader()
+        .getResourceAsStream("me/sparky983/warp/Configurations$Hidden.class");
+
+    final Class<?> hidden = MethodHandles.lookup().defineHiddenClass(inputStream.readAllBytes(), true, MethodHandles.Lookup.ClassOption.STRONG).lookupClass();
+
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(hidden));
+  }
+
+  @Test
+  void testBuilder_Sealed() {
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.Sealed.class));
+  }
+
+  @Test
+  void testBuilder_Generic() {
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.Generic.class));
+  }
+
+  @Test
+  void testBuilder_NonProperty() {
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.NonProperty.class));
+  }
+
+  // private property methods aren't tested since they're inaccessible
+
+  @Test
+  void testBuilder_StaticProperty() {
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.StaticProperty.class));
+  }
+
+  @Test
+  void testBuilder_GenericProperty() {
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.GenericProperty.class));
+  }
+
+  @Test
+  void testBuilder_ParameterizedProperty() {
+    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.ParameterizedProperty.class));
   }
 
   @Test

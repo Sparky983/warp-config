@@ -7,7 +7,50 @@ import me.sparky983.warp.annotations.Property;
 public final class Configurations {
   private Configurations() {}
 
-  public interface Invalid {}
+  public interface MissingAnnotation {}
+
+  @Configuration
+  interface Private {}
+
+  @Configuration
+  public interface Hidden {}
+
+  @Configuration
+  public sealed interface Sealed {}
+
+  /**
+  * Sealed classes must permit at least 1 subclass.
+  */
+  @Configuration
+  private non-sealed interface Permitted extends Sealed {}
+
+  @Configuration
+  public interface Generic<T> {}
+
+  @Configuration
+  public interface NonProperty {
+    void nonProperty();
+  }
+
+  @Configuration
+  public interface StaticProperty {
+    @Property("property")
+    static int property() {
+      return 0;
+    }
+  }
+
+  @Configuration
+  public interface GenericProperty {
+    @Property("property")
+    <T> int property();
+  }
+
+  @Configuration
+  public interface ParameterizedProperty {
+    @Property("property")
+    int property(int parameter);
+  }
 
   @Configuration
   public interface Empty {}
@@ -47,4 +90,7 @@ public final class Configurations {
     @Property("property")
     Random property();
   }
+
+  @Configuration
+  public static class Class {}
 }

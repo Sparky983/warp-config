@@ -19,6 +19,7 @@ import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.annotations.Configuration;
+import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.Deserializer;
@@ -65,6 +66,11 @@ final class InterfaceSchema<T> implements Schema<T> {
           String.format("Class %s must not be sealed", configurationClass.getName()));
     }
 
+    if (configurationClass.isHidden()) {
+      throw new IllegalArgumentException(
+          String.format("Class %s must not be hidden", configurationClass.getName()));
+    }
+
     if (configurationClass.getTypeParameters().length != 0) {
       throw new IllegalArgumentException(
           String.format("Class %s must not be generic", configurationClass.getName()));
@@ -72,6 +78,7 @@ final class InterfaceSchema<T> implements Schema<T> {
 
     properties =
         Stream.of(configurationClass.getMethods())
+            .filter((method) -> method.isAnnotationPresent(me.sparky983.warp.annotations.Property.class) || Modifier.isAbstract(method.getModifiers()))
             .map(MethodProperty::new)
             .collect(Collectors.toUnmodifiableSet());
 
