@@ -24,15 +24,19 @@ public final class ParameterizedType<T> {
       final Class<T> rawType, final List<ParameterizedType<?>> typeArguments) {
     Objects.requireNonNull(rawType, "rawType cannot be null");
 
-    if (!typeArguments.isEmpty() && rawType.getTypeParameters().length != typeArguments.size()) {
+    // null check and concurrent modification catch
+    final List<ParameterizedType<?>> typeArgumentsCopy = List.copyOf(typeArguments);
+
+    if (!typeArgumentsCopy.isEmpty()
+        && rawType.getTypeParameters().length != typeArgumentsCopy.size()) {
       throw new IllegalArgumentException(
           String.format(
               "%s declares %s type parameters but found %s type arguments",
-              rawType, rawType.getTypeParameters().length, typeArguments.size()));
+              rawType, rawType.getTypeParameters().length, typeArgumentsCopy.size()));
     }
 
     this.rawType = rawType;
-    this.typeArguments = List.copyOf(typeArguments);
+    this.typeArguments = typeArgumentsCopy;
   }
 
   /**
@@ -101,14 +105,13 @@ public final class ParameterizedType<T> {
   public static ParameterizedType<?> of(final Type type) {
     return switch (type) {
       case final Class<?> cls -> of(cls);
-      case final java.lang.reflect.ParameterizedType parameterizedType ->
-      new ParameterizedType<>(
+      case final java.lang.reflect.ParameterizedType parameterizedType -> new ParameterizedType<>(
           // This cast is safe actually safe - https://bugs.openjdk.org/browse/JDK-6255169
           (Class<?>) parameterizedType.getRawType(),
           Stream.of(parameterizedType.getActualTypeArguments())
               .<ParameterizedType<?>>map(ParameterizedType::of)
               .toList());
-      // Currently Java only supports a single bound
+        // Currently Java only supports a single bound
       case final WildcardType wildcardType -> of(wildcardType.getUpperBounds()[0]);
       case final GenericArrayType genericArrayType -> of(
           of(genericArrayType.getGenericComponentType()).rawType().arrayType());
@@ -162,6 +165,25 @@ public final class ParameterizedType<T> {
    */
   public boolean isRaw() {
     return typeArguments.isEmpty();
+  }
+
+  @Override
+  public boolean equals(final Object other) {
+    if (other == this) {
+      return true;
+    }
+
+    if (!(other instanceof final ParameterizedType<?> parameterizedType)) {
+      return false;
+    }
+
+    return parameterizedType.rawType().equals(rawType)
+        && parameterizedType.typeArguments().equals(typeArguments);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(rawType, typeArguments);
   }
 
   @Override
