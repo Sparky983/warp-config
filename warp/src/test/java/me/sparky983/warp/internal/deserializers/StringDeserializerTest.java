@@ -28,8 +28,7 @@ class StringDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.nil();
 
     assertThrows(
-        DeserializationException.class,
-        () -> STRING.deserialize(node, ParameterizedTypes.STRING));
+        DeserializationException.class, () -> STRING.deserialize(node, ParameterizedTypes.STRING));
   }
 
   @Test
