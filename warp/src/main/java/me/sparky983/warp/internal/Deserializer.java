@@ -135,26 +135,30 @@ public interface Deserializer<T> {
   static Deserializer<Map> map(final DeserializerRegistry deserializers) {
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
 
-    return (node, type) ->
-        switch (node) {
-          case final ConfigurationNode.Map map when type.isRaw() -> map.values();
-          case final ConfigurationNode.Map map -> {
-            final ParameterizedType<?> keyType = type.typeArguments().get(0);
-            final ParameterizedType<?> valueType = type.typeArguments().get(1);
-            final Deserializer keyDeserializer = deserializers.get(keyType.rawType())
-                .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the keys of %s not found", type)));
-            final Deserializer valueDeserializer = deserializers.get(valueType.rawType())
-                .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the values of %s not found", type)));
-            final Map deserializedMap = new HashMap<>();
-            for (final ConfigurationNode.Map.Entry entry : map.entries()) {
-              final Object key = keyDeserializer.deserialize(ConfigurationNode.string(entry.key()), keyType);
-              final Object value = valueDeserializer.deserialize(entry.value(), valueType);
-              deserializedMap.put(key, value);
-            }
-            yield Collections.unmodifiableMap(deserializedMap);
+    return (node, type) -> {
+      Objects.requireNonNull(node, "node cannot be null");
+      Objects.requireNonNull(type, "type cannot be null");
+
+      return switch (node) {
+        case final ConfigurationNode.Map map when type.isRaw() -> map.values();
+        case final ConfigurationNode.Map map -> {
+          final ParameterizedType<?> keyType = type.typeArguments().get(0);
+          final ParameterizedType<?> valueType = type.typeArguments().get(1);
+          final Deserializer keyDeserializer = deserializers.get(keyType.rawType())
+              .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the keys of %s not found", type)));
+          final Deserializer valueDeserializer = deserializers.get(valueType.rawType())
+              .orElseThrow(() -> new DeserializationException(String.format("Deserializer for the values of %s not found", type)));
+          final Map deserializedMap = new HashMap<>();
+          for (final ConfigurationNode.Map.Entry entry : map.entries()) {
+            final Object key = keyDeserializer.deserialize(ConfigurationNode.string(entry.key()), keyType);
+            final Object value = valueDeserializer.deserialize(entry.value(), valueType);
+            deserializedMap.put(key, value);
           }
-          default -> throw new DeserializationException("Expected a map");
-        };
+          yield Collections.unmodifiableMap(deserializedMap);
+        }
+        default -> throw new DeserializationException("Expected a map");
+      };
+    };
   }
 
   /**

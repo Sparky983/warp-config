@@ -1,6 +1,7 @@
 package me.sparky983.warp;
 
 import java.util.List;
+import java.util.Map;
 import me.sparky983.warp.internal.ParameterizedType;
 
 public final class ParameterizedTypes {
@@ -19,6 +20,13 @@ public final class ParameterizedTypes {
   @SuppressWarnings({"unchecked", "rawtypes"})
   public static final ParameterizedType<List<String>> STRING_LIST =
       (ParameterizedType) ParameterizedType.of(List.class, String.class);
+
+  @SuppressWarnings("rawtypes")
+  public static final ParameterizedType<Map> RAW_MAP = ParameterizedType.of(Map.class);
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public static final ParameterizedType<Map<String, String>> INTEGER_STRING_MAP =
+      (ParameterizedType) ParameterizedType.of(Map.class, Integer.class, String.class);
 
   private ParameterizedTypes() {}
 }

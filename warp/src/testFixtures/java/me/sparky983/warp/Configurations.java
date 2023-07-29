@@ -122,6 +122,31 @@ public final class Configurations {
   }
 
   @Configuration
+  public interface StringStringMap {
+    @Property("property")
+    java.util.Map<java.lang.String, java.lang.String> property();
+  }
+
+  @Configuration
+  public interface NonDeserializableKeyMap {
+    @Property("property")
+    java.util.Map<Random, java.lang.String> property();
+  }
+
+  @Configuration
+  public interface NonDeserializableValueMap {
+    @Property("property")
+    java.util.Map<java.lang.String, Random> property();
+  }
+
+  @SuppressWarnings("rawtypes")
+  @Configuration
+  public interface RawMap {
+    @Property("property")
+    java.util.Map property();
+  }
+
+  @Configuration
   public interface NonDeserializable {
     @Property("property")
     Random property();
