@@ -98,7 +98,7 @@ public sealed interface ConfigurationNode {
     /**
      * Returns the value of this node.
      *
-     * @return the value
+     * @return the value; never {@link Double#isNaN() NaN} or {@link Double#isInfinite() infinite}
      * @since 0.1
      */
     double value();
