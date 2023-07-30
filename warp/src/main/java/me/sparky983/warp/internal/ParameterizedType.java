@@ -24,7 +24,7 @@ public final class ParameterizedType<T> {
       final Class<T> rawType, final List<ParameterizedType<?>> typeArguments) {
     Objects.requireNonNull(rawType, "rawType cannot be null");
 
-    // null check and concurrent modification catch
+    // consistent null check - check list and elements at the same time
     final List<ParameterizedType<?>> typeArgumentsCopy = List.copyOf(typeArguments);
 
     if (!typeArgumentsCopy.isEmpty()

@@ -36,6 +36,9 @@ public sealed interface ConfigurationError extends Comparable<ConfigurationError
    * @since 0.1
    */
   static Group group(final String name, final ConfigurationError... errors) {
+    Objects.requireNonNull(name, "name cannot be null");
+    Objects.requireNonNull(errors, "errors cannot be null");
+
     final HashSet<ConfigurationError> errorsSet = new HashSet<>();
     for (final ConfigurationError error : errors) {
       Objects.requireNonNull(error, "error cannot be null");

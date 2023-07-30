@@ -30,6 +30,8 @@ public final class DefaultsRegistry {
    * @throws NullPointerException if the type is {@code null}.
    */
   public Optional<ConfigurationNode> get(final Class<?> type) {
+    Objects.requireNonNull(type, "type cannot be null");
+
     return Optional.ofNullable(defaults.get(type));
   }
 

@@ -121,12 +121,14 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
    */
   public DefaultConfigurationBuilder(final Schema<? extends T> schema) {
     Objects.requireNonNull(schema, "schema cannot be null");
+
     this.schema = schema;
   }
 
   @Override
   public ConfigurationBuilder<T> source(final ConfigurationSource source) {
     Objects.requireNonNull(source, "source cannot be null");
+
     this.sources.add(source);
     return this;
   }

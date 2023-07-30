@@ -17,6 +17,7 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
    */
   public DefaultConfigurationSource(final Map configuration) {
     Objects.requireNonNull(configuration, "configuration cannot be null");
+
     this.configuration = configuration;
   }
 

@@ -2,6 +2,7 @@ package me.sparky983.warp;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -28,7 +29,11 @@ public final class ConfigurationException extends Exception {
       final String message, final Set<? extends ConfigurationError> errors) {
     super(
         createErrorMessage(
-            message, new TreeSet<>(errors))); // The groups are sorted only in the message
+            Objects.requireNonNull(message, "message cannot be null"),
+            new TreeSet<>(
+                Objects.requireNonNull(
+                    errors,
+                    "errors cannot be null")))); // The groups are sorted only in the message
 
     this.errors = Collections.unmodifiableSet(new LinkedHashSet<>(errors));
   }
@@ -48,7 +53,7 @@ public final class ConfigurationException extends Exception {
       final Set<? extends ConfigurationError> errors) {
     for (final ConfigurationError error : errors) {
       builder.append("\n").append(" ".repeat(indent)).append("- ");
-      switch (error) {
+      /*switch (error) {
         case ConfigurationError.Group(String name, Set<ConfigurationError> children) -> {
           builder
               .append(name)
@@ -57,7 +62,7 @@ public final class ConfigurationException extends Exception {
           addErrorMessage(builder, indent + 2, children);
         }
         case ConfigurationError.Error(String message) -> builder.append(message);
-      }
+      }*/
     }
   }
 

@@ -163,13 +163,16 @@ class WarpTest {
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()
-                        .entry("nested", ConfigurationNode.map()
-                            .entry("property", ConfigurationNode.string("value"))
-                            .build())
+                        .entry(
+                            "nested",
+                            ConfigurationNode.map()
+                                .entry("property", ConfigurationNode.string("value"))
+                                .build())
                         .build()))
             .build();
 
-    assertEquals("me.sparky983.warp.Configurations$String{nested.property=value}", configuration.toString());
+    assertEquals(
+        "me.sparky983.warp.Configurations$String{nested.property=value}", configuration.toString());
   }
 
   @Test
