@@ -18,6 +18,7 @@ public final class DeserializationException extends Exception {
 
   @Override
   public String getMessage() {
+    // Overridden to make the return type non-null
     return super.getMessage();
   }
 }
