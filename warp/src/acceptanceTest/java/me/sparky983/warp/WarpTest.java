@@ -100,34 +100,6 @@ class WarpTest {
   }
 
   @Test
-  void testHashCode_Other() {
-    final ConfigurationBuilder<Configurations.Empty> configuration1 =
-        Warp.builder(Configurations.Empty.class);
-    final ConfigurationBuilder<Configurations.Empty> configuration2 =
-        Warp.builder(Configurations.Empty.class);
-
-    assertNotEquals(configuration1.hashCode(), configuration2.hashCode());
-  }
-
-  @Test
-  void testEquals_Self() {
-    final ConfigurationBuilder<Configurations.Empty> configuration =
-        Warp.builder(Configurations.Empty.class);
-
-    assertEquals(configuration, configuration);
-  }
-
-  @Test
-  void testEquals_Other() {
-    final ConfigurationBuilder<Configurations.Empty> configuration1 =
-        Warp.builder(Configurations.Empty.class);
-    final ConfigurationBuilder<Configurations.Empty> configuration2 =
-        Warp.builder(Configurations.Empty.class);
-
-    assertNotEquals(configuration1, configuration2);
-  }
-
-  @Test
   void testProperty_NotExists() {
     final ConfigurationBuilder<Configurations.String> builder =
         Warp.builder(Configurations.String.class);
@@ -176,10 +148,40 @@ class WarpTest {
   }
 
   @Test
-  void testObjectMethods() throws ConfigurationException {
+  void testEquals_Null() throws ConfigurationException {
+    final Configurations.Empty configuration = Warp.builder(Configurations.Empty.class).build();
+
+    assertNotEquals(null, configuration);
+  }
+
+  @Test
+  void testEquals_DifferentType() throws ConfigurationException {
+    final Configurations.Empty configuration = Warp.builder(Configurations.Empty.class).build();
+
+    assertNotEquals(new Object(), configuration);
+  }
+
+  @Test
+  void testEquals_Different() throws ConfigurationException {
+    final Configurations.Empty configuration1 = Warp.builder(Configurations.Empty.class).build();
+    final Configurations.Empty configuration2 = Warp.builder(Configurations.Empty.class).build();
+
+    assertNotEquals(configuration1, configuration2);
+  }
+
+  @Test
+  void testEquals_Same() throws ConfigurationException {
     final Configurations.Empty configuration = Warp.builder(Configurations.Empty.class).build();
 
     assertEquals(configuration, configuration);
-    assertNotEquals(new Object(), configuration);
   }
+
+  @Test
+  void testHashCode_Same() throws ConfigurationException {
+    final Configurations.Empty configuration = Warp.builder(Configurations.Empty.class).build();
+
+    assertEquals(configuration.hashCode(), configuration.hashCode());
+  }
+
+  // TODO(Sparky983): figure out if identity hash code can have collisions, and write a test for it if not
 }

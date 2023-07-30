@@ -150,8 +150,14 @@ final class InterfaceSchema<T> implements Schema<T> {
     return newProxyInstance(
         (proxy, method, args) -> {
           if (method.getDeclaringClass().equals(Object.class)) {
-            if (method.getName().equals("toString") && method.getParameterCount() == 0) {
+            final String name = method.getName();
+            final int parameterCount = method.getParameterCount();
+            if (name.equals("toString") && parameterCount == 0) {
               return configurationClass.getName() + mappingConfiguration;
+            } else if (name.equals("hashCode") && parameterCount == 0) {
+              return super.hashCode(); // this is fine since our configurations are identity-based
+            } else if (name.equals("equals") && parameterCount == 1) {
+              return proxy == args[0];
             }
           }
           final me.sparky983.warp.annotations.Property property =
