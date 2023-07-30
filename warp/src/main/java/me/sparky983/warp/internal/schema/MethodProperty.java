@@ -59,9 +59,4 @@ final class MethodProperty<T> implements Schema.Property<T> {
   public ParameterizedType<T> type() {
     return type;
   }
-
-  @Override
-  public String toString() {
-    return path;
-  }
 }
