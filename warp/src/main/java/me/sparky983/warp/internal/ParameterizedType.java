@@ -24,19 +24,17 @@ public final class ParameterizedType<T> {
       final Class<T> rawType, final List<ParameterizedType<?>> typeArguments) {
     Objects.requireNonNull(rawType, "rawType cannot be null");
 
-    // consistent null check - check list and elements at the same time
-    final List<ParameterizedType<?>> typeArgumentsCopy = List.copyOf(typeArguments);
+    this.typeArguments = List.copyOf(typeArguments);
 
-    if (!typeArgumentsCopy.isEmpty()
-        && rawType.getTypeParameters().length != typeArgumentsCopy.size()) {
+    if (!typeArguments.isEmpty()
+        && rawType.getTypeParameters().length != typeArguments.size()) {
       throw new IllegalArgumentException(
           String.format(
               "%s declares %s type parameters but found %s type arguments",
-              rawType, rawType.getTypeParameters().length, typeArgumentsCopy.size()));
+              rawType, rawType.getTypeParameters().length, typeArguments.size()));
     }
 
     this.rawType = rawType;
-    this.typeArguments = typeArgumentsCopy;
   }
 
   /**
