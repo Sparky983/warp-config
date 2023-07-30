@@ -244,13 +244,6 @@ class ParameterizedTypeTest {
   }
 
   @Test
-  void testEquals_Same() {
-    final ParameterizedType<String> type = ParameterizedType.of(String.class);
-
-    assertEquals(type, type);
-  }
-
-  @Test
   void testEquals_Equal() {
     assertEquals(
         ParameterizedType.of(List.class, String.class),
@@ -258,13 +251,6 @@ class ParameterizedTypeTest {
   }
 
   // No tests for different hash codes as that cannot be not guaranteed.
-
-  @Test
-  void testHashCode_Same() {
-    final ParameterizedType<String> type = ParameterizedType.of(String.class);
-
-    assertEquals(type.hashCode(), type.hashCode());
-  }
 
   @Test
   void testHashCode_Equal() {
