@@ -38,23 +38,23 @@ public interface Deserializer<T> {
   /** A {@link Boolean} deserializer. */
   Deserializer<Boolean> BOOLEAN =
       (node) -> {
-          Objects.requireNonNull(node, "node cannot be null");
+        Objects.requireNonNull(node, "node cannot be null");
 
-          return switch (node) {
-            case final ConfigurationNode.Bool bool -> bool.value();
-            default -> throw new DeserializationException("Must be a boolean");
-          };
+        return switch (node) {
+          case final ConfigurationNode.Bool bool -> bool.value();
+          default -> throw new DeserializationException("Must be a boolean");
+        };
       };
 
   /** A {@link String} deserializer. */
   Deserializer<String> STRING =
       (node) -> {
-          Objects.requireNonNull(node, "node cannot be null");
+        Objects.requireNonNull(node, "node cannot be null");
 
-          return switch (node) {
-            case final ConfigurationNode.String string -> string.value();
-            default -> throw new DeserializationException("Must be a string");
-          };
+        return switch (node) {
+          case final ConfigurationNode.String string -> string.value();
+          default -> throw new DeserializationException("Must be a string");
+        };
       };
 
   private static <T> Deserializer<T> integer(
@@ -67,7 +67,8 @@ public interface Deserializer<T> {
       }
       final long value = integer.value();
       if (value < min || value > max) {
-        throw new DeserializationException(String.format("Must be between %s and %s (both inclusive)", min, max));
+        throw new DeserializationException(
+            String.format("Must be between %s and %s (both inclusive)", min, max));
       }
       return mapper.apply(integer.value());
     };
@@ -124,7 +125,9 @@ public interface Deserializer<T> {
    * @param <V> the value type
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static <K, V> Deserializer<Map<K, V>> map(final Deserializer<? extends K> keyDeserializer, final Deserializer<? extends V> valueDeserializer) {
+  static <K, V> Deserializer<Map<K, V>> map(
+      final Deserializer<? extends K> keyDeserializer,
+      final Deserializer<? extends V> valueDeserializer) {
     Objects.requireNonNull(keyDeserializer, "keyDeserializer cannot be null");
     Objects.requireNonNull(valueDeserializer, "valueDeserializer cannot be null");
 
@@ -171,8 +174,8 @@ public interface Deserializer<T> {
    * Deserializes the given node.
    *
    * @param node the node; never {@code null}
-   * @return an {@link Optional} containing the deserialized node if it could not be deserialized, otherwise
-   *     an empty optional
+   * @return an {@link Optional} containing the deserialized node if it could not be deserialized,
+   *     otherwise an empty optional
    * @throws DeserializationException if the node was unable to be deserialized.
    */
   T deserialize(ConfigurationNode node) throws DeserializationException;

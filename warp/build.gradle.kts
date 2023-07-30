@@ -14,6 +14,16 @@ idea {
     }
 }
 
+spotless {
+    java {
+        // use preview features
+        targetExclude(
+                "src/main/java/me/sparky983/warp/ConfigurationError.java",
+                "src/main/java/me/sparky983/warp/ConfigurationException.java"
+        )
+    }
+}
+
 tasks {
     javadoc {
         (options as CoreJavadocOptions).run {
