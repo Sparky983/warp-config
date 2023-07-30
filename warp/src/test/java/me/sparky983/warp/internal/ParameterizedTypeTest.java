@@ -244,6 +244,13 @@ class ParameterizedTypeTest {
   }
 
   @Test
+  void testEquals_Same() {
+    final ParameterizedType<String> type = ParameterizedType.of(String.class);
+
+    assertEquals(type, type);
+  }
+
+  @Test
   void testEquals_Equal() {
     assertEquals(
         ParameterizedType.of(List.class, String.class),
