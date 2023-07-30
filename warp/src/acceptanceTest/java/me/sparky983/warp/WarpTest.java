@@ -182,6 +182,5 @@ class WarpTest {
 
     assertEquals(configuration.hashCode(), configuration.hashCode());
   }
-
-  // TODO(Sparky983): figure out if identity hash code can have collisions, and write a test for it if not
+  // TODO(Sparky983): figure out if identity hash code can have collisions, and write a test if not
 }
