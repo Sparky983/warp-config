@@ -32,18 +32,18 @@ class WarpTest {
 
   @Test
   void testBuilder_Hidden() throws Exception {
-    final InputStream inputStream =
+    try (final InputStream inputStream =
         Configurations.Hidden.class
             .getClassLoader()
-            .getResourceAsStream("me/sparky983/warp/Configurations$Hidden.class");
+            .getResourceAsStream("me/sparky983/warp/Configurations$Hidden.class")) {
+      final Class<?> hidden =
+          MethodHandles.lookup()
+              .defineHiddenClass(
+                  inputStream.readAllBytes(), true, MethodHandles.Lookup.ClassOption.STRONG)
+              .lookupClass();
 
-    final Class<?> hidden =
-        MethodHandles.lookup()
-            .defineHiddenClass(
-                inputStream.readAllBytes(), true, MethodHandles.Lookup.ClassOption.STRONG)
-            .lookupClass();
-
-    assertThrows(IllegalArgumentException.class, () -> Warp.builder(hidden));
+      assertThrows(IllegalArgumentException.class, () -> Warp.builder(hidden));
+    }
   }
 
   @Test
