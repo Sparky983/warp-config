@@ -109,7 +109,6 @@ class WarpTest {
     assertNotEquals(configuration1.hashCode(), configuration2.hashCode());
   }
 
-  @SuppressWarnings("EqualsWithItself")
   @Test
   void testEquals_Self() {
     final ConfigurationBuilder<Configurations.Empty> configuration =
