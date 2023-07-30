@@ -155,4 +155,28 @@ class WarpTest {
 
     assertThrows(IllegalStateException.class, builder::build);
   }
+
+  @Test
+  void testToString() throws ConfigurationException {
+    final Configurations.Nested configuration =
+        Warp.builder(Configurations.Nested.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry("nested", ConfigurationNode.map()
+                            .entry("property", ConfigurationNode.string("value"))
+                            .build())
+                        .build()))
+            .build();
+
+    assertEquals("me.sparky983.warp.Configurations$String{nested.property=value}", configuration.toString());
+  }
+
+  @Test
+  void testObjectMethods() throws ConfigurationException {
+    final Configurations.Empty configuration = Warp.builder(Configurations.Empty.class).build();
+
+    assertEquals(configuration, configuration);
+    assertNotEquals(new Object(), configuration);
+  }
 }

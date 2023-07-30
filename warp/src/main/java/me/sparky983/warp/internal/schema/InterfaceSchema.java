@@ -186,6 +186,9 @@ final class InterfaceSchema<T> implements Schema<T> {
     return newProxyInstance(
         (proxy, method, args) -> {
           if (method.getDeclaringClass().equals(Object.class)) {
+            if (method.getName().equals("toString") && method.getParameterCount() == 0) {
+              return configurationClass.getName() + mappedConfiguration;
+            }
             return method.invoke(proxy, args);
           }
           final me.sparky983.warp.annotations.Property property =
