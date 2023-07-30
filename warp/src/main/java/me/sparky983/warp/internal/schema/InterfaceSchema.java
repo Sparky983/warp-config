@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,8 +19,6 @@ import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.DefaultsRegistry;
-import me.sparky983.warp.internal.DeserializationException;
-import me.sparky983.warp.internal.Deserializer;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
 /**
@@ -31,7 +28,7 @@ import me.sparky983.warp.internal.DeserializerRegistry;
  */
 final class InterfaceSchema<T> implements Schema<T> {
   private final Class<T> configurationClass;
-  private final Set<Property> properties;
+  private final Set<Property<?>> properties;
 
   /**
    * Constructs an {@code InterfaceSchema}.
@@ -121,7 +118,6 @@ final class InterfaceSchema<T> implements Schema<T> {
             invocationHandler);
   }
 
-  @SuppressWarnings("rawtypes")
   @Override
   public T create(
       final DeserializerRegistry deserializers,
@@ -133,50 +129,18 @@ final class InterfaceSchema<T> implements Schema<T> {
     Objects.requireNonNull(defaults, "defaults cannot be null");
     configurations.forEach(Objects::requireNonNull);
 
-    final java.util.Map<String, Object> mappedConfiguration = new HashMap<>();
+    final MappingConfiguration mappingConfiguration =
+        new MappingConfiguration(defaults, deserializers);
     final Set<ConfigurationError> errors = new HashSet<>();
 
-    for (final Property property : properties) {
-      final Set<ConfigurationError> propertyErrors = new HashSet<>();
-      final Deserializer deserializer =
-          deserializers
-              .get(property.type())
-              .orElseThrow(
-                  () ->
-                      new IllegalStateException(
-                          String.format(
-                              "Property \"%s\" required a deserializer of type %s, but none was found",
-                              property, property.type())));
-      boolean isAbsent = true;
-      for (final Map configuration : configurations) {
-        final Optional<ConfigurationNode> node = get(property.path(), configuration);
-        if (node.isEmpty()) {
-          continue;
-        }
-
-        isAbsent = false;
-        try {
-          mappedConfiguration.putIfAbsent(property.path(), deserializer.deserialize(node.get()));
-        } catch (final DeserializationException e) {
-          propertyErrors.add(ConfigurationError.error(e.getMessage()));
-        }
-      }
-      if (isAbsent) {
-        final Optional<ConfigurationNode> defaultNode = defaults.get(property.type().rawType());
-        if (defaultNode.isEmpty()) {
-          propertyErrors.add(ConfigurationError.error("Must be set to a value"));
-        } else {
-          try {
-            mappedConfiguration.putIfAbsent(
-                property.path(), deserializer.deserialize(defaultNode.get()));
-          } catch (final DeserializationException e) {
-            propertyErrors.add(ConfigurationError.error(e.getMessage()));
-          }
-        }
-      }
-      if (!propertyErrors.isEmpty()) {
-        errors.add(ConfigurationError.group(property.path(), propertyErrors));
-      }
+    for (final Property<?> property : properties) {
+      mappingConfiguration
+          .put(
+              property,
+              configurations.stream()
+                  .flatMap((configuration) -> get(property.path(), configuration).stream())
+                  .toList())
+          .ifPresent(errors::add);
     }
 
     if (!errors.isEmpty()) {
@@ -187,14 +151,13 @@ final class InterfaceSchema<T> implements Schema<T> {
         (proxy, method, args) -> {
           if (method.getDeclaringClass().equals(Object.class)) {
             if (method.getName().equals("toString") && method.getParameterCount() == 0) {
-              return configurationClass.getName() + mappedConfiguration;
+              return configurationClass.getName() + mappingConfiguration;
             }
-            return method.invoke(proxy, args);
           }
           final me.sparky983.warp.annotations.Property property =
               method.getAnnotation(me.sparky983.warp.annotations.Property.class);
           assert property != null : "Expected property annotation";
-          return mappedConfiguration.get(property.value());
+          return mappingConfiguration.get(property.value());
         });
   }
 }

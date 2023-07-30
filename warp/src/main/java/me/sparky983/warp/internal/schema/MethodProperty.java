@@ -7,9 +7,9 @@ import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.ParameterizedType;
 
 /** The {@link Schema.Property} implementation for property methods. */
-final class MethodProperty implements Schema.Property {
+final class MethodProperty<T> implements Schema.Property<T> {
   private final String path;
-  private final ParameterizedType<?> type;
+  private final ParameterizedType<T> type;
 
   /**
    * Constructs a {@code MethodProperty} for the given method.
@@ -18,6 +18,7 @@ final class MethodProperty implements Schema.Property {
    * @throws IllegalArgumentException if the given method is not a valid property method.
    * @throws NullPointerException if the method is {@code null}.
    */
+  @SuppressWarnings("unchecked")
   MethodProperty(final Method method) {
     Objects.requireNonNull(method, "method cannot be null");
 
@@ -46,7 +47,7 @@ final class MethodProperty implements Schema.Property {
     }
 
     this.path = property.value();
-    this.type = ParameterizedType.of(method.getGenericReturnType());
+    this.type = (ParameterizedType<T>) ParameterizedType.of(method.getGenericReturnType());
   }
 
   @Override
@@ -55,7 +56,7 @@ final class MethodProperty implements Schema.Property {
   }
 
   @Override
-  public ParameterizedType<?> type() {
+  public ParameterizedType<T> type() {
     return type;
   }
 

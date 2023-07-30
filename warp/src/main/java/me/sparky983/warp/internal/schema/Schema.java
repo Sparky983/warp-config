@@ -44,7 +44,7 @@ public interface Schema<T> {
   }
 
   /** A property in a schema. */
-  interface Property {
+  interface Property<T> {
     /**
      * Returns the path of this property.
      *
@@ -57,6 +57,6 @@ public interface Schema<T> {
      *
      * @return the path
      */
-    ParameterizedType<?> type();
+    ParameterizedType<T> type();
   }
 }
