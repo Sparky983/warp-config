@@ -43,6 +43,6 @@ class ByteDeserializerTest {
 
     final byte result = BYTE.deserialize(node);
 
-    assertEquals((byte) value, result);
+    assertEquals(value, result);
   }
 }
