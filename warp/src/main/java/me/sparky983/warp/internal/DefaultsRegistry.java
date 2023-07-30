@@ -22,20 +22,6 @@ public final class DefaultsRegistry {
   }
 
   /**
-   * Returns the default for the given type.
-   *
-   * @param type the type
-   * @return an {@link Optional} containing the default for the specified type if one exists,
-   *     otherwise an empty optional.
-   * @throws NullPointerException if the type is {@code null}.
-   */
-  public Optional<ConfigurationNode> get(final Class<?> type) {
-    Objects.requireNonNull(type, "type cannot be null");
-
-    return Optional.ofNullable(defaults.get(type));
-  }
-
-  /**
    * Registers a default for the given type.
    *
    * @param type the type
@@ -49,5 +35,19 @@ public final class DefaultsRegistry {
 
     defaults.putIfAbsent(type, node);
     return this;
+  }
+
+  /**
+   * Returns the default for the given type.
+   *
+   * @param type the type
+   * @return an {@link Optional} containing the default for the specified type if one exists,
+   *     otherwise an empty optional.
+   * @throws NullPointerException if the type is {@code null}.
+   */
+  public Optional<ConfigurationNode> get(final Class<?> type) {
+    Objects.requireNonNull(type, "type cannot be null");
+
+    return Optional.ofNullable(defaults.get(type));
   }
 }
