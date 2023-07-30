@@ -25,7 +25,9 @@ class StringDeserializerTest {
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
 
-    assertEquals(Set.of(ConfigurationError.of("Must be a string")), thrown.errors());
+    assertEquals(
+        Set.of(ConfigurationError.group("property", ConfigurationError.error("Must be a string"))),
+        thrown.errors());
   }
 
   @Test

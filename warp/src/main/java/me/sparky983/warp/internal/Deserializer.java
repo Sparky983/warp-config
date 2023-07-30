@@ -42,7 +42,7 @@ public interface Deserializer<T> {
 
           return switch (node) {
             case final ConfigurationNode.Bool bool -> bool.value();
-            default -> throw new DeserializationException("Expected a boolean");
+            default -> throw new DeserializationException("Must be a boolean");
           };
       };
 
@@ -63,7 +63,7 @@ public interface Deserializer<T> {
       Objects.requireNonNull(node, "node cannot be null");
 
       if (!(node instanceof final ConfigurationNode.Integer integer)) {
-        throw new DeserializationException("Expected an integer");
+        throw new DeserializationException("Must be an integer");
       }
       final long value = integer.value();
       if (value < min || value > max) {

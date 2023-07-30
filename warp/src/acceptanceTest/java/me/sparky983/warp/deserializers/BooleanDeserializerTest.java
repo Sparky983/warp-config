@@ -27,7 +27,9 @@ class BooleanDeserializerTest {
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
 
-    assertEquals(Set.of(ConfigurationError.of("Expected a boolean")), thrown.errors());
+    assertEquals(
+        Set.of(ConfigurationError.group("property", ConfigurationError.error("Must be a boolean"))),
+        thrown.errors());
   }
 
   @ParameterizedTest

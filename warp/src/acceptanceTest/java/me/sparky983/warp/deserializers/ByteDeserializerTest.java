@@ -27,7 +27,10 @@ class ByteDeserializerTest {
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
 
-    assertEquals(Set.of(ConfigurationError.of("Expected an integer")), thrown.errors());
+    assertEquals(
+        Set.of(
+            ConfigurationError.group("property", ConfigurationError.error("Must be an integer"))),
+        thrown.errors());
   }
 
   @ParameterizedTest
@@ -46,9 +49,12 @@ class ByteDeserializerTest {
 
     assertEquals(
         Set.of(
-            ConfigurationError.of(
-                String.format(
-                    "Must be between %s and %s (both inclusive)", Byte.MIN_VALUE, Byte.MAX_VALUE))),
+            ConfigurationError.group(
+                "property",
+                ConfigurationError.error(
+                    String.format(
+                        "Must be between %s and %s (both inclusive)",
+                        Byte.MIN_VALUE, Byte.MAX_VALUE)))),
         thrown.errors());
   }
 

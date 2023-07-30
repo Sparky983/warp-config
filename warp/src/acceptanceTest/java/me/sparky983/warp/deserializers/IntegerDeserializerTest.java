@@ -27,7 +27,10 @@ class IntegerDeserializerTest {
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
 
-    assertEquals(Set.of(ConfigurationError.of("Expected an integer")), thrown.errors());
+    assertEquals(
+        Set.of(
+            ConfigurationError.group("property", ConfigurationError.error("Must be an integer"))),
+        thrown.errors());
   }
 
   @ParameterizedTest
@@ -46,10 +49,12 @@ class IntegerDeserializerTest {
 
     assertEquals(
         Set.of(
-            ConfigurationError.of(
-                String.format(
-                    "Must be between %s and %s (both inclusive)",
-                    Integer.MIN_VALUE, Integer.MAX_VALUE))),
+            ConfigurationError.group(
+                "property",
+                ConfigurationError.error(
+                    String.format(
+                        "Must be between %s and %s (both inclusive)",
+                        Integer.MIN_VALUE, Integer.MAX_VALUE)))),
         thrown.errors());
   }
 

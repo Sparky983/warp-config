@@ -40,7 +40,13 @@ idea {
 
 spotless {
     java {
-        targetExclude("src/main/java/me/sparky983/warp/internal/Deserializer.java") // uses preview features
+        // use preview features
+        targetExclude(
+                "src/main/java/me/sparky983/warp/internal/Deserializer.java",
+                "src/main/java/me/sparky983/warp/ConfigurationError.java",
+                "src/main/java/me/sparky983/warp/ConfigurationException.java"
+        )
+
         googleJavaFormat("1.17.0")
         formatAnnotations()
     }

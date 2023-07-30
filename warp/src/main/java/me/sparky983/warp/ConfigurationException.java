@@ -3,8 +3,7 @@ package me.sparky983.warp;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-import org.jspecify.annotations.Nullable;
+import java.util.TreeSet;
 
 /**
  * Thrown by {@link ConfigurationBuilder#build()} if there was an error with the configuration.
@@ -21,20 +20,45 @@ public final class ConfigurationException extends Exception {
    * @param message the message
    * @param errors a set of all the errors; changes to this set will not be reflected in the set
    *     returned by {@link #errors()}
-   * @throws NullPointerException if the errors set is {@code null} or one of the errors are {@code
-   *     null}.
+   * @throws NullPointerException if the message, the errors set is {@code null} or one of the
+   *     errors are {@code null}.
    * @since 0.1
    */
   public ConfigurationException(
-      final @Nullable String message, final Set<ConfigurationError> errors) {
+      final String message, final Set<? extends ConfigurationError> errors) {
     super(
-        String.format(
-            "%s:%s",
-            message,
-            errors.stream()
-                .map((error) -> String.format("\n - %s", error.description()))
-                .collect(Collectors.joining())));
+        createErrorMessage(
+            message, new TreeSet<>(errors))); // The groups are sorted only in the message
+
     this.errors = Collections.unmodifiableSet(new LinkedHashSet<>(errors));
+  }
+
+  private static String createErrorMessage(
+      final String message, final Set<? extends ConfigurationError> errors) {
+    final StringBuilder builder = new StringBuilder(message).append(':');
+
+    addErrorMessage(builder, 1, errors);
+
+    return builder.toString();
+  }
+
+  private static void addErrorMessage(
+      final StringBuilder builder,
+      final int indent,
+      final Set<? extends ConfigurationError> errors) {
+    for (final ConfigurationError error : errors) {
+      builder.append("\n").append(" ".repeat(indent)).append("- ");
+      switch (error) {
+        case ConfigurationError.Group(String name, Set<ConfigurationError> children) -> {
+          builder
+              .append(name)
+              .append(":");
+
+          addErrorMessage(builder, indent + 2, children);
+        }
+        case ConfigurationError.Error(String message) -> builder.append(message);
+      }
+    }
   }
 
   /**

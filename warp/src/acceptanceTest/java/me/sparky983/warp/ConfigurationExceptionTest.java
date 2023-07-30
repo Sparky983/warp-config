@@ -3,9 +3,7 @@ package me.sparky983.warp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
@@ -27,16 +25,32 @@ class ConfigurationExceptionTest {
     final ConfigurationException exception =
         new ConfigurationException(
             "message",
-            new LinkedHashSet<>(
-                Arrays.asList(ConfigurationError.of("error 1"), ConfigurationError.of("error 2"))));
+            Set.of(
+                ConfigurationError.error("Something went wrong"),
+                ConfigurationError.group(
+                    "animals.horse",
+                    ConfigurationError.error("Invalid horse b"),
+                    ConfigurationError.error("Invalid horse a")),
+                ConfigurationError.group("version", ConfigurationError.error("Must be a number"))));
 
     assertEquals(
         """
         message:
-         - error 1
-         - error 2""", exception.getMessage());
+         - Something went wrong
+         - animals.horse:
+           - Invalid horse a
+           - Invalid horse b
+         - version:
+           - Must be a number""",
+        exception.getMessage());
     assertEquals(
-        Set.of(ConfigurationError.of("error 1"), ConfigurationError.of("error 2")),
+        Set.of(
+            ConfigurationError.error("Something went wrong"),
+            ConfigurationError.group(
+                "animals.horse",
+                ConfigurationError.error("Invalid horse b"),
+                ConfigurationError.error("Invalid horse a")),
+            ConfigurationError.group("version", ConfigurationError.error("Must be a number"))),
         exception.errors());
   }
 }

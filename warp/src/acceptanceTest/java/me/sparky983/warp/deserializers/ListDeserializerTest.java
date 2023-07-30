@@ -42,7 +42,9 @@ class ListDeserializerTest {
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
 
-    assertEquals(Set.of(ConfigurationError.of("Must be a list")), thrown.errors());
+    assertEquals(
+        Set.of(ConfigurationError.group("property", ConfigurationError.error("Must be a list"))),
+        thrown.errors());
   }
 
   @Test

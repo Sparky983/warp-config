@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +19,6 @@ import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.annotations.Configuration;
-import me.sparky983.warp.annotations.Property;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.Deserializer;
@@ -135,9 +134,10 @@ final class InterfaceSchema<T> implements Schema<T> {
     configurations.forEach(Objects::requireNonNull);
 
     final java.util.Map<String, Object> mappedConfiguration = new HashMap<>();
-    final Set<ConfigurationError> violations = new LinkedHashSet<>();
+    final Set<ConfigurationError> errors = new HashSet<>();
 
     for (final Property property : properties) {
+      final Set<ConfigurationError> propertyErrors = new HashSet<>();
       final Deserializer deserializer =
           deserializers
               .get(property.type())
@@ -158,28 +158,29 @@ final class InterfaceSchema<T> implements Schema<T> {
         try {
           mappedConfiguration.putIfAbsent(property.path(), deserializer.deserialize(node.get()));
         } catch (final DeserializationException e) {
-          violations.add(ConfigurationError.of(e.getMessage()));
+          propertyErrors.add(ConfigurationError.error(e.getMessage()));
         }
       }
       if (isAbsent) {
         final Optional<ConfigurationNode> defaultNode = defaults.get(property.type().rawType());
         if (defaultNode.isEmpty()) {
-          violations.add(
-              ConfigurationError.of(
-                  String.format("Property \"%s\" was not present in any sources", property)));
+          propertyErrors.add(ConfigurationError.error("Must be set to a value"));
         } else {
           try {
             mappedConfiguration.putIfAbsent(
                 property.path(), deserializer.deserialize(defaultNode.get()));
           } catch (final DeserializationException e) {
-            violations.add(ConfigurationError.of(e.getMessage()));
+            propertyErrors.add(ConfigurationError.error(e.getMessage()));
           }
         }
       }
+      if (!propertyErrors.isEmpty()) {
+        errors.add(ConfigurationError.group(property.path(), propertyErrors));
+      }
     }
 
-    if (!violations.isEmpty()) {
-      throw new ConfigurationException("The configuration was invalid", violations);
+    if (!errors.isEmpty()) {
+      throw new ConfigurationException("The configuration was invalid", errors);
     }
 
     return newProxyInstance(
