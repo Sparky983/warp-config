@@ -257,7 +257,7 @@ class ParameterizedTypeTest {
         ParameterizedType.of(List.class, String.class));
   }
 
-  // No tests for different hash codes, as this is not guaranteed.
+  // No tests for different hash codes as that cannot be not guaranteed.
 
   @Test
   void testHashCode_Same() {
