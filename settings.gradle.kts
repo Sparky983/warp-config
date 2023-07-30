@@ -1,6 +1,6 @@
 rootProject.name = "warp-config"
 
 sequenceOf(
-    "warp-annotations",
-    "warp"
+        "warp",
+        "warp-annotations"
 ).forEach { include(it) }
