@@ -60,6 +60,7 @@ public final class DeserializerRegistry {
               ? super ParameterizedType<T>,
               ? extends Deserializer<? extends T>>
           factory) {
+    Objects.requireNonNull(type, "type cannot be null");
     Objects.requireNonNull(factory, "factory cannot be null");
 
     deserializers.remove(type);
