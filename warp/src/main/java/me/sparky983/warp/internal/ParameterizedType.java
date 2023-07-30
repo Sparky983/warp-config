@@ -26,8 +26,7 @@ public final class ParameterizedType<T> {
 
     this.typeArguments = List.copyOf(typeArguments);
 
-    if (!typeArguments.isEmpty()
-        && rawType.getTypeParameters().length != typeArguments.size()) {
+    if (!typeArguments.isEmpty() && rawType.getTypeParameters().length != typeArguments.size()) {
       throw new IllegalArgumentException(
           String.format(
               "%s declares %s type parameters but found %s type arguments",
@@ -113,7 +112,7 @@ public final class ParameterizedType<T> {
       case final WildcardType wildcardType -> of(wildcardType.getUpperBounds()[0]);
       case final GenericArrayType genericArrayType -> of(
           of(genericArrayType.getGenericComponentType()).rawType().arrayType());
-      case final TypeVariable<?> __ -> throw new IllegalArgumentException(
+      case final TypeVariable<?> typeVariable -> throw new IllegalArgumentException(
           "Type variables are not allowed in ParameterizedType");
       default -> throw new IllegalArgumentException(
           String.format("Unexpected type %s", type.getTypeName()));
