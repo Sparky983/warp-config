@@ -53,7 +53,7 @@ public final class ConfigurationException extends Exception {
       final Set<? extends ConfigurationError> errors) {
     for (final ConfigurationError error : errors) {
       builder.append("\n").append(" ".repeat(indent)).append("- ");
-      /*switch (error) {
+      switch (error) {
         case ConfigurationError.Group(String name, Set<ConfigurationError> children) -> {
           builder
               .append(name)
@@ -62,7 +62,7 @@ public final class ConfigurationException extends Exception {
           addErrorMessage(builder, indent + 2, children);
         }
         case ConfigurationError.Error(String message) -> builder.append(message);
-      }*/
+      }
     }
   }
 
