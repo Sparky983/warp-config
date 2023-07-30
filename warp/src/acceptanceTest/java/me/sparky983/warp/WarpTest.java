@@ -136,6 +136,19 @@ class WarpTest {
   }
 
   @Test
+  void testProperty_NotMap() {
+    final ConfigurationBuilder<Configurations.Nested> builder =
+        Warp.builder(Configurations.Nested.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry("nested", ConfigurationNode.string("not a map"))
+                        .build()));
+
+    assertThrows(ConfigurationException.class, builder::build);
+  }
+
+  @Test
   void testUnserializableProperty() {
     final ConfigurationBuilder<Configurations.NonDeserializable> builder =
         Warp.builder(Configurations.NonDeserializable.class);

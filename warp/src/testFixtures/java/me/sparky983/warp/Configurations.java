@@ -167,6 +167,12 @@ public final class Configurations {
   }
 
   @Configuration
+  public interface Nested {
+    @Property("nested.property")
+    java.lang.String property();
+  }
+
+  @Configuration
   public interface NonDeserializable {
     @Property("property")
     Random property();
