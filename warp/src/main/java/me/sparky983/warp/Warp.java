@@ -23,7 +23,7 @@ public final class Warp {
    * @param <T> the type of the configuration class.
    * @since 0.1
    */
-  public static <T> ConfigurationBuilder<T> builder(final Class<T> configurationClass) {
+  public static <T> ConfigurationBuilder<T> builder(final Class<? extends T> configurationClass) {
     return new DefaultConfigurationBuilder<>(Schema.fromClass(configurationClass));
   }
 }
