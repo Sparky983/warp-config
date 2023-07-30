@@ -1,11 +1,11 @@
 package me.sparky983.warp.internal;
 
-import me.sparky983.warp.ConfigurationNode;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import me.sparky983.warp.ConfigurationNode;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class DefaultsRegistryTest {
   DefaultsRegistry defaultsRegistry;
