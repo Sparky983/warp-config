@@ -95,7 +95,6 @@ public interface Deserializer<T> {
    * @param <E> the element type
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  @SuppressWarnings({"rawtypes", "unchecked"})
   static <E> Deserializer<List<E>> list(final Deserializer<? extends E> elementDeserializer) {
     Objects.requireNonNull(elementDeserializer, "elementDeserializer cannot be null");
 
@@ -104,7 +103,7 @@ public interface Deserializer<T> {
 
       return switch (node) {
         case final ConfigurationNode.List list -> {
-          final List deserializedList = new ArrayList<>();
+          final List<E> deserializedList = new ArrayList<>();
           for (final ConfigurationNode element : list.values()) {
             deserializedList.add(elementDeserializer.deserialize(element));
           }
