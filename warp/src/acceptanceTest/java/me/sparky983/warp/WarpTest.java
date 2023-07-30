@@ -172,7 +172,7 @@ class WarpTest {
             .build();
 
     assertEquals(
-        "me.sparky983.warp.Configurations$String{nested.property=value}", configuration.toString());
+        "me.sparky983.warp.Configurations$Nested{nested.property=value}", configuration.toString());
   }
 
   @Test
