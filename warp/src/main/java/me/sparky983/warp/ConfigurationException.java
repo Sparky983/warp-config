@@ -53,15 +53,13 @@ public final class ConfigurationException extends Exception {
       final Set<? extends ConfigurationError> errors) {
     for (final ConfigurationError error : errors) {
       builder.append("\n").append(" ".repeat(indent)).append("- ");
-      switch (error) {
-        case ConfigurationError.Group(String name, Set<ConfigurationError> children) -> {
-          builder
-              .append(name)
-              .append(":");
-
-          addErrorMessage(builder, indent + 2, children);
-        }
-        case ConfigurationError.Error(String message) -> builder.append(message);
+      if (error instanceof final ConfigurationError.Group group) {
+        builder.append(group.name()).append(":");
+        addErrorMessage(builder, indent + 2, group.errors());
+      } else if (error instanceof final ConfigurationError.Error message) {
+        builder.append(message.message());
+      } else {
+        throw new AssertionError(); // This shouldn't happen, but we don't want to silently fail
       }
     }
   }

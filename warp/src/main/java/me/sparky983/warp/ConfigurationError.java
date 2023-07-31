@@ -89,10 +89,10 @@ public sealed interface ConfigurationError extends Comparable<ConfigurationError
     public int compareTo(final ConfigurationError other) {
       Objects.requireNonNull(other, "other cannot be null");
 
-      return switch (other) {
-        case final Group group -> this.name.compareTo(group.name);
-        case final Error error -> 1;
-      };
+      if (other instanceof final Group group) {
+        return name.compareTo(group.name);
+      }
+      return 1;
     }
   }
 
@@ -118,10 +118,10 @@ public sealed interface ConfigurationError extends Comparable<ConfigurationError
     public int compareTo(final ConfigurationError other) {
       Objects.requireNonNull(other, "other cannot be null");
 
-      return switch (other) {
-        case final Group group -> -1;
-        case final Error error -> message.compareTo(error.message);
-      };
+      if (other instanceof final Error error) {
+        return message.compareTo(error.message);
+      }
+      return -1;
     }
   }
 }

@@ -40,10 +40,10 @@ public interface Deserializer<T> {
       (node) -> {
         Objects.requireNonNull(node, "node cannot be null");
 
-        return switch (node) {
-          case final ConfigurationNode.Bool bool -> bool.value();
-          default -> throw new DeserializationException("Must be a boolean");
-        };
+        if (node instanceof final ConfigurationNode.Bool bool) {
+          return bool.value();
+        }
+        throw new DeserializationException("Must be a boolean");
       };
 
   /** A {@link String} deserializer. */
@@ -51,10 +51,10 @@ public interface Deserializer<T> {
       (node) -> {
         Objects.requireNonNull(node, "node cannot be null");
 
-        return switch (node) {
-          case final ConfigurationNode.String string -> string.value();
-          default -> throw new DeserializationException("Must be a string");
-        };
+        if (node instanceof final ConfigurationNode.String string) {
+          return string.value();
+        }
+        throw new DeserializationException("Must be a string");
       };
 
   private static <T> Deserializer<T> integer(
@@ -78,12 +78,14 @@ public interface Deserializer<T> {
     return (node) -> {
       Objects.requireNonNull(node, "node cannot be null");
 
-      final double value =
-          switch (node) {
-            case final ConfigurationNode.Integer integer -> integer.value();
-            case final ConfigurationNode.Decimal decimal -> decimal.value();
-            default -> throw new DeserializationException("Must be a number");
-          };
+      final double value;
+      if (node instanceof final ConfigurationNode.Integer integer) {
+        value = integer.value();
+      } else if (node instanceof final ConfigurationNode.Decimal decimal) {
+        value = decimal.value();
+      } else {
+        throw new DeserializationException("Must be a number");
+      }
       return mapper.apply(value);
     };
   }
@@ -102,16 +104,14 @@ public interface Deserializer<T> {
     return (node) -> {
       Objects.requireNonNull(node, "node cannot be null");
 
-      return switch (node) {
-        case final ConfigurationNode.List list -> {
-          final List<E> deserializedList = new ArrayList<>();
-          for (final ConfigurationNode element : list.values()) {
-            deserializedList.add(elementDeserializer.deserialize(element));
-          }
-          yield Collections.unmodifiableList(deserializedList);
+      if (node instanceof final ConfigurationNode.List list) {
+        final List<E> deserializedList = new ArrayList<>();
+        for (final ConfigurationNode element : list.values()) {
+          deserializedList.add(elementDeserializer.deserialize(element));
         }
-        default -> throw new DeserializationException("Must be a list");
-      };
+        return Collections.unmodifiableList(deserializedList);
+      }
+      throw new DeserializationException("Must be a list");
     };
   }
 
@@ -134,18 +134,16 @@ public interface Deserializer<T> {
     return (node) -> {
       Objects.requireNonNull(node, "node cannot be null");
 
-      return switch (node) {
-        case final ConfigurationNode.Map map -> {
-          final Map<K, V> deserializedMap = new HashMap<>();
-          for (final ConfigurationNode.Map.Entry entry : map.entries()) {
-            final K key = keyDeserializer.deserialize(ConfigurationNode.string(entry.key()));
-            final V value = valueDeserializer.deserialize(entry.value());
-            deserializedMap.put(key, value);
-          }
-          yield Collections.unmodifiableMap(deserializedMap);
+      if (node instanceof final ConfigurationNode.Map map) {
+        final Map<K, V> deserializedMap = new HashMap<>();
+        for (final ConfigurationNode.Map.Entry entry : map.entries()) {
+          final K key = keyDeserializer.deserialize(ConfigurationNode.string(entry.key()));
+          final V value = valueDeserializer.deserialize(entry.value());
+          deserializedMap.put(key, value);
         }
-        default -> throw new DeserializationException("Must be a map");
-      };
+        return Collections.unmodifiableMap(deserializedMap);
+      }
+      throw new DeserializationException("Must be a map");
     };
   }
 
@@ -163,10 +161,10 @@ public interface Deserializer<T> {
     return (node) -> {
       Objects.requireNonNull(node, "node cannot be null");
 
-      return switch (node) {
-        case final ConfigurationNode.Nil nil -> Optional.empty();
-        default -> Optional.of(valueDeserializer.deserialize(node));
-      };
+      if (node instanceof ConfigurationNode.Nil) {
+        return Optional.empty();
+      }
+      return Optional.of(valueDeserializer.deserialize(node));
     };
   }
 

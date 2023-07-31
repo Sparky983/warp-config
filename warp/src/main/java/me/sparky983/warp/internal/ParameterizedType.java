@@ -100,23 +100,25 @@ public final class ParameterizedType<T> {
    *     arguments are {@code null}.
    */
   public static ParameterizedType<?> of(final Type type) {
-    return switch (type) {
-      case final Class<?> cls -> of(cls);
-      case final java.lang.reflect.ParameterizedType parameterizedType -> new ParameterizedType<>(
+    if (type instanceof final Class<?> cls) {
+      return of(cls);
+    } else if (type instanceof final java.lang.reflect.ParameterizedType parameterizedType) {
+      return new ParameterizedType<>(
           // This cast is safe actually safe - https://bugs.openjdk.org/browse/JDK-6255169
           (Class<?>) parameterizedType.getRawType(),
           Stream.of(parameterizedType.getActualTypeArguments())
               .<ParameterizedType<?>>map(ParameterizedType::of)
               .toList());
-        // Currently Java only supports a single bound
-      case final WildcardType wildcardType -> of(wildcardType.getUpperBounds()[0]);
-      case final GenericArrayType genericArrayType -> of(
-          of(genericArrayType.getGenericComponentType()).rawType().arrayType());
-      case final TypeVariable<?> typeVariable -> throw new IllegalArgumentException(
-          "Type variables are not allowed in ParameterizedType");
-      default -> throw new IllegalArgumentException(
-          String.format("Unexpected type %s", type.getTypeName()));
-    };
+    } else if (type instanceof final WildcardType wildcardType) {
+      // Currently Java only supports a single bound
+      return of(wildcardType.getUpperBounds()[0]);
+    } else if (type instanceof final GenericArrayType genericArrayType) {
+      return of(of(genericArrayType.getGenericComponentType()).rawType().arrayType());
+    } else if (type instanceof TypeVariable<?>) {
+      throw new IllegalArgumentException("Type variables are not allowed in ParameterizedType");
+    } else {
+      throw new IllegalArgumentException(String.format("Unexpected type %s", type.getTypeName()));
+    }
   }
 
   /**
