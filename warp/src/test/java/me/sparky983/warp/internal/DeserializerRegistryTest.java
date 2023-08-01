@@ -16,31 +16,19 @@ class DeserializerRegistryTest {
   }
 
   @Test
-  void testRegistry_NullType() {
+  void testRegisterDeserializer_NullType() {
     assertThrows(NullPointerException.class, () -> registry.register(null, (node) -> "test"));
   }
 
   @Test
-  void testRegister_NullDeserializer() {
+  void testRegisterDeserializer_NullDeserializer() {
     assertThrows(
         NullPointerException.class,
         () -> registry.register(String.class, (Deserializer<String>) null));
   }
 
   @Test
-  void testRegister_AlreadyRegistered() {
-    final Deserializer<String> deserializer1 = (node) -> "test";
-    final Deserializer<String> deserializer2 = (node) -> "test";
-
-    registry.register(String.class, deserializer1);
-
-    assertThrows(IllegalStateException.class, () -> registry.register(String.class, deserializer2));
-    assertThrows(IllegalStateException.class, () -> registry.register(String.class, (registry, type) -> deserializer2));
-    assertEquals(Optional.of(deserializer1), registry.get(ParameterizedType.of(String.class)));
-  }
-
-  @Test
-  void testRegister() {
+  void testRegisterDeserializer() {
     final Deserializer<String> deserializer = (node) -> "test";
 
     registry.register(String.class, deserializer);
@@ -67,6 +55,18 @@ class DeserializerRegistryTest {
   }
 
   @Test
+  void testRegister_AlreadyRegistered() {
+    final Deserializer<String> deserializer1 = (node) -> "test";
+    final Deserializer<String> deserializer2 = (node) -> "test";
+
+    registry.register(String.class, deserializer1);
+
+    assertThrows(IllegalStateException.class, () -> registry.register(String.class, deserializer2));
+    assertThrows(IllegalStateException.class, () -> registry.register(String.class, (registry, type) -> deserializer2));
+    assertEquals(Optional.of(deserializer1), registry.get(ParameterizedType.of(String.class)));
+  }
+
+  @Test
   void testGet_NotRegistered() {
     final Optional<Deserializer<String>> deserializer =
         registry.get(ParameterizedType.of(String.class));
@@ -76,9 +76,7 @@ class DeserializerRegistryTest {
 
   @Test
   void testGet_Factory() {
-    final Deserializer<String> overwritten = (node) -> "test";
     final Deserializer<String> deserializer = (node) -> "test";
-    registry.register(String.class, overwritten);
     registry.register(
         String.class,
         (registry, type) -> {
