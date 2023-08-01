@@ -28,9 +28,7 @@ public final class ParameterizedType<T> {
 
     if (!typeArguments.isEmpty() && rawType.getTypeParameters().length != typeArguments.size()) {
       throw new IllegalArgumentException(
-          String.format(
-              "%s declares %s type parameters but found %s type arguments",
-              rawType, rawType.getTypeParameters().length, typeArguments.size()));
+              rawType + " declares " + rawType.getTypeParameters().length + " type parameters but found " + typeArguments.size() + " type arguments");
     }
 
     this.rawType = rawType;
@@ -122,7 +120,7 @@ public final class ParameterizedType<T> {
     } else if (type instanceof TypeVariable<?>) {
       throw new IllegalArgumentException("Type variables are not allowed in ParameterizedType");
     } else {
-      throw new IllegalArgumentException(String.format("Unexpected type %s", type.getTypeName()));
+      throw new IllegalArgumentException("Unexpected type %s" + type.getTypeName());
     }
   }
 

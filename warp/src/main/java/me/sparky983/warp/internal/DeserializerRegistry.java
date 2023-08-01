@@ -98,17 +98,10 @@ public final class DeserializerRegistry {
                           } catch (final IllegalStateException e) {
                             throw e;
                           } catch (final Exception e) {
-                            throw new IllegalStateException(
-                                String.format(
-                                    "Exception occurred while creating deserializer for type %s",
-                                    type),
-                                e);
+                            throw new IllegalStateException("Exception occurred while creating deserializer for type " + type, e);
                           }
                           if (deserializer == null) {
-                            throw new IllegalStateException(
-                                String.format(
-                                    "%s deserialize factory returned null for type %s",
-                                    factory, type));
+                            throw new IllegalStateException(factory + " deserialize factory returned null for type " + type);
                           }
                           return deserializer;
                         }));

@@ -52,9 +52,7 @@ class IntegerDeserializerTest {
             ConfigurationError.group(
                 "property",
                 ConfigurationError.error(
-                    String.format(
-                        "Must be between %s and %s (both inclusive)",
-                        Integer.MIN_VALUE, Integer.MAX_VALUE)))),
+                        "Must be between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE + " (both inclusive)"))),
         thrown.errors());
   }
 

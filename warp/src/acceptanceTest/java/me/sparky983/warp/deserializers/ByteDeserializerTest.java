@@ -52,9 +52,7 @@ class ByteDeserializerTest {
             ConfigurationError.group(
                 "property",
                 ConfigurationError.error(
-                    String.format(
-                        "Must be between %s and %s (both inclusive)",
-                        Byte.MIN_VALUE, Byte.MAX_VALUE)))),
+                        "Must be between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE + " (both inclusive)"))),
         thrown.errors());
   }
 

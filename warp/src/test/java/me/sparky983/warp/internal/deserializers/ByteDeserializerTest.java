@@ -32,7 +32,7 @@ class ByteDeserializerTest {
         assertThrows(DeserializationException.class, () -> BYTE.deserialize(node));
 
     assertEquals(
-        String.format("Must be between %s and %s (both inclusive)", Byte.MIN_VALUE, Byte.MAX_VALUE),
+            "Must be between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE + " (both inclusive)",
         thrown.getMessage());
   }
 

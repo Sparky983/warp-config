@@ -42,7 +42,7 @@ public record DefaultMapNode(@Override java.util.Map<java.lang.String, Configura
   @Override
   public java.lang.String toString() {
     return values.entrySet().stream()
-        .map((entry) -> java.lang.String.format("%s=%s", entry.getKey(), entry.getValue()))
+        .map((entry) -> entry.getKey() + "=" + entry.getValue())
         .collect(Collectors.joining(", ", "{", "}"));
   }
 
@@ -89,7 +89,7 @@ public record DefaultMapNode(@Override java.util.Map<java.lang.String, Configura
 
     @Override
     public java.lang.String toString() {
-      return java.lang.String.format("%s=%s", key, value);
+      return key + "=" + value;
     }
   }
 }

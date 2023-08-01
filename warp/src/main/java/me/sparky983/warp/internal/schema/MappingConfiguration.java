@@ -62,9 +62,7 @@ public final class MappingConfiguration {
             .orElseThrow(
                 () ->
                     new IllegalStateException(
-                        String.format(
-                            "Property \"%s\" required a deserializer of type %s, but none was found",
-                            property.path(), property.type())));
+                            "Property \"" + property.path() + "\" required a deserializer of type " + property.type() + ", but none was found"));
 
     final Set<ConfigurationError> errors = new HashSet<>();
 

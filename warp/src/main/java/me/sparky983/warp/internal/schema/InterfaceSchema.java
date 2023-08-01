@@ -43,34 +43,27 @@ final class InterfaceSchema<T> implements Schema<T> {
 
     if (!configurationClass.isAnnotationPresent(Configuration.class)) {
       throw new IllegalArgumentException(
-          String.format(
-              "Class %s must be annotated with @%s",
-              configurationClass.getName(), Configuration.class.getName()));
+              "Class " + configurationClass.getName() + " must be annotated with @" + Configuration.class.getName());
     }
 
     if (!configurationClass.isInterface()) {
-      throw new IllegalArgumentException(
-          String.format("Class %s must be an interface", configurationClass.getName()));
+      throw new IllegalArgumentException(configurationClass + " must be an interface");
     }
 
     if (!Modifier.isPublic(configurationClass.getModifiers())) {
-      throw new IllegalArgumentException(
-          String.format("Class %s must be public", configurationClass.getName()));
+      throw new IllegalArgumentException(configurationClass + " must be public");
     }
 
     if (configurationClass.isSealed()) {
-      throw new IllegalArgumentException(
-          String.format("Class %s must not be sealed", configurationClass.getName()));
+      throw new IllegalArgumentException(configurationClass + " must not be sealed");
     }
 
     if (configurationClass.isHidden()) {
-      throw new IllegalArgumentException(
-          String.format("Class %s must not be hidden", configurationClass.getName()));
+      throw new IllegalArgumentException(configurationClass + " must not be hidden");
     }
 
     if (configurationClass.getTypeParameters().length != 0) {
-      throw new IllegalArgumentException(
-          String.format("Class %s must not be generic", configurationClass.getName()));
+      throw new IllegalArgumentException(configurationClass + " must not be generic");
     }
 
     properties =

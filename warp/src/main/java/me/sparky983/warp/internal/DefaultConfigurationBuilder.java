@@ -51,8 +51,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                         .orElseThrow(
                             () ->
                                 new IllegalStateException(
-                                    String.format(
-                                        "Deserializer for the value of %s not found", type)));
+                                        "Deserializer for the value of " + type + " not found"));
                 return Deserializer.optional(deserializer);
               })
           .register(
@@ -69,16 +68,14 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                         .orElseThrow(
                             () ->
                                 new IllegalStateException(
-                                    String.format(
-                                        "Deserializer for the keys of %s not found", type)));
+                                        "Deserializer for the keys of " + type + " not found"));
                 final Deserializer<?> valueDeserializer =
                     deserializers
                         .get(valueType)
                         .orElseThrow(
                             () ->
                                 new IllegalStateException(
-                                    String.format(
-                                        "Deserializer for the values of %s not found", type)));
+                                        "Deserializer for the values of " + type + " not found"));
                 return Deserializer.map(keyDeserializer, valueDeserializer);
               })
           .register(
@@ -94,8 +91,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                         .orElseThrow(
                             () ->
                                 new IllegalStateException(
-                                    String.format(
-                                        "Deserializer for the elements of %s not found", type)));
+                                        "Deserializer for the elements of " + type + " not found"));
                 return Deserializer.list(deserializer);
               });
 

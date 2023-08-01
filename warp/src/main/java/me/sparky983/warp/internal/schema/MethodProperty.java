@@ -25,25 +25,25 @@ final class MethodProperty<T> implements Schema.Property<T> {
     final Property property = method.getAnnotation(Property.class);
     if (property == null) {
       throw new IllegalArgumentException(
-          String.format("Method %s must be annotated with @%s", method, Property.class.getName()));
+              "Method " + method + " must be annotated with @" + Property.class.getName());
     }
 
     if (!Modifier.isPublic(method.getModifiers())) {
-      throw new IllegalArgumentException(String.format("Method %s must be public", method));
+      throw new IllegalArgumentException("Method " + method + " must be public");
     }
 
     if (!Modifier.isAbstract(method.getModifiers())) {
       throw new IllegalArgumentException(
-          String.format("Method %s must be abstract or default", method));
+              "Method " + method + " must be abstract or default");
     }
 
     if (method.getParameterCount() != 0) {
       throw new IllegalArgumentException(
-          String.format("Method %s must not declare any parameters", method));
+              "Method " + method + " must not declare any parameters");
     }
 
     if (method.getTypeParameters().length != 0) {
-      throw new IllegalArgumentException(String.format("Method %s must not be generic", method));
+      throw new IllegalArgumentException("Method " + method + " must not be generic");
     }
 
     this.path = property.value();

@@ -68,7 +68,7 @@ public interface Deserializer<T> {
       final long value = integer.value();
       if (value < min || value > max) {
         throw new DeserializationException(
-            String.format("Must be between %s and %s (both inclusive)", min, max));
+                "Must be between " + min + " and " + max + " (both inclusive)");
       }
       return mapper.apply(integer.value());
     };
