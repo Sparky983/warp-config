@@ -8,7 +8,6 @@ import java.util.function.BiFunction;
 
 /** A registry of {@link Deserializer Deserializers}. */
 public final class DeserializerRegistry {
-  private final Map<Class<?>, Deserializer<?>> deserializers = new HashMap<>();
   private final Map<
           Class<?>, BiFunction<DeserializerRegistry, ParameterizedType<?>, Deserializer<?>>>
       deserializerFactories = new HashMap<>();
@@ -39,10 +38,9 @@ public final class DeserializerRegistry {
     Objects.requireNonNull(type, "type cannot be null");
     Objects.requireNonNull(deserializer, "deserializer cannot be null");
 
-    if (deserializers.putIfAbsent(type, deserializer) != null) {
+    if (deserializerFactories.putIfAbsent(type, (registry, parameterizedType) -> deserializer) != null) {
       throw new IllegalStateException("Deserializer for type " + type + " already registered");
     }
-    deserializerFactories.remove(type);
     return this;
   }
 
@@ -71,7 +69,6 @@ public final class DeserializerRegistry {
       throw new IllegalStateException(
           "Deserializer factory for type " + type + " already registered");
     }
-    deserializers.remove(type);
     return this;
   }
 
@@ -86,24 +83,21 @@ public final class DeserializerRegistry {
   public <T> Optional<Deserializer<T>> get(final ParameterizedType<T> type) {
     Objects.requireNonNull(type, "type cannot be null");
 
-    return Optional.ofNullable((Deserializer<T>) deserializers.get(type.rawType()))
-        .or(
-            () ->
-                Optional.ofNullable((deserializerFactories.get(type.rawType())))
-                    .map(
-                        (factory) -> {
-                          final Deserializer<T> deserializer;
-                          try {
-                            deserializer = (Deserializer<T>) factory.apply(this, type);
-                          } catch (final IllegalStateException e) {
-                            throw e;
-                          } catch (final Exception e) {
-                            throw new IllegalStateException("Exception occurred while creating deserializer for type " + type, e);
-                          }
-                          if (deserializer == null) {
-                            throw new IllegalStateException(factory + " deserialize factory returned null for type " + type);
-                          }
-                          return deserializer;
-                        }));
+    return Optional.ofNullable((deserializerFactories.get(type.rawType())))
+        .map(
+            (factory) -> {
+              final Deserializer<T> deserializer;
+              try {
+                deserializer = (Deserializer<T>) factory.apply(this, type);
+              } catch (final IllegalStateException e) {
+                throw e;
+              } catch (final Exception e) {
+                throw new IllegalStateException("Exception occurred while creating deserializer for type " + type, e);
+              }
+              if (deserializer == null) {
+                throw new IllegalStateException(factory + " deserialize factory returned null for type " + type);
+              }
+              return deserializer;
+            });
   }
 }
