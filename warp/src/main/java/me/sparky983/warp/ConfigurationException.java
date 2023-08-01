@@ -19,8 +19,8 @@ public final class ConfigurationException extends Exception {
    * Constructs a {@code ConfigurationException}.
    *
    * @param message the message
-   * @param errors a set of all the errors; changes to this set will not be reflected in the set
-   *     returned by {@link #errors()}
+   * @param errors a set of all the {@link ConfigurationError ConfigurationErrors}; changes to this
+   *     set will not be reflected in the set returned by {@link #errors()}
    * @throws NullPointerException if the message, the errors set is {@code null} or one of the
    *     errors are {@code null}.
    * @since 0.1

@@ -20,21 +20,22 @@ import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
- * The {@link Schema} implementation for configuration classes.
+ * A {@link Schema} for a {@linkplain Configuration configuration class}.
  *
- * @param <T> the type of the configuration classes
+ * @param <T> the type of the {@linkplain Configuration configuration class}
  */
 final class InterfaceSchema<T> implements Schema<T> {
   private final Class<T> configurationClass;
   private final Set<Property<?>> properties;
 
   /**
-   * Constructs an {@code InterfaceSchema}.
+   * Constructs an {@code InterfaceSchema} for the given {@linkplain Configuration configuration class}.
    *
    * @param configurationClass the configuration class
-   * @throws IllegalArgumentException if the configuration class is not valid.
+   * @throws IllegalArgumentException if the configuration class is {@code null}.
    * @throws NullPointerException if the configuration class is {@code null}.
    */
   InterfaceSchema(final Class<T> configurationClass) {

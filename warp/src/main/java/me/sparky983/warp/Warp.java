@@ -1,5 +1,6 @@
 package me.sparky983.warp;
 
+import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.DefaultConfigurationBuilder;
 import me.sparky983.warp.internal.schema.Schema;
 
@@ -13,12 +14,11 @@ public final class Warp {
   private Warp() {}
 
   /**
-   * Creates a new {@link ConfigurationBuilder} for the given configuration class.
+   * Returns a {@link ConfigurationBuilder} for the given configuration class.
    *
    * @param configurationClass the configuration class
    * @return the new {@link ConfigurationBuilder}
-   * @throws IllegalArgumentException if given configuration class is not a valid configuration
-   *     class.
+   * @throws IllegalArgumentException if configuration class is not {@link Configuration##requirements-header valid}.
    * @throws NullPointerException if the configuration class is {@code null}.
    * @param <T> the type of the configuration class.
    * @since 0.1

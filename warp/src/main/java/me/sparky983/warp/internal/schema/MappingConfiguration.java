@@ -13,12 +13,19 @@ import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.Deserializer;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
+/** A configuration that maps its values to objects as they are put. */
 public final class MappingConfiguration {
   private final DefaultsRegistry defaultsRegistry;
   private final DeserializerRegistry deserializerRegistry;
 
   private final Map<String, Object> properties = new HashMap<>();
 
+  /**
+   * Constructs a {@code MappingConfiguration}.
+   *
+   * @param defaultsRegistry the defaults registry
+   * @param deserializerRegistry the deserializer registry
+   */
   public MappingConfiguration(
       final DefaultsRegistry defaultsRegistry, final DeserializerRegistry deserializerRegistry) {
     this.defaultsRegistry = defaultsRegistry;
@@ -67,6 +74,12 @@ public final class MappingConfiguration {
     return Optional.of(ConfigurationError.group(path, errors));
   }
 
+  /**
+   * Gets the value associated with the given path.
+   *
+   * @param path the path
+   * @return the value
+   */
   public Object get(final String path) {
     return properties.get(path);
   }

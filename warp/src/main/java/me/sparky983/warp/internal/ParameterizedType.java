@@ -37,11 +37,11 @@ public final class ParameterizedType<T> {
   }
 
   /**
-   * Creates a new raw parameterized type for the given class.
+   * Returns {@code ParameterizedType} with the given raw type and no type arguments.
    *
-   * @param rawType the class
-   * @return the new parameterized type
-   * @param <T> the type
+   * @param rawType a class representing the raw type
+   * @return the parameterized type
+   * @param <T> the raw type
    * @throws NullPointerException if the class is {@code null}.
    */
   public static <T> ParameterizedType<T> of(final Class<T> rawType) {
@@ -49,17 +49,16 @@ public final class ParameterizedType<T> {
   }
 
   /**
-   * Creates a new parameterized type for the given class with the given type arguments.
+   * Returns a {@code ParameterizedType} with the given raw type and type arguments.
    *
-   * @param rawType the class
+   * @param rawType a class representing the raw type
    * @param typeArguments the type arguments; changes to this array will not be reflected in the
    *     resulting parameterized type's type arguments
-   * @return the new parameterized type
+   * @return the parameterized type
    * @param <T> the type
    * @throws IllegalArgumentException if the number of type arguments is not 0 (raw type) and the
    *     number of type arguments don't match the amount of type parameters declared by the class.
-   * @throws NullPointerException if the class, the type arguments array or any of the type
-   *     arguments are {@code null}.
+   * @throws NullPointerException if the class, the type arguments or a type is {@code null}.
    */
   public static <T> ParameterizedType<T> of(
       final Class<T> rawType, final ParameterizedType<?>... typeArguments) {
@@ -67,17 +66,16 @@ public final class ParameterizedType<T> {
   }
 
   /**
-   * Creates a new parameterized type for the given class with the given type arguments.
+   * Returns a {@code ParameterizedType} with the given raw type and type arguments.
    *
-   * @param rawType the class
+   * @param rawType a class representing the raw type
    * @param typeArguments the type arguments; changes to this array will not be reflected in the
    *     resulting parameterized type's type arguments
-   * @return the new parameterized type
+   * @return the parameterized type
    * @param <T> the type
    * @throws IllegalArgumentException if the number of type arguments is not 0 (raw type) and the
    *     number of type arguments don't match the amount of type parameters declared by the class.
-   * @throws NullPointerException if the class, the type arguments array or any of the type
-   *     arguments are {@code null}.
+   * @throws NullPointerException if the class, the type arguments or a type is {@code null}.
    */
   public static <T> ParameterizedType<T> of(
       final Class<T> rawType, final Class<?>... typeArguments) {
@@ -90,12 +88,18 @@ public final class ParameterizedType<T> {
   }
 
   /**
-   * Creates a new parameterized type for the type.
+   * Returns a {@code ParameterizedType} for the given {@link Type}.
    *
    * @param type the type
-   * @return the new parameterized type
-   * @throws IllegalArgumentException if the given type included a type variable or if the type was
-   *     unexpected
+   * @return the parameterized type
+   * @throws IllegalArgumentException if the given type either is or references (directly or indirectly) a type that is
+   * not an instance of one of the following:
+   * <ul>
+   *     <li>{@link Class}
+   *     <li>{@link java.lang.reflect.ParameterizedType}
+   *     <li>{@link WildcardType}
+   *     <li>{@link GenericArrayType}
+   * </ul>
    * @throws NullPointerException if the class, the type arguments array or any of the type
    *     arguments are {@code null}.
    */
@@ -140,7 +144,7 @@ public final class ParameterizedType<T> {
   }
 
   /**
-   * Returns the type arguments as classes.
+   * Returns the raw types of each type arguments.
    *
    * @return the type arguments
    */

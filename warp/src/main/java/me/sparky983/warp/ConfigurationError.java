@@ -13,12 +13,12 @@ import java.util.TreeSet;
  */
 public sealed interface ConfigurationError extends Comparable<ConfigurationError> {
   /**
-   * Returns a {@link Group} with the specified name and errors.
+   * Returns a {@link Group} with the given name and errors.
    *
    * @param name the name of the group
-   * @param errors the errors
-   * @return a {@link Group} with the specified name and errors
-   * @throws NullPointerException if the name, errors set or one of the errors are {@code null}.
+   * @param errors a set containing all the errors
+   * @return a {@link Group} with the given name and errors
+   * @throws NullPointerException if the name, errors or an error is {@code null}.
    * @since 0.1
    */
   static Group group(final String name, final Set<ConfigurationError> errors) {
@@ -26,13 +26,14 @@ public sealed interface ConfigurationError extends Comparable<ConfigurationError
   }
 
   /**
-   * Returns a {@link Group} with the specified name and errors.
+   * Returns a {@link Group} with the given name and errors.
    *
    * @param name the name of the group
-   * @param errors the errors
-   * @return a {@link Group} with the specified name and errors
-   * @throws NullPointerException if the name, errors set or one of the errors are {@code null}.
-   * @throws IllegalArgumentException if there are duplicate errors
+   * @param errors an array containing all the errors
+   * @return a {@link Group} with the given name and errors
+   * @throws NullPointerException if the name, errors or an error is {@code null}.
+   * @throws IllegalArgumentException if the array contains duplicates (defined by {@link
+   *     Object#equals(Object)}).
    * @since 0.1
    */
   static Group group(final String name, final ConfigurationError... errors) {
@@ -50,10 +51,10 @@ public sealed interface ConfigurationError extends Comparable<ConfigurationError
   }
 
   /**
-   * Returns an {@link Error} with the specified message.
+   * Returns an {@link Error} with the given message.
    *
-   * @param message the message of the error
-   * @return an {@link Error} with the specified message
+   * @param message the message
+   * @return an {@link Error} with the given message
    * @throws NullPointerException if the message is {@code null}.
    * @since 0.1
    */
@@ -85,6 +86,11 @@ public sealed interface ConfigurationError extends Comparable<ConfigurationError
       this.errors = Collections.unmodifiableSet(new TreeSet<>(errors));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The order is unspecified.
+     */
     @Override
     public int compareTo(final ConfigurationError other) {
       Objects.requireNonNull(other, "other cannot be null");
@@ -114,6 +120,11 @@ public sealed interface ConfigurationError extends Comparable<ConfigurationError
       Objects.requireNonNull(message, "message cannot be null");
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The order is unspecified.
+     */
     @Override
     public int compareTo(final ConfigurationError other) {
       Objects.requireNonNull(other, "other cannot be null");

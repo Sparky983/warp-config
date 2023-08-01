@@ -10,12 +10,13 @@ import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
+import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.schema.Schema;
 
 /**
  * The default implementation of {@link ConfigurationBuilder}.
  *
- * @param <T> the type of the configuration class
+ * @param <T> the type of the {@linkplain Configuration configuration class}
  */
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
   /** The default deserializer registry. */
