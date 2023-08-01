@@ -40,6 +40,15 @@ class DeserializerRegistryTest {
   }
 
   @Test
+  void testRegister() {
+    final Deserializer<String> deserializer = (node) -> "test";
+
+    registry.register(String.class, deserializer);
+
+    assertEquals(Optional.of(deserializer), registry.get(ParameterizedType.of(String.class)));
+  }
+
+  @Test
   void testRegisterFactory_NullType() {
     assertThrows(
         NullPointerException.class,
