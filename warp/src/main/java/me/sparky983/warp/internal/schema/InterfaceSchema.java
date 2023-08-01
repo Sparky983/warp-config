@@ -84,7 +84,7 @@ final class InterfaceSchema<T> implements Schema<T> {
     ConfigurationNode currentNode = configuration;
     final Queue<String> keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
     while (currentNode instanceof final ConfigurationNode.Map map) {
-      final Optional<ConfigurationNode> node = map.get(keys.poll());
+      final Optional<ConfigurationNode> node = map.get(keys.remove());
       if (node.isEmpty()) {
         return Optional.empty();
       }
