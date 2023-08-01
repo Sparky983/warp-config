@@ -31,6 +31,7 @@ public final class DeserializerRegistry {
    * @param deserializer the serializer
    * @return this registry
    * @param <T> the type to deserialize to
+   * @throws IllegalStateException if a deserializer for the given type is already registered.
    * @throws NullPointerException if the deserialized type or the deserializer are {@code null}.
    */
   <T> DeserializerRegistry register(
@@ -38,7 +39,9 @@ public final class DeserializerRegistry {
     Objects.requireNonNull(type, "type cannot be null");
     Objects.requireNonNull(deserializer, "deserializer cannot be null");
 
-    deserializers.put(type, deserializer);
+    if (deserializers.putIfAbsent(type, deserializer) != null) {
+      throw new IllegalStateException("Deserializer for type " + type + " already registered");
+    }
     deserializerFactories.remove(type);
     return this;
   }
@@ -50,6 +53,7 @@ public final class DeserializerRegistry {
    * @param factory the deserializer factory
    * @return this registry
    * @param <T> the type to deserialize to
+   * @throws IllegalStateException if a deserializer for the given type is already registered.
    * @throws NullPointerException if the deserialized type or the deserializer are {@code null}.
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -63,8 +67,10 @@ public final class DeserializerRegistry {
     Objects.requireNonNull(type, "type cannot be null");
     Objects.requireNonNull(factory, "factory cannot be null");
 
+    if (deserializerFactories.putIfAbsent(type, (BiFunction) factory) != null) {
+        throw new IllegalStateException("Deserializer factory for type " + type + " already registered");
+    }
     deserializers.remove(type);
-    deserializerFactories.put(type, (BiFunction) factory);
     return this;
   }
 

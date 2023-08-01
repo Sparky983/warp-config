@@ -27,13 +27,16 @@ public final class DefaultsRegistry {
    * @param type the type
    * @param node the default value
    * @return this registry
+   * @throws IllegalStateException if a default for the given type is already registered.
    * @throws NullPointerException if the type or the node are {@code null}.
    */
   public DefaultsRegistry register(final Class<?> type, final ConfigurationNode node) {
     Objects.requireNonNull(type, "type cannot be null");
     Objects.requireNonNull(node, "node cannot be null");
 
-    defaults.putIfAbsent(type, node);
+    if (defaults.putIfAbsent(type, node) != null) {
+      throw new IllegalStateException("Default for type " + type + " already registered");
+    }
     return this;
   }
 
