@@ -83,7 +83,7 @@ public final class DeserializerRegistry {
   public <T> Optional<Deserializer<T>> get(final ParameterizedType<T> type) {
     Objects.requireNonNull(type, "type cannot be null");
 
-    return Optional.ofNullable((deserializerFactories.get(type.rawType())))
+    return Optional.ofNullable(deserializerFactories.get(type.rawType()))
         .map(
             (factory) -> {
               final Deserializer<T> deserializer;
