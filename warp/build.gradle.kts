@@ -3,10 +3,6 @@ plugins {
     `java-test-fixtures`
 }
 
-dependencies {
-    api(project(":warp-annotations"))
-}
-
 idea {
     module {
         sourceDirs.remove(file("src/testFixtures/java"))

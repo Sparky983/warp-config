@@ -3,7 +3,7 @@ package me.sparky983.warp.internal.schema;
 import java.util.List;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode.Map;
-import me.sparky983.warp.annotations.Configuration;
+import me.sparky983.warp.Configuration;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;

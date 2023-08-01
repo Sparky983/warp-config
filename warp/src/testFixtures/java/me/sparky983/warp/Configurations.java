@@ -3,8 +3,6 @@ package me.sparky983.warp;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import me.sparky983.warp.annotations.Configuration;
-import me.sparky983.warp.annotations.Property;
 
 public final class Configurations {
   private Configurations() {}

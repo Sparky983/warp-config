@@ -16,10 +16,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import me.sparky983.warp.ConfigurationError;
-import me.sparky983.warp.ConfigurationException;
-import me.sparky983.warp.ConfigurationNode;
-import me.sparky983.warp.annotations.Configuration;
+
+import me.sparky983.warp.*;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
@@ -72,7 +70,7 @@ final class InterfaceSchema<T> implements Schema<T> {
         Stream.of(configurationClass.getMethods())
             .filter(
                 (method) ->
-                    method.isAnnotationPresent(me.sparky983.warp.annotations.Property.class)
+                    method.isAnnotationPresent(me.sparky983.warp.Property.class)
                         || Modifier.isAbstract(method.getModifiers()))
             .collect(Collectors.toMap(Function.identity(), MethodProperty::new));
 

@@ -1,8 +1,6 @@
 package me.sparky983.warp;
 
 import java.util.Optional;
-import me.sparky983.warp.annotations.Configuration;
-import me.sparky983.warp.annotations.Property;
 
 /**
  * A {@linkplain Configuration configuration class} builder.

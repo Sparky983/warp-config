@@ -3,7 +3,7 @@ package me.sparky983.warp.internal.schema;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
-import me.sparky983.warp.annotations.Property;
+import me.sparky983.warp.Property;
 import me.sparky983.warp.internal.ParameterizedType;
 
 /** The {@link Schema.Property} implementation for property methods. */
