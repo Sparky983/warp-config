@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class WarpTest {
@@ -144,7 +145,7 @@ class WarpTest {
   }
 
   @Test
-  void testConfigurationSourcePrecedence() throws ConfigurationException {
+  void testSourcePrecedence() throws ConfigurationException {
     final Configurations.String builder =
         Warp.builder(Configurations.String.class)
                 .source(
@@ -160,6 +161,15 @@ class WarpTest {
                 .build();
 
     assertEquals("overrides", builder.property());
+  }
+
+  @Test
+  void testSourceThrows() {
+    final ConfigurationBuilder<Configurations.String> builder = 
+            Warp.builder(Configurations.String.class)
+                    .source(() -> { throw new ConfigurationException("test", Set.of(ConfigurationError.error("message"))); });
+
+    assertThrows(ConfigurationException.class, builder::build);
   }
 
   @Test
