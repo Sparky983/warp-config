@@ -1,22 +1,24 @@
 package me.sparky983.warp.internal.schema;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
-import me.sparky983.warp.ConfigurationNode.Map;
 import me.sparky983.warp.annotations.Configuration;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
@@ -28,7 +30,7 @@ import me.sparky983.warp.internal.DeserializerRegistry;
  */
 final class InterfaceSchema<T> implements Schema<T> {
   private final Class<T> configurationClass;
-  private final Set<Property<?>> properties;
+  private final Map<Method, Property<?>> properties;
 
   /**
    * Constructs an {@code InterfaceSchema} for the given {@linkplain Configuration configuration
@@ -72,8 +74,7 @@ final class InterfaceSchema<T> implements Schema<T> {
                 (method) ->
                     method.isAnnotationPresent(me.sparky983.warp.annotations.Property.class)
                         || Modifier.isAbstract(method.getModifiers()))
-            .map(MethodProperty::new)
-            .collect(Collectors.toUnmodifiableSet());
+            .collect(Collectors.toMap(Function.identity(), MethodProperty::new));
 
     this.configurationClass = configurationClass;
   }
@@ -116,7 +117,7 @@ final class InterfaceSchema<T> implements Schema<T> {
   public T create(
       final DeserializerRegistry deserializers,
       final DefaultsRegistry defaults,
-      final List<? extends Map> configurations)
+      final List<? extends ConfigurationNode.Map> configurations)
       throws ConfigurationException {
     Objects.requireNonNull(configurations, "configurations cannot be null");
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
@@ -127,7 +128,7 @@ final class InterfaceSchema<T> implements Schema<T> {
         new MappingConfiguration(defaults, deserializers);
     final Set<ConfigurationError> errors = new HashSet<>();
 
-    for (final Property<?> property : properties) {
+    for (final Property<?> property : properties.values()) {
       mappingConfiguration
           .put(
               property,
@@ -154,10 +155,7 @@ final class InterfaceSchema<T> implements Schema<T> {
               return proxy == args[0];
             }
           }
-          final me.sparky983.warp.annotations.Property property =
-              method.getAnnotation(me.sparky983.warp.annotations.Property.class);
-          assert property != null : "Expected property annotation";
-          return mappingConfiguration.get(property.value());
+          return mappingConfiguration.get(properties.get(method)).orElseThrow();
         });
   }
 }

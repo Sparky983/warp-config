@@ -129,6 +129,21 @@ class WarpTest {
   }
 
   @Test
+  void testConflictingPropertyPaths() throws ConfigurationException {
+    final Configurations.Conflicting builder =
+        Warp.builder(Configurations.Conflicting.class)
+                .source(
+                    ConfigurationSource.of(
+                        ConfigurationNode.map()
+                            .entry("property", ConfigurationNode.integer(10))
+                            .build()))
+                .build();
+
+    assertEquals(10, builder.property1());
+    assertEquals(10, builder.property2());
+  }
+
+  @Test
   void testToString() throws ConfigurationException {
     final Configurations.Nested configuration =
         Warp.builder(Configurations.Nested.class)

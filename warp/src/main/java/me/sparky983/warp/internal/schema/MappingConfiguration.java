@@ -19,7 +19,7 @@ public final class MappingConfiguration {
   private final DefaultsRegistry defaultsRegistry;
   private final DeserializerRegistry deserializerRegistry;
 
-  private final Map<String, Object> properties = new HashMap<>();
+  private final Map<Schema.Property<?>, Object> properties = new HashMap<>();
 
   /**
    * Constructs a {@code MappingConfiguration}.
@@ -62,7 +62,11 @@ public final class MappingConfiguration {
             .orElseThrow(
                 () ->
                     new IllegalStateException(
-                            "Property \"" + property.path() + "\" required a deserializer of type " + property.type() + ", but none was found"));
+                        "Property \""
+                            + property.path()
+                            + "\" required a deserializer of type "
+                            + property.type()
+                            + ", but none was found"));
 
     final Set<ConfigurationError> errors = new HashSet<>();
 
@@ -80,7 +84,7 @@ public final class MappingConfiguration {
         // We still want to deserialize the value, even if it's already been set so we still get an
         // error message if it
         // couldn't be deserialized
-        properties.putIfAbsent(path, deserializer.deserialize(value));
+        properties.putIfAbsent(property, deserializer.deserialize(value));
       } catch (final DeserializationException e) {
         errors.add(ConfigurationError.error(e.getMessage()));
       }
@@ -93,16 +97,18 @@ public final class MappingConfiguration {
   }
 
   /**
-   * Gets the value associated with the given path.
+   * Gets the value associated with the given property.
    *
-   * @param path the path
-   * @return the value
+   * @param property the {@link Schema.Property}
+   * @return an optional containing the value if it is present, otherwise an empty optional
+   * @param <T> the type of the property
    * @throws NullPointerException if the path is {@code null}
    */
-  public Object get(final String path) {
-    Objects.requireNonNull(path, "path cannot be null");
+  @SuppressWarnings("unchecked")
+  public <T> Optional<T> get(final Schema.Property<T> property) {
+    Objects.requireNonNull(property, "property cannot be null");
 
-    return properties.get(path);
+    return (Optional<T>) Optional.ofNullable(properties.get(property));
   }
 
   @Override

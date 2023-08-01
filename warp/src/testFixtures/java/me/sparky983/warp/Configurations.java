@@ -179,5 +179,14 @@ public final class Configurations {
   }
 
   @Configuration
+  public interface Conflicting {
+    @Property("property")
+    int property1();
+
+    @Property("property")
+    double property2();
+  }
+
+  @Configuration
   public static class Class {}
 }
