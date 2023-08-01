@@ -9,7 +9,7 @@ public final class Types {
   public static final Type INTEGER_TO_STRING_LIST_MAP;
   public static final Type UPPER_BOUNDED_CHAR_SEQUENCE_LIST;
   public static final Type STRING_LIST_ARRAY;
-  public static final Type T;
+  public static final Type TYPE_VARIABLE;
 
   static {
     try {
@@ -24,7 +24,7 @@ public final class Types {
       STRING_LIST_ARRAY =
           Types.class.getDeclaredMethod("stringListArray", List[].class)
               .getGenericParameterTypes()[0];
-      T = Types.class.getDeclaredMethod("typeVariable", Object.class).getGenericParameterTypes()[0];
+      TYPE_VARIABLE = Types.class.getDeclaredMethod("typeVariable", Object.class).getGenericParameterTypes()[0];
     } catch (final NoSuchMethodException e) {
       throw new RuntimeException(e);
     }

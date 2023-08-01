@@ -183,7 +183,7 @@ class ParameterizedTypeTest {
 
   @Test
   void testOfType_TypeVariable() {
-    assertThrows(IllegalArgumentException.class, () -> ParameterizedType.of(Types.T));
+    assertThrows(IllegalArgumentException.class, () -> ParameterizedType.of(Types.TYPE_VARIABLE));
   }
 
   @Test
