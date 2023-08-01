@@ -40,14 +40,7 @@ public sealed interface ConfigurationError extends Comparable<ConfigurationError
     Objects.requireNonNull(name, "name cannot be null");
     Objects.requireNonNull(errors, "errors cannot be null");
 
-    final HashSet<ConfigurationError> errorsSet = new HashSet<>();
-    for (final ConfigurationError error : errors) {
-      Objects.requireNonNull(error, "error cannot be null");
-      if (!errorsSet.add(error)) {
-        throw new IllegalArgumentException("Duplicate error: " + error);
-      }
-    }
-    return new Group(name, errorsSet);
+    return new Group(name, Set.of(errors));
   }
 
   /**
