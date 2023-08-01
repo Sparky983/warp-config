@@ -26,7 +26,8 @@ public final class MappingConfiguration {
    *
    * @param defaultsRegistry the defaults registry
    * @param deserializerRegistry the deserializer registry
-   * @throws NullPointerException if the defaults registry or the deserializer registry are {@code null}.
+   * @throws NullPointerException if the defaults registry or the deserializer registry are {@code
+   *     null}.
    */
   public MappingConfiguration(
       final DefaultsRegistry defaultsRegistry, final DeserializerRegistry deserializerRegistry) {
@@ -37,15 +38,17 @@ public final class MappingConfiguration {
     this.deserializerRegistry = deserializerRegistry;
   }
 
-/**
-* Serializes the given values and sets the value associated with the given property to the first value.
- *
- * @param property the property
- * @param tempValues the values
- * @return an {@link Optional} containing a {@link ConfigurationError} if there was an error, or an empty optional
- * @param <T> the type of the property
- * @throws NullPointerException if the property or the values are {@code null}.
-*/
+  /**
+   * Serializes the given values and sets the value associated with the given property to the first
+   * value.
+   *
+   * @param property the property
+   * @param tempValues the values
+   * @return an {@link Optional} containing a {@link ConfigurationError} if there was an error, or
+   *     an empty optional
+   * @param <T> the type of the property
+   * @throws NullPointerException if the property or the values are {@code null}.
+   */
   public <T> Optional<ConfigurationError> put(
       final Schema.Property<T> property, final List<? extends ConfigurationNode> tempValues) {
     Objects.requireNonNull(property, "property cannot be null");

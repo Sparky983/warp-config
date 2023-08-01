@@ -10,8 +10,8 @@ import me.sparky983.warp.annotations.Property;
  * @param <T> the type of the {@linkplain Configuration configuration class}
  * @since 0.1
  * @see Warp#builder(Class)
- * @warp.implNote The default implementation supports the following {@linkplain Property property method}
- *     return types:
+ * @warp.implNote The default implementation supports the following {@linkplain Property property
+ *     method} return types:
  *     <ul>
  *       <li>{@link Byte}
  *       <li>{@code byte}
@@ -57,7 +57,8 @@ public interface ConfigurationBuilder<T> {
    *
    * <p>If one of the sources has an error, a {@link ConfigurationException} is thrown.
    *
-   * <p>If the sources combined cannot conform to the configuration class, a {@link ConfigurationException} is thrown.
+   * <p>If the sources combined cannot conform to the configuration class, a {@link
+   * ConfigurationException} is thrown.
    *
    * <p>If a type was unable to be deserialized, an {@link IllegalStateException} is thrown.
    *

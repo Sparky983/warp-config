@@ -92,14 +92,15 @@ public final class ParameterizedType<T> {
    *
    * @param type the type
    * @return the parameterized type
-   * @throws IllegalArgumentException if the given type either is or references (directly or indirectly) a type that is
-   * not an instance of one of the following:
-   * <ul>
-   *     <li>{@link Class}
-   *     <li>{@link java.lang.reflect.ParameterizedType}
-   *     <li>{@link WildcardType}
-   *     <li>{@link GenericArrayType}
-   * </ul>
+   * @throws IllegalArgumentException if the given type either is or references (directly or
+   *     indirectly) a type that is not an instance of one of the following:
+   *     <ul>
+   *       <li>{@link Class}
+   *       <li>{@link java.lang.reflect.ParameterizedType}
+   *       <li>{@link WildcardType}
+   *       <li>{@link GenericArrayType}
+   *     </ul>
+   *
    * @throws NullPointerException if the class, the type arguments array or any of the type
    *     arguments are {@code null}.
    */

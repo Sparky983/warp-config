@@ -68,7 +68,8 @@ public final class DeserializerRegistry {
     Objects.requireNonNull(factory, "factory cannot be null");
 
     if (deserializerFactories.putIfAbsent(type, (BiFunction) factory) != null) {
-        throw new IllegalStateException("Deserializer factory for type " + type + " already registered");
+      throw new IllegalStateException(
+          "Deserializer factory for type " + type + " already registered");
     }
     deserializers.remove(type);
     return this;

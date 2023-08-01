@@ -6,11 +6,16 @@ import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A configuration source.
+ *
  * <h2>Empty Source</h2>
- * An empty source simply refers to a configuration where {@link #configuration()} returns {@link Optional#empty()}.
+ *
+ * An empty source simply refers to a configuration where {@link #configuration()} returns {@link
+ * Optional#empty()}.
+ *
  * <h2>Blank Source</h2>
- * A blank source refers to a configuration where {@link #configuration()} returns a {@link ConfigurationNode.Map} with
- * no entries.
+ *
+ * A blank source refers to a configuration where {@link #configuration()} returns a {@link
+ * ConfigurationNode.Map} with no entries.
  *
  * @since 0.1
  */
