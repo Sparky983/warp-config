@@ -144,6 +144,25 @@ class WarpTest {
   }
 
   @Test
+  void testConfigurationSourcePrecedence() throws ConfigurationException {
+    final Configurations.String builder =
+        Warp.builder(Configurations.String.class)
+                .source(
+                    ConfigurationSource.of(
+                        ConfigurationNode.map()
+                            .entry("property", ConfigurationNode.string("overrides"))
+                            .build()))
+                .source(
+                    ConfigurationSource.of(
+                        ConfigurationNode.map()
+                            .entry("property", ConfigurationNode.string("overriden"))
+                            .build()))
+                .build();
+
+    assertEquals("overrides", builder.property());
+  }
+
+  @Test
   void testToString() throws ConfigurationException {
     final Configurations.Nested configuration =
         Warp.builder(Configurations.Nested.class)
