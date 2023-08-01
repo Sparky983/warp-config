@@ -1,12 +1,7 @@
 package me.sparky983.warp.internal.schema;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.internal.DefaultsRegistry;
@@ -113,6 +108,8 @@ public final class MappingConfiguration {
 
   @Override
   public String toString() {
-    return properties.toString();
+    final StringJoiner joiner = new StringJoiner(", ", "{", "}");
+    properties.forEach((property, value) -> joiner.add(property.path() + "=" + value));
+    return joiner.toString();
   }
 }
