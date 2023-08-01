@@ -20,7 +20,7 @@ import org.intellij.lang.annotations.Pattern;
  *   <li>A property method must not be generic
  *   <li>A property method must not declare any parameters (an explicit receiver parameter is
  *       allowed)
- *   <li>A property method must be a member of a {@link Configuration configuration class}
+ *   <li>A property method must be a member of a {@linkplain Configuration configuration class}
  * </ul>
  *
  * <h2>Implementation Requirements</h2>

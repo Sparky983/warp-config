@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  *       <ul>
  *         <li>A {@code private} instance method
  *         <li>A {@code static} method
- *         <li>A {@link Property property method}
+ *         <li>A {@linkplain Property property method}
  *       </ul>
  * </ul>
  *
