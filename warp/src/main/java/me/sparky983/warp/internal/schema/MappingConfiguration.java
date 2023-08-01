@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import me.sparky983.warp.ConfigurationError;
@@ -28,12 +29,18 @@ public final class MappingConfiguration {
    */
   public MappingConfiguration(
       final DefaultsRegistry defaultsRegistry, final DeserializerRegistry deserializerRegistry) {
+    Objects.requireNonNull(defaultsRegistry, "defaultsRegistry cannot be null");
+    Objects.requireNonNull(deserializerRegistry, "deserializerRegistry cannot be null");
+
     this.defaultsRegistry = defaultsRegistry;
     this.deserializerRegistry = deserializerRegistry;
   }
 
   public <T> Optional<ConfigurationError> put(
       final Schema.Property<T> property, final List<? extends ConfigurationNode> tempValues) {
+    Objects.requireNonNull(property, "property cannot be null");
+    Objects.requireNonNull(tempValues, "tempValues cannot be null");
+
     final String path = property.path();
 
     final Deserializer<T> deserializer =
@@ -79,8 +86,11 @@ public final class MappingConfiguration {
    *
    * @param path the path
    * @return the value
+   * @throws NullPointerException if the path is {@code null}
    */
   public Object get(final String path) {
+    Objects.requireNonNull(path, "path cannot be null");
+
     return properties.get(path);
   }
 
