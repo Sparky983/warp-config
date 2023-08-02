@@ -1,7 +1,6 @@
 package me.sparky983.warp.internal.schema;
 
 import java.util.*;
-
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.internal.DefaultsRegistry;

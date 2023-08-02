@@ -24,7 +24,8 @@ public final class Types {
       STRING_LIST_ARRAY =
           Types.class.getDeclaredMethod("stringListArray", List[].class)
               .getGenericParameterTypes()[0];
-      TYPE_VARIABLE = Types.class.getDeclaredMethod("typeVariable", Object.class).getGenericParameterTypes()[0];
+      TYPE_VARIABLE =
+          Types.class.getDeclaredMethod("typeVariable", Object.class).getGenericParameterTypes()[0];
     } catch (final NoSuchMethodException e) {
       throw new RuntimeException(e);
     }

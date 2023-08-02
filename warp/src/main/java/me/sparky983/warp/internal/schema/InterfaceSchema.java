@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import me.sparky983.warp.*;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
@@ -43,7 +42,10 @@ final class InterfaceSchema<T> implements Schema<T> {
 
     if (!configurationClass.isAnnotationPresent(Configuration.class)) {
       throw new IllegalArgumentException(
-              "Class " + configurationClass.getName() + " must be annotated with @" + Configuration.class.getName());
+          "Class "
+              + configurationClass.getName()
+              + " must be annotated with @"
+              + Configuration.class.getName());
     }
 
     if (!configurationClass.isInterface()) {

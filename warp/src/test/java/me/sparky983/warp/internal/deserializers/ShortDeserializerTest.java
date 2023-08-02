@@ -32,7 +32,7 @@ class ShortDeserializerTest {
         assertThrows(DeserializationException.class, () -> SHORT.deserialize(node));
 
     assertEquals(
-            "Must be between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE + " (both inclusive)",
+        "Must be between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE + " (both inclusive)",
         thrown.getMessage());
   }
 

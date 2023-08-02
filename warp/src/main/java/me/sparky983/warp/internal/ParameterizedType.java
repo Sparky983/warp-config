@@ -28,7 +28,12 @@ public final class ParameterizedType<T> {
 
     if (!typeArguments.isEmpty() && rawType.getTypeParameters().length != typeArguments.size()) {
       throw new IllegalArgumentException(
-              rawType + " declares " + rawType.getTypeParameters().length + " type parameters but found " + typeArguments.size() + " type arguments");
+          rawType
+              + " declares "
+              + rawType.getTypeParameters().length
+              + " type parameters but found "
+              + typeArguments.size()
+              + " type arguments");
     }
 
     this.rawType = rawType;

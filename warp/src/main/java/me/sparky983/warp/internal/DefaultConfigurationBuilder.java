@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import me.sparky983.warp.Configuration;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
-import me.sparky983.warp.Configuration;
 import me.sparky983.warp.internal.schema.Schema;
 
 /**
@@ -51,7 +51,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                         .orElseThrow(
                             () ->
                                 new IllegalStateException(
-                                        "Deserializer for the value of " + type + " not found"));
+                                    "Deserializer for the value of " + type + " not found"));
                 return Deserializer.optional(deserializer);
               })
           .register(
@@ -68,14 +68,14 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                         .orElseThrow(
                             () ->
                                 new IllegalStateException(
-                                        "Deserializer for the keys of " + type + " not found"));
+                                    "Deserializer for the keys of " + type + " not found"));
                 final Deserializer<?> valueDeserializer =
                     deserializers
                         .get(valueType)
                         .orElseThrow(
                             () ->
                                 new IllegalStateException(
-                                        "Deserializer for the values of " + type + " not found"));
+                                    "Deserializer for the values of " + type + " not found"));
                 return Deserializer.map(keyDeserializer, valueDeserializer);
               })
           .register(
@@ -91,7 +91,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                         .orElseThrow(
                             () ->
                                 new IllegalStateException(
-                                        "Deserializer for the elements of " + type + " not found"));
+                                    "Deserializer for the elements of " + type + " not found"));
                 return Deserializer.list(deserializer);
               });
 

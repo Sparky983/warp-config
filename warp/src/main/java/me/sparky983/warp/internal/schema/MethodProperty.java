@@ -25,7 +25,7 @@ final class MethodProperty<T> implements Schema.Property<T> {
     final Property property = method.getAnnotation(Property.class);
     if (property == null) {
       throw new IllegalArgumentException(
-              "Method " + method + " must be annotated with @" + Property.class.getName());
+          "Method " + method + " must be annotated with @" + Property.class.getName());
     }
 
     if (!Modifier.isPublic(method.getModifiers())) {
@@ -33,13 +33,11 @@ final class MethodProperty<T> implements Schema.Property<T> {
     }
 
     if (!Modifier.isAbstract(method.getModifiers())) {
-      throw new IllegalArgumentException(
-              "Method " + method + " must be abstract or default");
+      throw new IllegalArgumentException("Method " + method + " must be abstract or default");
     }
 
     if (method.getParameterCount() != 0) {
-      throw new IllegalArgumentException(
-              "Method " + method + " must not declare any parameters");
+      throw new IllegalArgumentException("Method " + method + " must not declare any parameters");
     }
 
     if (method.getTypeParameters().length != 0) {

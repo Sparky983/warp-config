@@ -38,7 +38,8 @@ public final class DeserializerRegistry {
     Objects.requireNonNull(type, "type cannot be null");
     Objects.requireNonNull(deserializer, "deserializer cannot be null");
 
-    if (deserializerFactories.putIfAbsent(type, (registry, parameterizedType) -> deserializer) != null) {
+    if (deserializerFactories.putIfAbsent(type, (registry, parameterizedType) -> deserializer)
+        != null) {
       throw new IllegalStateException("Deserializer for type " + type + " already registered");
     }
     return this;
@@ -92,10 +93,12 @@ public final class DeserializerRegistry {
               } catch (final IllegalStateException e) {
                 throw e;
               } catch (final Exception e) {
-                throw new IllegalStateException("Exception occurred while creating deserializer for type " + type, e);
+                throw new IllegalStateException(
+                    "Exception occurred while creating deserializer for type " + type, e);
               }
               if (deserializer == null) {
-                throw new IllegalStateException(factory + " deserialize factory returned null for type " + type);
+                throw new IllegalStateException(
+                    factory + " deserialize factory returned null for type " + type);
               }
               return deserializer;
             });

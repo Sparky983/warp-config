@@ -133,12 +133,12 @@ class WarpTest {
   void testConflictingPropertyPaths() throws ConfigurationException {
     final Configurations.Conflicting builder =
         Warp.builder(Configurations.Conflicting.class)
-                .source(
-                    ConfigurationSource.of(
-                        ConfigurationNode.map()
-                            .entry("property", ConfigurationNode.integer(10))
-                            .build()))
-                .build();
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry("property", ConfigurationNode.integer(10))
+                        .build()))
+            .build();
 
     assertEquals(10, builder.property1());
     assertEquals(10, builder.property2());
@@ -148,26 +148,30 @@ class WarpTest {
   void testSourcePrecedence() throws ConfigurationException {
     final Configurations.String builder =
         Warp.builder(Configurations.String.class)
-                .source(
-                    ConfigurationSource.of(
-                        ConfigurationNode.map()
-                            .entry("property", ConfigurationNode.string("overrides"))
-                            .build()))
-                .source(
-                    ConfigurationSource.of(
-                        ConfigurationNode.map()
-                            .entry("property", ConfigurationNode.string("overriden"))
-                            .build()))
-                .build();
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry("property", ConfigurationNode.string("overrides"))
+                        .build()))
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry("property", ConfigurationNode.string("overriden"))
+                        .build()))
+            .build();
 
     assertEquals("overrides", builder.property());
   }
 
   @Test
   void testSourceThrows() {
-    final ConfigurationBuilder<Configurations.String> builder = 
-            Warp.builder(Configurations.String.class)
-                    .source(() -> { throw new ConfigurationException("test", Set.of(ConfigurationError.error("message"))); });
+    final ConfigurationBuilder<Configurations.String> builder =
+        Warp.builder(Configurations.String.class)
+            .source(
+                () -> {
+                  throw new ConfigurationException(
+                      "test", Set.of(ConfigurationError.error("message")));
+                });
 
     assertThrows(ConfigurationException.class, builder::build);
   }

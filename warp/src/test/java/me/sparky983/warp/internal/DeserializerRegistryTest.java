@@ -62,7 +62,9 @@ class DeserializerRegistryTest {
     registry.register(String.class, deserializer1);
 
     assertThrows(IllegalStateException.class, () -> registry.register(String.class, deserializer2));
-    assertThrows(IllegalStateException.class, () -> registry.register(String.class, (registry, type) -> deserializer2));
+    assertThrows(
+        IllegalStateException.class,
+        () -> registry.register(String.class, (registry, type) -> deserializer2));
     assertEquals(Optional.of(deserializer1), registry.get(ParameterizedType.of(String.class)));
   }
 

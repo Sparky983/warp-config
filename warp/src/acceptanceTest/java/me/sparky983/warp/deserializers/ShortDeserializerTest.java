@@ -52,7 +52,11 @@ class ShortDeserializerTest {
             ConfigurationError.group(
                 "property",
                 ConfigurationError.error(
-                        "Must be between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE + " (both inclusive)"))),
+                    "Must be between "
+                        + Short.MIN_VALUE
+                        + " and "
+                        + Short.MAX_VALUE
+                        + " (both inclusive)"))),
         thrown.errors());
   }
 

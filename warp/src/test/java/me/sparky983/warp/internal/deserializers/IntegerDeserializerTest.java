@@ -32,7 +32,7 @@ class IntegerDeserializerTest {
         assertThrows(DeserializationException.class, () -> INTEGER.deserialize(node));
 
     assertEquals(
-            "Must be between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE + " (both inclusive)",
+        "Must be between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE + " (both inclusive)",
         thrown.getMessage());
   }
 
