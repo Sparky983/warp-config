@@ -1,6 +1,13 @@
 package me.sparky983.warp.internal.schema;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.internal.DefaultsRegistry;
@@ -75,9 +82,8 @@ public final class MappingConfiguration {
 
     for (final ConfigurationNode value : values) {
       try {
-        // We still want to deserialize the value, even if it's already been set so we still get an
-        // error message if it
-        // couldn't be deserialized
+        // We still want to deserialize the value, even if it's already been set, so we still get an
+        // error message if it couldn't be deserialized
         properties.putIfAbsent(property, deserializer.deserialize(value));
       } catch (final DeserializationException e) {
         errors.add(ConfigurationError.error(e.getMessage()));

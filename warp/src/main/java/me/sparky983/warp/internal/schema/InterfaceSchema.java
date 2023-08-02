@@ -16,7 +16,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import me.sparky983.warp.*;
+import me.sparky983.warp.Configuration;
+import me.sparky983.warp.ConfigurationError;
+import me.sparky983.warp.ConfigurationException;
+import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
