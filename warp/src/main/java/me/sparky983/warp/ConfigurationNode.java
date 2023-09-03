@@ -181,6 +181,20 @@ public sealed interface ConfigurationNode {
   /**
    * Returns a {@link List} node of the given values.
    *
+   * @param values the values; changes in this list will not be reflected in the created values
+   * @return the new list of values
+   * @throws NullPointerException if the values list is {@code null} or one of the values are {@code null}.
+   * @since 0.1
+   */
+  @SuppressWarnings("unchecked")
+  static List list(final java.util.List<? extends ConfigurationNode> values) {
+    // The cast is safe because the list is immediately copied
+    return new DefaultListNode((java.util.List<ConfigurationNode>) values);
+  }
+
+  /**
+   * Returns a {@link List} node of the given values.
+   *
    * @param values the values; changes in this array will not be reflected in the created values
    * @return the new list of values
    * @throws NullPointerException if the values varargs array is {@code null} or one of the values
@@ -188,7 +202,7 @@ public sealed interface ConfigurationNode {
    * @since 0.1
    */
   static List list(final ConfigurationNode... values) {
-    return new DefaultListNode(Arrays.asList(values));
+    return list(java.util.List.of(values));
   }
 
   /**

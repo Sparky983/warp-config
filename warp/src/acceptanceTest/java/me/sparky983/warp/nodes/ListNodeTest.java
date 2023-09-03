@@ -9,7 +9,37 @@ import org.junit.jupiter.api.Test;
 
 class ListNodeTest {
   @Test
-  void testValues() {
+  void testListValues() {
+    final ConfigurationNode.List list =
+        ConfigurationNode.list(
+            List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")));
+
+    assertEquals(
+        List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")),
+        list.values());
+  }
+
+  @Test
+  void testListIterator() {
+    final ConfigurationNode.List list =
+        ConfigurationNode.list(
+            List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")));
+
+    assertIterableEquals(
+        List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")), list);
+  }
+
+  @Test
+  void testListToString() {
+    final ConfigurationNode.List list =
+        ConfigurationNode.list(
+            List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")));
+
+    assertEquals("[1.0, test value]", list.toString());
+  }
+
+  @Test
+  void testVarargsValues() {
     final ConfigurationNode.List list =
         ConfigurationNode.list(
             ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value"));
@@ -20,7 +50,7 @@ class ListNodeTest {
   }
 
   @Test
-  void testIterator() {
+  void testVarargsIterator() {
     final ConfigurationNode.List list =
         ConfigurationNode.list(
             ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value"));
@@ -30,7 +60,7 @@ class ListNodeTest {
   }
 
   @Test
-  void testToString() {
+  void testVarargsToString() {
     final ConfigurationNode.List list =
         ConfigurationNode.list(
             ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value"));
