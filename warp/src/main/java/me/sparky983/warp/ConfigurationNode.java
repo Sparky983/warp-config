@@ -1,6 +1,5 @@
 package me.sparky983.warp;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 import me.sparky983.warp.internal.node.DefaultBoolNode;
@@ -183,7 +182,8 @@ public sealed interface ConfigurationNode {
    *
    * @param values the values; changes in this list will not be reflected in the created values
    * @return the new list of values
-   * @throws NullPointerException if the values list is {@code null} or one of the values are {@code null}.
+   * @throws NullPointerException if the values list is {@code null} or one of the values are {@code
+   *     null}.
    * @since 0.1
    */
   @SuppressWarnings("unchecked")
