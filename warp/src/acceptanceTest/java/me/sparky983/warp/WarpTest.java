@@ -109,6 +109,17 @@ class WarpTest {
   }
 
   @Test
+  void testNestedProperty_NotExists() {
+    final ConfigurationBuilder<Configurations.Nested> builder =
+        Warp.builder(Configurations.Nested.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry("nested", ConfigurationNode.map().build())
+                        .build()));
+  }
+
+  @Test
   void testProperty_NotMap() {
     final ConfigurationBuilder<Configurations.Nested> builder =
         Warp.builder(Configurations.Nested.class)
