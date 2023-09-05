@@ -117,6 +117,8 @@ class WarpTest {
                     ConfigurationNode.map()
                         .entry("nested", ConfigurationNode.map().build())
                         .build()));
+
+    assertThrows(ConfigurationException.class, builder::build);
   }
 
   @Test
