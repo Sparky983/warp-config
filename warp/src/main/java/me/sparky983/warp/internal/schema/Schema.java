@@ -3,7 +3,7 @@ package me.sparky983.warp.internal.schema;
 import java.util.List;
 import me.sparky983.warp.Configuration;
 import me.sparky983.warp.ConfigurationException;
-import me.sparky983.warp.ConfigurationNode.Map;
+import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;
@@ -28,7 +28,7 @@ public interface Schema<T> {
   T create(
       DeserializerRegistry deserializers,
       DefaultsRegistry defaults,
-      List<? extends Map> configurations)
+      List<? extends ConfigurationNode.Map> configurations)
       throws ConfigurationException;
 
   /**
