@@ -21,24 +21,24 @@ import me.sparky983.warp.internal.schema.Schema;
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
   /** The default deserializer registry. */
   private static final DeserializerRegistry DESERIALIZERS =
-      DeserializerRegistry.create()
-          .register(Byte.class, Deserializer.BYTE)
-          .register(byte.class, Deserializer.BYTE)
-          .register(Short.class, Deserializer.SHORT)
-          .register(short.class, Deserializer.SHORT)
-          .register(Integer.class, Deserializer.INTEGER)
-          .register(int.class, Deserializer.INTEGER)
-          .register(Long.class, Deserializer.LONG)
-          .register(long.class, Deserializer.LONG)
-          .register(Float.class, Deserializer.FLOAT)
-          .register(float.class, Deserializer.FLOAT)
-          .register(Double.class, Deserializer.DOUBLE)
-          .register(double.class, Deserializer.DOUBLE)
-          .register(Boolean.class, Deserializer.BOOLEAN)
-          .register(boolean.class, Deserializer.BOOLEAN)
-          .register(String.class, Deserializer.STRING)
-          .register(CharSequence.class, Deserializer.STRING)
-          .register(
+      DeserializerRegistry.builder()
+          .deserializer(Byte.class, Deserializer.BYTE)
+          .deserializer(byte.class, Deserializer.BYTE)
+          .deserializer(Short.class, Deserializer.SHORT)
+          .deserializer(short.class, Deserializer.SHORT)
+          .deserializer(Integer.class, Deserializer.INTEGER)
+          .deserializer(int.class, Deserializer.INTEGER)
+          .deserializer(Long.class, Deserializer.LONG)
+          .deserializer(long.class, Deserializer.LONG)
+          .deserializer(Float.class, Deserializer.FLOAT)
+          .deserializer(float.class, Deserializer.FLOAT)
+          .deserializer(Double.class, Deserializer.DOUBLE)
+          .deserializer(double.class, Deserializer.DOUBLE)
+          .deserializer(Boolean.class, Deserializer.BOOLEAN)
+          .deserializer(boolean.class, Deserializer.BOOLEAN)
+          .deserializer(String.class, Deserializer.STRING)
+          .deserializer(CharSequence.class, Deserializer.STRING)
+          .factory(
               Optional.class,
               (deserializers, type) -> {
                 if (type.isRaw()) {
@@ -54,7 +54,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                                     "Deserializer for the value of " + type + " not found"));
                 return Deserializer.optional(deserializer);
               })
-          .register(
+          .factory(
               Map.class,
               (deserializers, type) -> {
                 if (type.isRaw()) {
@@ -78,7 +78,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                                     "Deserializer for the values of " + type + " not found"));
                 return Deserializer.map(keyDeserializer, valueDeserializer);
               })
-          .register(
+          .factory(
               List.class,
               (deserializers, type) -> {
                 if (type.isRaw()) {
@@ -93,7 +93,8 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                                 new IllegalStateException(
                                     "Deserializer for the elements of " + type + " not found"));
                 return Deserializer.list(deserializer);
-              });
+              })
+          .build();
 
   /** The default defaults registry */
   private static final DefaultsRegistry DEFAULTS =
