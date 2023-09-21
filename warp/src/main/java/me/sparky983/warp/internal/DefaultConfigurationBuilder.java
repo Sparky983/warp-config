@@ -22,22 +22,22 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   /** The default deserializer registry. */
   private static final DeserializerRegistry DESERIALIZERS =
       DeserializerRegistry.builder()
-          .deserializer(Byte.class, Deserializer.BYTE)
-          .deserializer(byte.class, Deserializer.BYTE)
-          .deserializer(Short.class, Deserializer.SHORT)
-          .deserializer(short.class, Deserializer.SHORT)
-          .deserializer(Integer.class, Deserializer.INTEGER)
-          .deserializer(int.class, Deserializer.INTEGER)
-          .deserializer(Long.class, Deserializer.LONG)
-          .deserializer(long.class, Deserializer.LONG)
-          .deserializer(Float.class, Deserializer.FLOAT)
-          .deserializer(float.class, Deserializer.FLOAT)
-          .deserializer(Double.class, Deserializer.DOUBLE)
-          .deserializer(double.class, Deserializer.DOUBLE)
-          .deserializer(Boolean.class, Deserializer.BOOLEAN)
-          .deserializer(boolean.class, Deserializer.BOOLEAN)
-          .deserializer(String.class, Deserializer.STRING)
-          .deserializer(CharSequence.class, Deserializer.STRING)
+          .deserializer(Byte.class, Deserializers.BYTE)
+          .deserializer(byte.class, Deserializers.BYTE)
+          .deserializer(Short.class, Deserializers.SHORT)
+          .deserializer(short.class, Deserializers.SHORT)
+          .deserializer(Integer.class, Deserializers.INTEGER)
+          .deserializer(int.class, Deserializers.INTEGER)
+          .deserializer(Long.class, Deserializers.LONG)
+          .deserializer(long.class, Deserializers.LONG)
+          .deserializer(Float.class, Deserializers.FLOAT)
+          .deserializer(float.class, Deserializers.FLOAT)
+          .deserializer(Double.class, Deserializers.DOUBLE)
+          .deserializer(double.class, Deserializers.DOUBLE)
+          .deserializer(Boolean.class, Deserializers.BOOLEAN)
+          .deserializer(boolean.class, Deserializers.BOOLEAN)
+          .deserializer(String.class, Deserializers.STRING)
+          .deserializer(CharSequence.class, Deserializers.STRING)
           .factory(
               Optional.class,
               (deserializers, type) -> {
@@ -52,7 +52,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                             () ->
                                 new IllegalStateException(
                                     "Deserializer for the value of " + type + " not found"));
-                return Deserializer.optional(deserializer);
+                return Deserializers.optional(deserializer);
               })
           .factory(
               Map.class,
@@ -76,7 +76,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                             () ->
                                 new IllegalStateException(
                                     "Deserializer for the values of " + type + " not found"));
-                return Deserializer.map(keyDeserializer, valueDeserializer);
+                return Deserializers.map(keyDeserializer, valueDeserializer);
               })
           .factory(
               List.class,
@@ -92,7 +92,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                             () ->
                                 new IllegalStateException(
                                     "Deserializer for the elements of " + type + " not found"));
-                return Deserializer.list(deserializer);
+                return Deserializers.list(deserializer);
               })
           .build();
 

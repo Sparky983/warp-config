@@ -7,6 +7,7 @@ import java.util.Map;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.Deserializer;
+import me.sparky983.warp.internal.Deserializers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,17 +16,17 @@ class MapDeserializerTest {
 
   @BeforeEach
   void setUp() {
-    deserializer = Deserializer.map((node) -> "key: " + node, (node) -> "value: " + node);
+    deserializer = Deserializers.map((node) -> "key: " + node, (node) -> "value: " + node);
   }
 
   @Test
   void testMap_NullKeyDeserializer() {
-    assertThrows(NullPointerException.class, () -> Deserializer.map(Deserializer.STRING, null));
+    assertThrows(NullPointerException.class, () -> Deserializers.map(Deserializers.STRING, null));
   }
 
   @Test
   void testMap_NullValueDeserializer() {
-    assertThrows(NullPointerException.class, () -> Deserializer.map(null, Deserializer.STRING));
+    assertThrows(NullPointerException.class, () -> Deserializers.map(null, Deserializers.STRING));
   }
 
   @Test

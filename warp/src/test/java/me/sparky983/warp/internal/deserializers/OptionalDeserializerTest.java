@@ -7,6 +7,7 @@ import java.util.Optional;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.Deserializer;
+import me.sparky983.warp.internal.Deserializers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,12 +16,12 @@ class OptionalDeserializerTest {
 
   @BeforeEach
   void setUp() {
-    deserializer = Deserializer.optional((node) -> "value: " + node);
+    deserializer = Deserializers.optional((node) -> "value: " + node);
   }
 
   @Test
   void testOptional_Null() {
-    assertThrows(NullPointerException.class, () -> Deserializer.optional(null));
+    assertThrows(NullPointerException.class, () -> Deserializers.optional(null));
   }
 
   @Test

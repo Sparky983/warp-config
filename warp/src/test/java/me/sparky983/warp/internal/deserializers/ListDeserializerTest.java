@@ -7,6 +7,7 @@ import java.util.List;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.internal.DeserializationException;
 import me.sparky983.warp.internal.Deserializer;
+import me.sparky983.warp.internal.Deserializers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,12 +16,12 @@ class ListDeserializerTest {
 
   @BeforeEach
   void setUp() {
-    deserializer = Deserializer.list((node) -> "element: " + node);
+    deserializer = Deserializers.list((node) -> "element: " + node);
   }
 
   @Test
   void testList_Null() {
-    assertThrows(NullPointerException.class, () -> Deserializer.list(null));
+    assertThrows(NullPointerException.class, () -> Deserializers.list(null));
   }
 
   @Test
