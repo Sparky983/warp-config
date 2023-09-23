@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,9 +15,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 class YamlConfigurationSourceTest {
-  static final String INVALID = """
+  static final String INVALID_YAML = """
       map:
         ? invalid
+      """;
+
+  static final String INVALID = """
+      map:
+        ? [ key ]
+        : value
       """;
 
   static final String MIX_YAML = """
@@ -59,6 +63,13 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testOf_InvalidYaml() {
+    final YamlConfigurationSource invalid = YamlConfigurationSource.of(INVALID_YAML);
+
+    assertThrows(ConfigurationException.class, invalid::configuration);
+  }
+
+  @Test
+  void testOf_Invalid() {
     final YamlConfigurationSource invalid = YamlConfigurationSource.of(INVALID);
 
     assertThrows(ConfigurationException.class, invalid::configuration);
@@ -76,6 +87,16 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadPath_InvalidYaml() throws IOException {
+    final Path invalidYaml = tempDir.resolve("invalid.yaml");
+    Files.writeString(invalidYaml, INVALID_YAML);
+
+    final YamlConfigurationSource source = YamlConfigurationSource.read(invalidYaml);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
+  void testReadPath_Invalid() throws IOException {
     final Path invalidYaml = tempDir.resolve("invalid.yaml");
     Files.writeString(invalidYaml, INVALID);
 
@@ -130,6 +151,16 @@ class YamlConfigurationSourceTest {
   }
 
   @Test
+  void testReadPathCharset_Invalid() throws IOException {
+    final Path invalidYaml = tempDir.resolve("invalid.yaml");
+    Files.writeString(invalidYaml, INVALID, INCOMPATIBLE_CHARSET);
+
+    final YamlConfigurationSource source = YamlConfigurationSource.read(invalidYaml, INCOMPATIBLE_CHARSET);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
   void testReadPathCharset_NotFound() {
     final Path notFound = tempDir.resolve("not-found.yaml");
 
@@ -158,6 +189,15 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadReader_InvalidYaml() {
+    final Reader invalid = new StringReader(INVALID);
+
+    final YamlConfigurationSource source = YamlConfigurationSource.read(invalid);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
+  void testReadReader_Invalid() {
     final Reader invalid = new StringReader(INVALID);
 
     final YamlConfigurationSource source = YamlConfigurationSource.read(invalid);

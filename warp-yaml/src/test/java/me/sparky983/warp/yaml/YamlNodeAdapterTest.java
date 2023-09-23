@@ -25,6 +25,15 @@ class YamlNodeAdapterTest {
   }
 
   @Test
+  void testAdapt_NonStringKey() {
+    final YamlMapping mapping = Yaml.createYamlMappingBuilder()
+        .add(Yaml.createYamlSequenceBuilder().build(), "value")
+        .build();
+
+    assertThrows(IllegalArgumentException.class, () -> YamlNodeAdapter.adapt(mapping));
+  }
+
+  @Test
   void testNode() {
     final ConfigurationNode node = YamlNodeAdapter.adapt(Yaml.createYamlMappingBuilder()
         .add("no value", (YamlNode) null)

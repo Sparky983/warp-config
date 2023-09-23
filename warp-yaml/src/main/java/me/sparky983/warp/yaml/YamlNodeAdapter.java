@@ -34,7 +34,11 @@ final class YamlNodeAdapter {
 
     final ConfigurationNode.Map.Builder builder = ConfigurationNode.map();
     for (final YamlNode key : mapping.keys()) {
-      builder.entry(key.asScalar().value(), adapt(mapping.value(key)));
+      if (key instanceof final Scalar scalar) {
+        builder.entry(scalar.value(), adapt(mapping.value(key)));
+      } else {
+        throw new IllegalArgumentException("Unknown key type: " + key.getClass());
+      }
     }
     return builder.build();
   }

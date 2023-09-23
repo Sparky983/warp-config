@@ -1,18 +1,16 @@
 package me.sparky983.warp.yaml;
 
 import com.amihaiemil.eoyaml.Yaml;
+import com.amihaiemil.eoyaml.YamlInput;
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import me.sparky983.warp.ConfigurationException;
-import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
 
 /**
@@ -36,9 +34,11 @@ public interface YamlConfigurationSource extends ConfigurationSource {
     } catch (final IOException e) {
       throw new AssertionError(e); // Should never happen
     } catch (final YamlReadingException e) {
+      final String message = e.getMessage() == null ?
+          e.getMessage() :
+          "Unknown error while reading YAML file";
       return new ErrorYamlConfigurationSource(new ConfigurationException(e.getMessage(), Set.of()));
     }
-
   }
 
   static YamlConfigurationSource read(final Path path) throws IOException {
@@ -50,7 +50,10 @@ public interface YamlConfigurationSource extends ConfigurationSource {
     } catch (final FileNotFoundException e) {
       return new EmptyYamlConfigurationSource();
     } catch (final YamlReadingException e) {
-      return new ErrorYamlConfigurationSource(new ConfigurationException(e.getMessage(), Set.of()));
+      final String message = e.getMessage() == null ?
+          e.getMessage() :
+          "Unknown error while reading YAML file";
+      return new ErrorYamlConfigurationSource(new ConfigurationException(message, Set.of()));
     }
   }
 }
