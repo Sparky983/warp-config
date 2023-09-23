@@ -1,0 +1,12 @@
+# hi
+library:
+  # hi
+  name: "warp"
+  version: 0.1
+  description: "A pretty good library that"
+  authors:
+      - "me"
+      - "not you"
+
+sparky:
+  attractiveness: 100

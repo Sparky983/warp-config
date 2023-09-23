@@ -1,11 +1,4 @@
 plugins {
     id("warp.library-conventions")
-    `java-test-fixtures`
-}
-
-idea {
-    module {
-        sourceDirs.remove(file("src/testFixtures/java"))
-        testSources.from("src/testFixtures/java")
-    }
+    id("warp.test-fixtures-conventions")
 }
