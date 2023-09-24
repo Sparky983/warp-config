@@ -1,6 +1,7 @@
 package me.sparky983.warp.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,16 +126,22 @@ public final class Deserializers {
       final Deserializer<? extends E> elementDeserializer) {
     Objects.requireNonNull(elementDeserializer, "elementDeserializer cannot be null");
 
-    return (node, context) -> {
+    return (node, deserializeContext) -> {
       Objects.requireNonNull(node, "node cannot be null");
-      Objects.requireNonNull(context, "context cannot be null");
+      Objects.requireNonNull(deserializeContext, "deserializeContext cannot be null");
 
       if (node instanceof final ConfigurationNode.List list) {
         final List<Renderer<? extends E>> renderers = new ArrayList<>();
         for (final ConfigurationNode element : list.values()) {
-          renderers.add(elementDeserializer.deserialize(element, context));
+          renderers.add(elementDeserializer.deserialize(element, deserializeContext));
         }
-        return new ListRenderer<>(renderers);
+        return (renderContext) -> {
+          Objects.requireNonNull(renderContext, "renderContext cannot be null");
+
+          return renderers.stream()
+              .<E>map((renderer) -> renderer.render(renderContext))
+              .toList();
+        };
       }
       throw new DeserializationException("Must be a list");
     };
@@ -156,18 +163,24 @@ public final class Deserializers {
     Objects.requireNonNull(keyDeserializer, "keyDeserializer cannot be null");
     Objects.requireNonNull(valueDeserializer, "valueDeserializer cannot be null");
 
-    return (node, context) -> {
+    return (node, deserializeContext) -> {
       Objects.requireNonNull(node, "node cannot be null");
-      Objects.requireNonNull(context, "context cannot be null");
+      Objects.requireNonNull(deserializeContext, "deserializeContext cannot be null");
 
       if (node instanceof final ConfigurationNode.Map map) {
         final Map<Renderer<? extends K>, Renderer<? extends V>> renderers = new HashMap<>();
         for (final ConfigurationNode.Map.Entry entry : map.entries()) {
           renderers.put(
-              keyDeserializer.deserialize(ConfigurationNode.string(entry.key()), context),
-              valueDeserializer.deserialize(entry.value(), context));
+              keyDeserializer.deserialize(ConfigurationNode.string(entry.key()), deserializeContext),
+              valueDeserializer.deserialize(entry.value(), deserializeContext));
         }
-        return new MapRenderer<>(renderers);
+        return (renderContext) -> {
+          Objects.requireNonNull(renderContext, "renderContext cannot be null");
+          final Map<K, V> result = new HashMap<>();
+          renderers.forEach((key, value) ->
+              result.put(key.render(renderContext), value.render(renderContext)));
+          return Collections.unmodifiableMap(result);
+        };
       }
       throw new DeserializationException("Must be a map");
     };
