@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import me.sparky983.warp.internal.DeserializerRegistry.Builder;
+import me.sparky983.warp.Deserializer;
 
 /** The default implementation of {@link DeserializerRegistry}. */
 final class DefaultDeserializerRegistry implements DeserializerRegistry {

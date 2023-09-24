@@ -10,17 +10,24 @@ import java.util.Set;
 import java.util.StringJoiner;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.Renderer;
+import me.sparky983.warp.Renderer.Context;
 import me.sparky983.warp.internal.DefaultsRegistry;
-import me.sparky983.warp.internal.DeserializationException;
-import me.sparky983.warp.internal.Deserializer;
+import me.sparky983.warp.DeserializationException;
+import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
 /** A configuration that maps its values to objects as they are put. */
 public final class MappingConfiguration {
+  /**
+   * A cached deserializer context (the context is empty).
+   */
+  private static final Deserializer.Context CONTEXT = new Deserializer.Context() {};
+
   private final DefaultsRegistry defaultsRegistry;
   private final DeserializerRegistry deserializerRegistry;
 
-  private final Map<Schema.Property<?>, Object> properties = new HashMap<>();
+  private final Map<Schema.Property<?>, Renderer<?>> properties = new HashMap<>();
 
   /**
    * Constructs a {@code MappingConfiguration}.
@@ -84,7 +91,7 @@ public final class MappingConfiguration {
       try {
         // We still want to deserialize the value, even if it's already been set, so we still get an
         // error message if it couldn't be deserialized
-        properties.putIfAbsent(property, deserializer.deserialize(value));
+        properties.putIfAbsent(property, deserializer.deserialize(value, CONTEXT));
       } catch (final DeserializationException e) {
         errors.add(ConfigurationError.error(e.getMessage()));
       }
@@ -100,21 +107,16 @@ public final class MappingConfiguration {
    * Gets the value associated with the given property.
    *
    * @param property the {@link Schema.Property}
+   * @param context the renderer context
    * @return an optional containing the value if it is present, otherwise an empty optional
    * @param <T> the type of the property
    * @throws NullPointerException if the path is {@code null}
    */
   @SuppressWarnings("unchecked")
-  public <T> Optional<T> get(final Schema.Property<T> property) {
+  public <T> Optional<T> render(final Schema.Property<T> property, final Renderer.Context context) {
     Objects.requireNonNull(property, "property cannot be null");
 
-    return (Optional<T>) Optional.ofNullable(properties.get(property));
-  }
-
-  @Override
-  public String toString() {
-    final StringJoiner joiner = new StringJoiner(", ", "{", "}");
-    properties.forEach((property, value) -> joiner.add(property.path() + "=" + value));
-    return joiner.toString();
+    return (Optional<T>) Optional.ofNullable(properties.get(property))
+        .map((render) -> render.render(context));
   }
 }

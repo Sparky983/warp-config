@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import me.sparky983.warp.Deserializer;
+import me.sparky983.warp.Renderer;
 import org.junit.jupiter.api.Test;
 
 class DefaultDeserializerRegistryTest {
@@ -12,7 +14,8 @@ class DefaultDeserializerRegistryTest {
   void testBuilderDeserializer_NullType() {
     final DeserializerRegistry.Builder builder = DeserializerRegistry.builder();
 
-    assertThrows(NullPointerException.class, () -> builder.deserializer(null, (node) -> "test"));
+    assertThrows(NullPointerException.class, () ->
+        builder.deserializer(null, (node, context) -> Renderer.of("test")));
   }
 
   @Test
@@ -25,7 +28,7 @@ class DefaultDeserializerRegistryTest {
   @Test
   void testBuilderDeserializer() {
     final DeserializerRegistry.Builder builder = DeserializerRegistry.builder();
-    final Deserializer<String> deserializer = (node) -> "test";
+    final Deserializer<String> deserializer = (node, context) -> Renderer.of("test");
 
     assertEquals(builder, builder.deserializer(String.class, deserializer));
 
@@ -39,7 +42,7 @@ class DefaultDeserializerRegistryTest {
 
     assertThrows(
         NullPointerException.class,
-        () -> builder.factory(null, (registry, type) -> (node) -> "test"));
+        () -> builder.factory(null, (registry, type) -> (node, context) -> Renderer.of("test")));
   }
 
   @Test
@@ -53,8 +56,8 @@ class DefaultDeserializerRegistryTest {
   void testBuilderFactory_AlreadyRegistered() {
     final DeserializerRegistry.Builder builder = DeserializerRegistry.builder();
 
-    final Deserializer<String> deserializer1 = (node) -> "test";
-    final Deserializer<String> deserializer2 = (node) -> "test";
+    final Deserializer<String> deserializer1 = (node, context) -> Renderer.of("test");
+    final Deserializer<String> deserializer2 = (node, context) -> Renderer.of("test");
 
     builder.deserializer(String.class, deserializer1);
 
@@ -83,7 +86,7 @@ class DefaultDeserializerRegistryTest {
   void testBuilderFactory() {
     final DeserializerRegistry.Builder builder = DeserializerRegistry.builder();
 
-    final Deserializer<String> deserializer = (node) -> "test";
+    final Deserializer<String> deserializer = (node, context) -> Renderer.of("test");
     final AtomicReference<DeserializerRegistry> registryRef = new AtomicReference<>();
     builder.factory(
         String.class,

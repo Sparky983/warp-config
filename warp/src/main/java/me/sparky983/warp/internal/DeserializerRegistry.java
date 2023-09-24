@@ -1,6 +1,7 @@
 package me.sparky983.warp.internal;
 
 import java.util.Optional;
+import me.sparky983.warp.Deserializer;
 
 /** A registry of {@link Deserializer Deserializers}. */
 public interface DeserializerRegistry {
