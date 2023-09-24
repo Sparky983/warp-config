@@ -3,12 +3,20 @@ package me.sparky983.warp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
+import me.sparky983.warp.internal.Deserializers;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoSettings;
 
+@MockitoSettings
 class WarpTest {
   @Test
   void testBuilder_Null() {
@@ -187,6 +195,39 @@ class WarpTest {
                 });
 
     assertThrows(ConfigurationException.class, builder::build);
+  }
+
+  @Test
+  void testDeserializer_NullType() {
+    final ConfigurationBuilder<Configurations.String> builder =
+        Warp.builder(Configurations.String.class);
+
+    assertThrows(NullPointerException.class, () -> builder.deserializer(null, Deserializers.STRING));
+  }
+
+  @Test
+  void testDeserializer_NullDeserializer() {
+    final ConfigurationBuilder<Configurations.String> builder =
+        Warp.builder(Configurations.String.class);
+
+    assertThrows(NullPointerException.class, () -> builder.deserializer(String.class, null));
+  }
+
+  @Test
+  void testDeserializer(@Mock final Deserializer<String> deserializer, @Mock final Renderer<String> renderer) throws Exception {
+    final ConfigurationNode.String node = ConfigurationNode.string("value");
+
+    final Configurations.String configuration = Warp.builder(Configurations.String.class)
+        .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", node).build()))
+        .deserializer(String.class, deserializer)
+        .build();
+
+    when(deserializer.deserialize(node, any())).thenReturn(renderer);
+    when(renderer.render(any())).thenReturn("value");
+    assertEquals("value", configuration.property());
+    verify(deserializer).deserialize(node, any());
+    verify(renderer).render(any());
+    verifyNoMoreInteractions(deserializer, renderer);
   }
 
   @Test

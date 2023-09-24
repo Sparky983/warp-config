@@ -133,6 +133,12 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   }
 
   @Override
+  public <D> ConfigurationBuilder<T> deserializer(final Class<D> type,
+      final Deserializer<D> deserializer) {
+    return this;
+  }
+
+  @Override
   public T build() throws ConfigurationException {
     final List<ConfigurationNode.Map> configurations = new ArrayList<>(sources.size());
     for (final ConfigurationSource source : sources) {
