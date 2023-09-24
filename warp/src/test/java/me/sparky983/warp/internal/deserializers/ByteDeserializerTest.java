@@ -18,17 +18,17 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class ByteDeserializerTest {
-  @Mock Deserializer.Context deserializeContext;
-  @Mock Renderer.Context renderContext;
+  @Mock Deserializer.Context deserializerContext;
+  @Mock Renderer.Context rendererContext;
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(deserializeContext, renderContext);
+    verifyNoMoreInteractions(deserializerContext, rendererContext);
   }
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> BYTE.deserialize(null, deserializeContext));
+    assertThrows(NullPointerException.class, () -> BYTE.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -42,7 +42,7 @@ class ByteDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> BYTE.deserialize(node, deserializeContext));
+    assertThrows(DeserializationException.class, () -> BYTE.deserialize(node, deserializerContext));
   }
 
   @ParameterizedTest
@@ -51,7 +51,7 @@ class ByteDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
     final DeserializationException thrown =
-        assertThrows(DeserializationException.class, () -> BYTE.deserialize(node, deserializeContext));
+        assertThrows(DeserializationException.class, () -> BYTE.deserialize(node, deserializerContext));
 
     assertEquals(
         "Must be between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE + " (both inclusive)",
@@ -61,7 +61,7 @@ class ByteDeserializerTest {
   @Test
   void testRender_NullContext() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(0);
-    final Renderer<Byte> renderer = BYTE.deserialize(node, deserializeContext);
+    final Renderer<Byte> renderer = BYTE.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
@@ -71,8 +71,8 @@ class ByteDeserializerTest {
   void testRender(final byte value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final byte result = BYTE.deserialize(node, deserializeContext)
-        .render(renderContext);
+    final byte result = BYTE.deserialize(node, deserializerContext)
+        .render(rendererContext);
 
     assertEquals(value, result);
   }

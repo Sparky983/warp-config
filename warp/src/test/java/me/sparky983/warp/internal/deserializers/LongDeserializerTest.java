@@ -18,17 +18,17 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class LongDeserializerTest {
-  @Mock Deserializer.Context deserializeContext;
-  @Mock Renderer.Context renderContext;
+  @Mock Deserializer.Context deserializerContext;
+  @Mock Renderer.Context rendererContext;
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(deserializeContext, renderContext);
+    verifyNoMoreInteractions(deserializerContext, rendererContext);
   }
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> LONG.deserialize(null, deserializeContext));
+    assertThrows(NullPointerException.class, () -> LONG.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -42,13 +42,13 @@ class LongDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> LONG.deserialize(node, deserializeContext));
+    assertThrows(DeserializationException.class, () -> LONG.deserialize(node, deserializerContext));
   }
 
   @Test
   void testRender_NullContext() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(0);
-    final Renderer<Long> renderer = LONG.deserialize(node, deserializeContext);
+    final Renderer<Long> renderer = LONG.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
@@ -58,8 +58,8 @@ class LongDeserializerTest {
   void testRender(final long value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final long result = LONG.deserialize(node, deserializeContext)
-        .render(renderContext);
+    final long result = LONG.deserialize(node, deserializerContext)
+        .render(rendererContext);
 
     assertEquals(value, result);
   }

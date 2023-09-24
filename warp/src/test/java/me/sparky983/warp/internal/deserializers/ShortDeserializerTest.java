@@ -18,17 +18,17 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class ShortDeserializerTest {
-  @Mock Deserializer.Context deserializeContext;
-  @Mock Renderer.Context renderContext;
+  @Mock Deserializer.Context deserializerContext;
+  @Mock Renderer.Context rendererContext;
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(deserializeContext, renderContext);
+    verifyNoMoreInteractions(deserializerContext, rendererContext);
   }
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> SHORT.deserialize(null, deserializeContext));
+    assertThrows(NullPointerException.class, () -> SHORT.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -42,7 +42,7 @@ class ShortDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> SHORT.deserialize(node, deserializeContext));
+    assertThrows(DeserializationException.class, () -> SHORT.deserialize(node, deserializerContext));
   }
 
   @ParameterizedTest
@@ -51,7 +51,7 @@ class ShortDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
     final DeserializationException thrown =
-        assertThrows(DeserializationException.class, () -> SHORT.deserialize(node, deserializeContext));
+        assertThrows(DeserializationException.class, () -> SHORT.deserialize(node, deserializerContext));
 
     assertEquals(
         "Must be between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE + " (both inclusive)",
@@ -61,7 +61,7 @@ class ShortDeserializerTest {
   @Test
   void testRender_NullContext() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(0);
-    final Renderer<Short> renderer = SHORT.deserialize(node, deserializeContext);
+    final Renderer<Short> renderer = SHORT.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
@@ -71,8 +71,8 @@ class ShortDeserializerTest {
   void testRender(final int value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final short result = SHORT.deserialize(node, deserializeContext)
-        .render(renderContext);
+    final short result = SHORT.deserialize(node, deserializerContext)
+        .render(rendererContext);
 
     assertEquals((short) value, result);
   }

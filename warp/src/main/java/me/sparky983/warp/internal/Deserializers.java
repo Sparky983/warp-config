@@ -126,20 +126,20 @@ public final class Deserializers {
       final Deserializer<? extends E> elementDeserializer) {
     Objects.requireNonNull(elementDeserializer, "elementDeserializer cannot be null");
 
-    return (node, deserializeContext) -> {
+    return (node, deserializerContext) -> {
       Objects.requireNonNull(node, "node cannot be null");
-      Objects.requireNonNull(deserializeContext, "deserializeContext cannot be null");
+      Objects.requireNonNull(deserializerContext, "deserializerContext cannot be null");
 
       if (node instanceof final ConfigurationNode.List list) {
         final List<Renderer<? extends E>> renderers = new ArrayList<>();
         for (final ConfigurationNode element : list.values()) {
-          renderers.add(elementDeserializer.deserialize(element, deserializeContext));
+          renderers.add(elementDeserializer.deserialize(element, deserializerContext));
         }
-        return (renderContext) -> {
-          Objects.requireNonNull(renderContext, "renderContext cannot be null");
+        return (rendererContext) -> {
+          Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
 
           return renderers.stream()
-              .<E>map((renderer) -> renderer.render(renderContext))
+              .<E>map((renderer) -> renderer.render(rendererContext))
               .toList();
         };
       }
@@ -163,22 +163,22 @@ public final class Deserializers {
     Objects.requireNonNull(keyDeserializer, "keyDeserializer cannot be null");
     Objects.requireNonNull(valueDeserializer, "valueDeserializer cannot be null");
 
-    return (node, deserializeContext) -> {
+    return (node, deserializerContext) -> {
       Objects.requireNonNull(node, "node cannot be null");
-      Objects.requireNonNull(deserializeContext, "deserializeContext cannot be null");
+      Objects.requireNonNull(deserializerContext, "deserializerContext cannot be null");
 
       if (node instanceof final ConfigurationNode.Map map) {
         final Map<Renderer<? extends K>, Renderer<? extends V>> renderers = new HashMap<>();
         for (final ConfigurationNode.Map.Entry entry : map.entries()) {
           renderers.put(
-              keyDeserializer.deserialize(ConfigurationNode.string(entry.key()), deserializeContext),
-              valueDeserializer.deserialize(entry.value(), deserializeContext));
+              keyDeserializer.deserialize(ConfigurationNode.string(entry.key()), deserializerContext),
+              valueDeserializer.deserialize(entry.value(), deserializerContext));
         }
-        return (renderContext) -> {
-          Objects.requireNonNull(renderContext, "renderContext cannot be null");
+        return (rendererContext) -> {
+          Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
           final Map<K, V> result = new HashMap<>();
           renderers.forEach((key, value) ->
-              result.put(key.render(renderContext), value.render(renderContext)));
+              result.put(key.render(rendererContext), value.render(rendererContext)));
           return Collections.unmodifiableMap(result);
         };
       }

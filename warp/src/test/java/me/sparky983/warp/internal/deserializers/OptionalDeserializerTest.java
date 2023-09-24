@@ -18,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class OptionalDeserializerTest {
-  @Mock Deserializer.Context deserializeContext;
-  @Mock Renderer.Context renderContext;
+  @Mock Deserializer.Context deserializerContext;
+  @Mock Renderer.Context rendererContext;
 
   Deserializer<Optional<String>> deserializer;
 
@@ -30,7 +30,7 @@ class OptionalDeserializerTest {
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(deserializeContext, renderContext);
+    verifyNoMoreInteractions(deserializerContext, rendererContext);
   }
 
   @Test
@@ -40,20 +40,20 @@ class OptionalDeserializerTest {
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> deserializer.deserialize(null, deserializeContext));
+    assertThrows(NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
   }
 
   @Test
   void testRender_NullContext() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.nil();
-    final Renderer<Optional<String>> renderer = deserializer.deserialize(node, deserializeContext);
+    final Renderer<Optional<String>> renderer = deserializer.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
 
   @Test
   void testRender_Nil() throws DeserializationException {
-    final Optional<String> result = deserializer.deserialize(ConfigurationNode.nil(), deserializeContext).render(renderContext);
+    final Optional<String> result = deserializer.deserialize(ConfigurationNode.nil(), deserializerContext).render(rendererContext);
 
     assertEquals(Optional.empty(), result);
   }
@@ -62,8 +62,8 @@ class OptionalDeserializerTest {
   void testRender() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(1);
 
-    final Optional<String> result = deserializer.deserialize(node, deserializeContext)
-        .render(renderContext);
+    final Optional<String> result = deserializer.deserialize(node, deserializerContext)
+        .render(rendererContext);
 
     assertEquals(Optional.of("value: 1"), result);
   }

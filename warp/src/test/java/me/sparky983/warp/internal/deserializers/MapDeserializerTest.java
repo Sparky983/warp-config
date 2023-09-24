@@ -18,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class MapDeserializerTest {
-  @Mock Deserializer.Context deserializeContext;
-  @Mock Renderer.Context renderContext;
+  @Mock Deserializer.Context deserializerContext;
+  @Mock Renderer.Context rendererContext;
   Deserializer<Map<String, String>> deserializer;
 
   @BeforeEach
@@ -29,7 +29,7 @@ class MapDeserializerTest {
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(deserializeContext, renderContext);
+    verifyNoMoreInteractions(deserializerContext, rendererContext);
   }
 
   @Test
@@ -44,7 +44,7 @@ class MapDeserializerTest {
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> deserializer.deserialize(null, deserializeContext));
+    assertThrows(NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -58,7 +58,7 @@ class MapDeserializerTest {
   void testDeserialize_NonMap() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> deserializer.deserialize(node, deserializeContext));
+    assertThrows(DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
   }
 
   @Test
@@ -69,7 +69,7 @@ class MapDeserializerTest {
             .entry("3", ConfigurationNode.integer(4))
             .build();
 
-    final Renderer<Map<String, String>> renderer = deserializer.deserialize(node, deserializeContext);
+    final Renderer<Map<String, String>> renderer = deserializer.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
@@ -82,9 +82,10 @@ class MapDeserializerTest {
             .entry("3", ConfigurationNode.integer(4))
             .build();
 
-    final Map<String, String> result = deserializer.deserialize(node, deserializeContext)
-        .render(renderContext);
+    final Map<String, String> result = deserializer.deserialize(node, deserializerContext)
+        .render(rendererContext);
 
     assertEquals(Map.of("key: 1", "value: 2", "key: 3", "value: 4"), result);
+    assertThrows(UnsupportedOperationException.class, () -> result.put("key: 1", "value: 2"));
   }
 }

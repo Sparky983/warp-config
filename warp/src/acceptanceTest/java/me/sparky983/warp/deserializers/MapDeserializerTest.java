@@ -72,6 +72,9 @@ class MapDeserializerTest {
 
     final Configurations.StringStringMap configuration = builder.build();
 
-    assertEquals(Map.of("key 1", "value 1", "key 2", "value 2"), configuration.property());
+    final Map<String, String> property = configuration.property();
+
+    assertEquals(Map.of("key 1", "value 1", "key 2", "value 2"), property);
+    assertThrows(UnsupportedOperationException.class, () -> property.put("key 3", "value 3"));
   }
 }

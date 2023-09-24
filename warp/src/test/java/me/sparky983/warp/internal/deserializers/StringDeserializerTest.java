@@ -16,17 +16,17 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class StringDeserializerTest {
-  @Mock Deserializer.Context deserializeContext;
-  @Mock Renderer.Context renderContext;
+  @Mock Deserializer.Context deserializerContext;
+  @Mock Renderer.Context rendererContext;
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(deserializeContext, renderContext);
+    verifyNoMoreInteractions(deserializerContext, rendererContext);
   }
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> STRING.deserialize(null, deserializeContext));
+    assertThrows(NullPointerException.class, () -> STRING.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -40,13 +40,13 @@ class StringDeserializerTest {
   void testDeserialize_NonString() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> STRING.deserialize(node, deserializeContext));
+    assertThrows(DeserializationException.class, () -> STRING.deserialize(node, deserializerContext));
   }
 
   @Test
   void testRender_NullContext() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.string("value");
-    final Renderer<String> renderer = STRING.deserialize(node, deserializeContext);
+    final Renderer<String> renderer = STRING.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
@@ -55,8 +55,8 @@ class StringDeserializerTest {
   void testRender() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.string("value");
 
-    final String result = STRING.deserialize(node, deserializeContext)
-        .render(renderContext);
+    final String result = STRING.deserialize(node, deserializerContext)
+        .render(rendererContext);
 
     assertEquals("value", result);
   }

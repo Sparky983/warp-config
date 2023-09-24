@@ -18,17 +18,17 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class BooleanDeserializerTest {
-  @Mock Deserializer.Context deserializeContext;
-  @Mock Renderer.Context renderContext;
+  @Mock Deserializer.Context deserializerContext;
+  @Mock Renderer.Context rendererContext;
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(deserializeContext, renderContext);
+    verifyNoMoreInteractions(deserializerContext, rendererContext);
   }
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> BOOLEAN.deserialize(null, deserializeContext));
+    assertThrows(NullPointerException.class, () -> BOOLEAN.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -42,13 +42,13 @@ class BooleanDeserializerTest {
   void testDeserialize_NonBoolean() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> BOOLEAN.deserialize(node, deserializeContext));
+    assertThrows(DeserializationException.class, () -> BOOLEAN.deserialize(node, deserializerContext));
   }
 
   @Test
   void testRender_NullContext() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.bool(true);
-    final Renderer<Boolean> renderer = BOOLEAN.deserialize(node, deserializeContext);
+    final Renderer<Boolean> renderer = BOOLEAN.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
@@ -58,8 +58,8 @@ class BooleanDeserializerTest {
   void testRender(final boolean value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.bool(value);
 
-    final boolean result = BOOLEAN.deserialize(node, deserializeContext)
-        .render(renderContext);
+    final boolean result = BOOLEAN.deserialize(node, deserializerContext)
+        .render(rendererContext);
 
     assertEquals(value, result);
   }

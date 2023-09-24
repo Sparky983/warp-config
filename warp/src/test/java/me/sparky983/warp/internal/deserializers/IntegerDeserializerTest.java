@@ -18,17 +18,17 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class IntegerDeserializerTest {
-  @Mock Deserializer.Context deserializeContext;
-  @Mock Renderer.Context renderContext;
+  @Mock Deserializer.Context deserializerContext;
+  @Mock Renderer.Context rendererContext;
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(deserializeContext, renderContext);
+    verifyNoMoreInteractions(deserializerContext, rendererContext);
   }
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> INTEGER.deserialize(null, deserializeContext));
+    assertThrows(NullPointerException.class, () -> INTEGER.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -42,7 +42,7 @@ class IntegerDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> INTEGER.deserialize(node, deserializeContext));
+    assertThrows(DeserializationException.class, () -> INTEGER.deserialize(node, deserializerContext));
   }
 
   @ParameterizedTest
@@ -51,7 +51,7 @@ class IntegerDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
     final DeserializationException thrown =
-        assertThrows(DeserializationException.class, () -> INTEGER.deserialize(node, deserializeContext));
+        assertThrows(DeserializationException.class, () -> INTEGER.deserialize(node, deserializerContext));
 
     assertEquals(
         "Must be between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE + " (both inclusive)",
@@ -61,7 +61,7 @@ class IntegerDeserializerTest {
   @Test
   void testRender_NullContext() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(0);
-    final Renderer<Integer> renderer = INTEGER.deserialize(node, deserializeContext);
+    final Renderer<Integer> renderer = INTEGER.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
@@ -71,8 +71,8 @@ class IntegerDeserializerTest {
   void testRender(final int value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final int result = INTEGER.deserialize(node, deserializeContext)
-        .render(renderContext);
+    final int result = INTEGER.deserialize(node, deserializerContext)
+        .render(rendererContext);
 
     assertEquals(value, result);
   }

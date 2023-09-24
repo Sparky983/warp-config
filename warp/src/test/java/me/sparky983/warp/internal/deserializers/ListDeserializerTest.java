@@ -18,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class ListDeserializerTest {
-  @Mock Deserializer.Context deserializeContext;
-  @Mock Renderer.Context renderContext;
+  @Mock Deserializer.Context deserializerContext;
+  @Mock Renderer.Context rendererContext;
 
   Deserializer<List<String>> deserializer;
 
@@ -30,7 +30,7 @@ class ListDeserializerTest {
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(deserializeContext, renderContext);
+    verifyNoMoreInteractions(deserializerContext, rendererContext);
   }
 
   @Test
@@ -40,7 +40,7 @@ class ListDeserializerTest {
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> deserializer.deserialize(null, deserializeContext));
+    assertThrows(NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -54,13 +54,13 @@ class ListDeserializerTest {
   void testDeserialize_NonList() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> deserializer.deserialize(node, deserializeContext));
+    assertThrows(DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
   }
 
   @Test
   void testRender_NullContext() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.list();
-    final Renderer<List<String>> renderer = deserializer.deserialize(node, deserializeContext);
+    final Renderer<List<String>> renderer = deserializer.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
@@ -70,9 +70,10 @@ class ListDeserializerTest {
     final ConfigurationNode node =
         ConfigurationNode.list(ConfigurationNode.integer(1), ConfigurationNode.integer(2));
 
-    final List<String> result = deserializer.deserialize(node, deserializeContext)
-        .render(renderContext);
+    final List<String> result = deserializer.deserialize(node, deserializerContext)
+        .render(rendererContext);
 
     assertEquals(List.of("element: 1", "element: 2"), result);
+    assertThrows(UnsupportedOperationException.class, () -> result.add("element: 3"));
   }
 }
