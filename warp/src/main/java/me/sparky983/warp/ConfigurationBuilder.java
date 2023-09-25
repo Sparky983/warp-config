@@ -59,7 +59,7 @@ public interface ConfigurationBuilder<T> {
    * @throws NullPointerException if the type or deserializer is {@code null}.
    * @since 0.1
    */
-  <D> ConfigurationBuilder<T> deserializer(Class<D> type, Deserializer<D> deserializer);
+  <D> ConfigurationBuilder<T> deserializer(Class<D> type, Deserializer<? extends D> deserializer);
 
   /**
    * Builds the configuration class.

@@ -20,8 +20,20 @@ import me.sparky983.warp.internal.schema.Schema;
  * @param <T> the type of the {@linkplain Configuration configuration class}
  */
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
-  /** The default deserializer registry. */
-  private static final DeserializerRegistry DESERIALIZERS =
+  /** The default defaults registry */
+  private static final DefaultsRegistry DEFAULTS =
+      DefaultsRegistry.create()
+          .register(Optional.class, ConfigurationNode.nil())
+          .register(List.class, ConfigurationNode.list())
+          .register(Map.class, ConfigurationNode.map().build());
+
+  /**
+   * The configuration sources. Initial capacity is set to {@code 1} because usually there is only
+   * one source.
+   */
+  private final Collection<ConfigurationSource> sources = new ArrayList<>(1);
+
+  private final DeserializerRegistry.Builder deserializers =
       DeserializerRegistry.builder()
           .deserializer(Byte.class, Deserializers.BYTE)
           .deserializer(byte.class, Deserializers.BYTE)
@@ -94,21 +106,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                                 new IllegalStateException(
                                     "Deserializer for the elements of " + type + " not found"));
                 return Deserializers.list(deserializer);
-              })
-          .build();
-
-  /** The default defaults registry */
-  private static final DefaultsRegistry DEFAULTS =
-      DefaultsRegistry.create()
-          .register(Optional.class, ConfigurationNode.nil())
-          .register(List.class, ConfigurationNode.list())
-          .register(Map.class, ConfigurationNode.map().build());
-
-  /**
-   * The configuration sources. Initial capacity is set to {@code 1} because usually there is only
-   * one source.
-   */
-  private final Collection<ConfigurationSource> sources = new ArrayList<>(1);
+              });
 
   private final Schema<? extends T> schema;
 
@@ -134,7 +132,11 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
 
   @Override
   public <D> ConfigurationBuilder<T> deserializer(final Class<D> type,
-      final Deserializer<D> deserializer) {
+      final Deserializer<? extends D> deserializer) {
+    Objects.requireNonNull(type, "type cannot be null");
+    Objects.requireNonNull(deserializer, "deserializer cannot be null");
+
+    deserializers.deserializer(type, deserializer);
     return this;
   }
 
@@ -144,6 +146,6 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
     for (final ConfigurationSource source : sources) {
       source.configuration().ifPresent(configurations::add);
     }
-    return schema.create(DESERIALIZERS, DEFAULTS, configurations);
+    return schema.create(deserializers.build(), DEFAULTS, configurations);
   }
 }

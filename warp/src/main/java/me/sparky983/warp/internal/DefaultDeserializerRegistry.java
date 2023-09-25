@@ -55,7 +55,7 @@ final class DefaultDeserializerRegistry implements DeserializerRegistry {
         final Class<T> type, final Deserializer<? extends T> deserializer) {
       Objects.requireNonNull(deserializer, "deserializer cannot be null");
 
-      this.<T>factory(type, (registry, parameterizedType) -> deserializer);
+      this.factory(type, (registry, parameterizedType) -> deserializer);
       return this;
     }
 
@@ -65,10 +65,7 @@ final class DefaultDeserializerRegistry implements DeserializerRegistry {
       Objects.requireNonNull(type, "type cannot be null");
       Objects.requireNonNull(factory, "factory cannot be null");
 
-      if (deserializerFactories.putIfAbsent(type, factory) != null) {
-        throw new IllegalStateException(
-            "Deserializer factory for type " + type + " already registered");
-      }
+      deserializerFactories.put(type, factory);
       return this;
     }
 

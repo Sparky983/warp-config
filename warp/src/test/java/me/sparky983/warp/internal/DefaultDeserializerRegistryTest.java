@@ -60,16 +60,11 @@ class DefaultDeserializerRegistryTest {
     final Deserializer<String> deserializer2 = (node, context) -> Renderer.of("test");
 
     builder.deserializer(String.class, deserializer1);
-
-    assertThrows(
-        IllegalStateException.class, () -> builder.deserializer(String.class, deserializer2));
-    assertThrows(
-        IllegalStateException.class,
-        () -> builder.factory(String.class, (registry, type) -> deserializer2));
+    builder.deserializer(String.class, deserializer2);
 
     final DeserializerRegistry registry = builder.build();
 
-    assertEquals(Optional.of(deserializer1), registry.get(ParameterizedType.of(String.class)));
+    assertEquals(Optional.of(deserializer2), registry.get(ParameterizedType.of(String.class)));
   }
 
   @Test

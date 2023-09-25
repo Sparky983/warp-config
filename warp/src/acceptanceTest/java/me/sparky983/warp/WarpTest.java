@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -217,15 +218,16 @@ class WarpTest {
   void testDeserializer(@Mock final Deserializer<String> deserializer, @Mock final Renderer<String> renderer) throws Exception {
     final ConfigurationNode.String node = ConfigurationNode.string("value");
 
+    when(deserializer.deserialize(eq(node), any())).thenReturn(renderer);
+    when(renderer.render(any())).thenReturn("value");
+
     final Configurations.String configuration = Warp.builder(Configurations.String.class)
         .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", node).build()))
         .deserializer(String.class, deserializer)
         .build();
 
-    when(deserializer.deserialize(node, any())).thenReturn(renderer);
-    when(renderer.render(any())).thenReturn("value");
     assertEquals("value", configuration.property());
-    verify(deserializer).deserialize(node, any());
+    verify(deserializer).deserialize(eq(node), any());
     verify(renderer).render(any());
     verifyNoMoreInteractions(deserializer, renderer);
   }

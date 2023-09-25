@@ -7,11 +7,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.Renderer;
-import me.sparky983.warp.Renderer.Context;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
@@ -56,6 +54,7 @@ public final class MappingConfiguration {
    *     an empty optional
    * @param <T> the type of the property
    * @throws NullPointerException if the property or the values are {@code null}.
+   * @throws IllegalStateException TODO
    */
   public <T> Optional<ConfigurationError> put(
       final Schema.Property<T> property, final List<? extends ConfigurationNode> tempValues) {
@@ -91,7 +90,12 @@ public final class MappingConfiguration {
       try {
         // We still want to deserialize the value, even if it's already been set, so we still get an
         // error message if it couldn't be deserialized
-        properties.putIfAbsent(property, deserializer.deserialize(value, CONTEXT));
+        final Renderer<T> renderer = deserializer.deserialize(value, CONTEXT);
+        if (renderer == null) {
+          // TODO: or NPE?
+          throw new IllegalStateException("Deserializer returned null");
+        }
+        properties.putIfAbsent(property, renderer);
       } catch (final DeserializationException e) {
         errors.add(ConfigurationError.error(e.getMessage()));
       }
@@ -110,13 +114,21 @@ public final class MappingConfiguration {
    * @param context the renderer context
    * @return an optional containing the value if it is present, otherwise an empty optional
    * @param <T> the type of the property
-   * @throws NullPointerException if the path is {@code null}
+   * @throws NullPointerException if the path is {@code null}.
+   * @throws IllegalStateException TODO
    */
   @SuppressWarnings("unchecked")
   public <T> Optional<T> render(final Schema.Property<T> property, final Renderer.Context context) {
     Objects.requireNonNull(property, "property cannot be null");
 
-    return (Optional<T>) Optional.ofNullable(properties.get(property))
-        .map((render) -> render.render(context));
+    return Optional.ofNullable((Renderer<T>) properties.get(property))
+        .map((render) -> {
+          final T t = render.render(context);
+          if (t == null) {
+            // TODO: or NPE?
+            throw new IllegalStateException("Renderer returned null");
+          }
+          return t;
+        });
   }
 }
