@@ -4,7 +4,7 @@ package me.sparky983.warp;
  * A {@link ConfigurationNode} deserializer.
  *
  * @param <T> the deserialized type
- * @since 1.1
+ * @since 0.1
  */
 @FunctionalInterface
 public interface Deserializer<T> {
@@ -15,7 +15,7 @@ public interface Deserializer<T> {
    * @param context the context; never {@code null}
    * @return TODO
    * @throws DeserializationException if the node was unable to be deserialized.
-   * @since 1.1
+   * @since 0.1
    */
   Renderer<T> deserialize(ConfigurationNode node, Context context) throws DeserializationException;
 
