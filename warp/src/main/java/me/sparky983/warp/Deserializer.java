@@ -21,6 +21,8 @@ public interface Deserializer<T> {
 
   /**
    * The context for a deserialization.
+   *
+   * @since 0.1
    */
   interface Context {
     // Maintenance note: make sure internal passing of the context arguments is valid
