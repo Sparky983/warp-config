@@ -34,7 +34,7 @@ public interface Renderer<T extends @Nullable Object> {
   /**
    * Renders the value.
    *
-   * @param context the context
+   * @param context the context; never {@code null}
    * @return the rendered value
    * @since 0.1
    */
