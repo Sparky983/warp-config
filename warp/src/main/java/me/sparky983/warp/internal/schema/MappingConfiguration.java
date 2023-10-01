@@ -53,8 +53,8 @@ public final class MappingConfiguration {
    * @return an {@link Optional} containing a {@link ConfigurationError} if there was an error, or
    *     an empty optional
    * @param <T> the type of the property
-   * @throws NullPointerException if the property or the values are {@code null}.
-   * @throws IllegalStateException TODO
+   * @throws NullPointerException if the property or the values are {@code null}, or if the
+   * deserializer associated with the given property's type returns {@code null}.
    */
   public <T> Optional<ConfigurationError> put(
       final Schema.Property<T> property, final List<? extends ConfigurationNode> tempValues) {
@@ -87,17 +87,18 @@ public final class MappingConfiguration {
     }
 
     for (final ConfigurationNode value : values) {
+      final Renderer<T> renderer;
       try {
         // We still want to deserialize the value, even if it's already been set, so we still get an
         // error message if it couldn't be deserialized
-        final Renderer<T> renderer = deserializer.deserialize(value, CONTEXT);
-        if (renderer == null) {
-          // TODO: or NPE?
-          throw new IllegalStateException("Deserializer returned null");
-        }
+        renderer = deserializer.deserialize(value, CONTEXT);
         properties.putIfAbsent(property, renderer);
       } catch (final DeserializationException e) {
         errors.add(ConfigurationError.error(e.getMessage()));
+        continue;
+      }
+      if (renderer == null) {
+        throw new NullPointerException("Deserializer returned null");
       }
     }
 
@@ -114,21 +115,21 @@ public final class MappingConfiguration {
    * @param context the renderer context
    * @return an optional containing the value if it is present, otherwise an empty optional
    * @param <T> the type of the property
-   * @throws NullPointerException if the path is {@code null}.
-   * @throws IllegalStateException TODO
+   * @throws NullPointerException if the path is {@code null} or if the renderer returned by the
+   * deserializer associated with the given property's type returns {@code null}.
    */
   @SuppressWarnings("unchecked")
   public <T> Optional<T> render(final Schema.Property<T> property, final Renderer.Context context) {
     Objects.requireNonNull(property, "property cannot be null");
 
     return Optional.ofNullable((Renderer<T>) properties.get(property))
-        .map((render) -> {
-          final T t = render.render(context);
-          if (t == null) {
-            // TODO: or NPE?
-            throw new IllegalStateException("Renderer returned null");
-          }
-          return t;
-        });
+        .map(
+            (render) -> {
+              final T t = render.render(context);
+              if (t == null) {
+                throw new NullPointerException("Renderer returned null");
+              }
+              return t;
+            });
   }
 }
