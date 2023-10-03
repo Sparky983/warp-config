@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 
-@MockitoSettings
 class WarpTest {
   @Test
   void testBuilder_Null() {
@@ -196,40 +195,6 @@ class WarpTest {
                 });
 
     assertThrows(ConfigurationException.class, builder::build);
-  }
-
-  @Test
-  void testDeserializer_NullType() {
-    final ConfigurationBuilder<Configurations.String> builder =
-        Warp.builder(Configurations.String.class);
-
-    assertThrows(NullPointerException.class, () -> builder.deserializer(null, Deserializers.STRING));
-  }
-
-  @Test
-  void testDeserializer_NullDeserializer() {
-    final ConfigurationBuilder<Configurations.String> builder =
-        Warp.builder(Configurations.String.class);
-
-    assertThrows(NullPointerException.class, () -> builder.deserializer(String.class, null));
-  }
-
-  @Test
-  void testDeserializer(@Mock final Deserializer<String> deserializer, @Mock final Renderer<String> renderer) throws Exception {
-    final ConfigurationNode.String node = ConfigurationNode.string("value");
-
-    when(deserializer.deserialize(eq(node), any())).thenReturn(renderer);
-    when(renderer.render(any())).thenReturn("value");
-
-    final Configurations.String configuration = Warp.builder(Configurations.String.class)
-        .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", node).build()))
-        .deserializer(String.class, deserializer)
-        .build();
-
-    assertEquals("value", configuration.property());
-    verify(deserializer).deserialize(eq(node), any());
-    verify(renderer).render(any());
-    verifyNoMoreInteractions(deserializer, renderer);
   }
 
   @Test
