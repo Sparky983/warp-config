@@ -12,7 +12,7 @@ final class DefaultDeserializerRegistry implements DeserializerRegistry {
 
   private DefaultDeserializerRegistry(
       final Map<Class<?>, DeserializerFactory<?>> deserializerFactories) {
-    this.deserializerFactories = deserializerFactories;
+    this.deserializerFactories = new HashMap<>(deserializerFactories);
   }
 
   /**
