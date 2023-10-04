@@ -40,7 +40,8 @@ class DoubleDeserializerTest {
   void testDeserialize_NonNumber() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> DOUBLE.deserialize(node, deserializerContext));
+    assertThrows(
+        DeserializationException.class, () -> DOUBLE.deserialize(node, deserializerContext));
   }
 
   @Test
@@ -55,8 +56,7 @@ class DoubleDeserializerTest {
   void testRender_Integer() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(1);
 
-    final double result = DOUBLE.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final double result = DOUBLE.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals(1.0, result);
   }
@@ -65,8 +65,7 @@ class DoubleDeserializerTest {
   void testRender_Decimal() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.decimal(1.5);
 
-    final double result = DOUBLE.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final double result = DOUBLE.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals(1.5, result);
   }

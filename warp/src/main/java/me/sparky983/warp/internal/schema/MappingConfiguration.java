@@ -9,17 +9,15 @@ import java.util.Optional;
 import java.util.Set;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
-import me.sparky983.warp.Renderer;
-import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
+import me.sparky983.warp.Renderer;
+import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
 /** A configuration that maps its values to objects as they are put. */
 public final class MappingConfiguration {
-  /**
-   * A cached deserializer context (the context is empty).
-   */
+  /** A cached deserializer context (the context is empty). */
   private static final Deserializer.Context CONTEXT = new Deserializer.Context() {};
 
   private final DefaultsRegistry defaultsRegistry;
@@ -54,7 +52,7 @@ public final class MappingConfiguration {
    *     an {@linkplain Optional#empty() empty optional}
    * @param <T> the type of the property
    * @throws NullPointerException if the property or the values are {@code null}, or if the
-   * deserializer associated with the given property's type returns {@code null}.
+   *     deserializer associated with the given property's type returns {@code null}.
    */
   public <T> Optional<ConfigurationError> put(
       final Schema.Property<T> property, final List<? extends ConfigurationNode> tempValues) {
@@ -113,11 +111,11 @@ public final class MappingConfiguration {
    *
    * @param property the {@link Schema.Property}
    * @param context the renderer context
-   * @return an optional containing the value if it is present, otherwise an
-   *     {@linkplain Optional#empty() empty optional}
+   * @return an optional containing the value if it is present, otherwise an {@linkplain
+   *     Optional#empty() empty optional}
    * @param <T> the type of the property
    * @throws NullPointerException if the path is {@code null} or if the renderer returned by the
-   * deserializer associated with the given property's type returns {@code null}.
+   *     deserializer associated with the given property's type returns {@code null}.
    */
   @SuppressWarnings("unchecked")
   public <T> Optional<T> render(final Schema.Property<T> property, final Renderer.Context context) {
@@ -134,4 +132,3 @@ public final class MappingConfiguration {
             });
   }
 }
-  

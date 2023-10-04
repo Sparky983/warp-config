@@ -13,47 +13,31 @@ import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
 
-/**
-* Contains the default {@link Deserializer Deserializers}
-*/
+/** Contains the default {@link Deserializer Deserializers} */
 public final class Deserializers {
-  /**
-   * A {@link Byte} deserializer
-   */
-  public static final Deserializer<Byte> BYTE = integer(Byte.MIN_VALUE, Byte.MAX_VALUE,
-      Number::byteValue);
+  /** A {@link Byte} deserializer */
+  public static final Deserializer<Byte> BYTE =
+      integer(Byte.MIN_VALUE, Byte.MAX_VALUE, Number::byteValue);
 
-  /**
-   * A {@link Short} deserializer.
-   */
-  public static final Deserializer<Short> SHORT = integer(Short.MIN_VALUE, Short.MAX_VALUE,
-      Number::shortValue);
+  /** A {@link Short} deserializer. */
+  public static final Deserializer<Short> SHORT =
+      integer(Short.MIN_VALUE, Short.MAX_VALUE, Number::shortValue);
 
-  /**
-   * A {@link Integer} deserializer.
-   */
-  public static final Deserializer<Integer> INTEGER = integer(Integer.MIN_VALUE, Integer.MAX_VALUE,
-      Number::intValue);
+  /** A {@link Integer} deserializer. */
+  public static final Deserializer<Integer> INTEGER =
+      integer(Integer.MIN_VALUE, Integer.MAX_VALUE, Number::intValue);
 
-  /**
-   * A {@link Long} deserializer.
-   */
-  public static final Deserializer<Long> LONG = integer(Long.MIN_VALUE, Long.MAX_VALUE,
-      Number::longValue);
+  /** A {@link Long} deserializer. */
+  public static final Deserializer<Long> LONG =
+      integer(Long.MIN_VALUE, Long.MAX_VALUE, Number::longValue);
 
-  /**
-   * A {@link Float} deserializer.
-   */
+  /** A {@link Float} deserializer. */
   public static final Deserializer<Float> FLOAT = decimal(Number::floatValue);
 
-  /**
-   * A {@link Double} deserializer.
-   */
+  /** A {@link Double} deserializer. */
   public static final Deserializer<Double> DOUBLE = decimal(Number::doubleValue);
 
-  /**
-   * A {@link Boolean} deserializer.
-   */
+  /** A {@link Boolean} deserializer. */
   public static final Deserializer<Boolean> BOOLEAN =
       (node, context) -> {
         Objects.requireNonNull(node, "node cannot be null");
@@ -65,9 +49,7 @@ public final class Deserializers {
         throw new DeserializationException("Must be a boolean");
       };
 
-  /**
-   * A {@link String} deserializer.
-   */
+  /** A {@link String} deserializer. */
   public static final Deserializer<String> STRING =
       (node, context) -> {
         Objects.requireNonNull(node, "node cannot be null");
@@ -79,8 +61,7 @@ public final class Deserializers {
         throw new DeserializationException("Must be a string");
       };
 
-  private Deserializers() {
-  }
+  private Deserializers() {}
 
   private static <T> Deserializer<T> integer(
       final long min, final long max, final Function<? super Long, ? extends T> mapper) {
@@ -141,9 +122,7 @@ public final class Deserializers {
         return (rendererContext) -> {
           Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
 
-          return renderers.stream()
-              .<E>map((renderer) -> renderer.render(rendererContext))
-              .toList();
+          return renderers.stream().<E>map((renderer) -> renderer.render(rendererContext)).toList();
         };
       }
       throw new DeserializationException("Must be a list");
@@ -174,14 +153,16 @@ public final class Deserializers {
         final Map<Renderer<? extends K>, Renderer<? extends V>> renderers = new HashMap<>();
         for (final ConfigurationNode.Map.Entry entry : map.entries()) {
           renderers.put(
-              keyDeserializer.deserialize(ConfigurationNode.string(entry.key()), deserializerContext),
+              keyDeserializer.deserialize(
+                  ConfigurationNode.string(entry.key()), deserializerContext),
               valueDeserializer.deserialize(entry.value(), deserializerContext));
         }
         return (rendererContext) -> {
           Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
           final Map<K, V> result = new HashMap<>();
-          renderers.forEach((key, value) ->
-              result.put(key.render(rendererContext), value.render(rendererContext)));
+          renderers.forEach(
+              (key, value) ->
+                  result.put(key.render(rendererContext), value.render(rendererContext)));
           return Collections.unmodifiableMap(result);
         };
       }

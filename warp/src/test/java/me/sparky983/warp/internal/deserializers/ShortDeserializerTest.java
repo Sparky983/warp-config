@@ -42,7 +42,8 @@ class ShortDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> SHORT.deserialize(node, deserializerContext));
+    assertThrows(
+        DeserializationException.class, () -> SHORT.deserialize(node, deserializerContext));
   }
 
   @ParameterizedTest
@@ -51,7 +52,8 @@ class ShortDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
     final DeserializationException thrown =
-        assertThrows(DeserializationException.class, () -> SHORT.deserialize(node, deserializerContext));
+        assertThrows(
+            DeserializationException.class, () -> SHORT.deserialize(node, deserializerContext));
 
     assertEquals(
         "Must be between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE + " (both inclusive)",
@@ -71,8 +73,7 @@ class ShortDeserializerTest {
   void testRender(final int value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final short result = SHORT.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final short result = SHORT.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals((short) value, result);
   }

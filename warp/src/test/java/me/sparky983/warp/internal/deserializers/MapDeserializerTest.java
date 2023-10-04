@@ -24,7 +24,10 @@ class MapDeserializerTest {
 
   @BeforeEach
   void setUp() {
-    deserializer = Deserializers.map((node, context) -> Renderer.of("key: " + node), (node, context) -> Renderer.of("value: " + node));
+    deserializer =
+        Deserializers.map(
+            (node, context) -> Renderer.of("key: " + node),
+            (node, context) -> Renderer.of("value: " + node));
   }
 
   @AfterEach
@@ -44,7 +47,8 @@ class MapDeserializerTest {
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
+    assertThrows(
+        NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -58,7 +62,8 @@ class MapDeserializerTest {
   void testDeserialize_NonMap() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
+    assertThrows(
+        DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
   }
 
   @Test
@@ -69,7 +74,8 @@ class MapDeserializerTest {
             .entry("3", ConfigurationNode.integer(4))
             .build();
 
-    final Renderer<Map<String, String>> renderer = deserializer.deserialize(node, deserializerContext);
+    final Renderer<Map<String, String>> renderer =
+        deserializer.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
@@ -82,8 +88,8 @@ class MapDeserializerTest {
             .entry("3", ConfigurationNode.integer(4))
             .build();
 
-    final Map<String, String> result = deserializer.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final Map<String, String> result =
+        deserializer.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals(Map.of("key: 1", "value: 2", "key: 3", "value: 4"), result);
     assertThrows(UnsupportedOperationException.class, () -> result.put("key: 1", "value: 2"));

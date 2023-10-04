@@ -40,7 +40,8 @@ class ListDeserializerTest {
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
+    assertThrows(
+        NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -54,7 +55,8 @@ class ListDeserializerTest {
   void testDeserialize_NonList() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
+    assertThrows(
+        DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
   }
 
   @Test
@@ -70,8 +72,8 @@ class ListDeserializerTest {
     final ConfigurationNode node =
         ConfigurationNode.list(ConfigurationNode.integer(1), ConfigurationNode.integer(2));
 
-    final List<String> result = deserializer.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final List<String> result =
+        deserializer.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals(List.of("element: 1", "element: 2"), result);
     assertThrows(UnsupportedOperationException.class, () -> result.add("element: 3"));

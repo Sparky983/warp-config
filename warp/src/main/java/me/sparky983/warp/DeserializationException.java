@@ -1,7 +1,6 @@
 package me.sparky983.warp;
 
 import java.util.Objects;
-import me.sparky983.warp.Deserializer;
 
 /** Thrown when a {@link Deserializer} could not deserialize a value. */
 public final class DeserializationException extends Exception {

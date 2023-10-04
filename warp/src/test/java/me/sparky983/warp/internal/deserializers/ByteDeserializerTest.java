@@ -51,7 +51,8 @@ class ByteDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
     final DeserializationException thrown =
-        assertThrows(DeserializationException.class, () -> BYTE.deserialize(node, deserializerContext));
+        assertThrows(
+            DeserializationException.class, () -> BYTE.deserialize(node, deserializerContext));
 
     assertEquals(
         "Must be between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE + " (both inclusive)",
@@ -71,8 +72,7 @@ class ByteDeserializerTest {
   void testRender(final byte value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final byte result = BYTE.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final byte result = BYTE.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals(value, result);
   }

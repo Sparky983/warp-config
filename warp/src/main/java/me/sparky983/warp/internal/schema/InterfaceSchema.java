@@ -30,9 +30,7 @@ import me.sparky983.warp.internal.DeserializerRegistry;
  * @param <T> the type of the {@linkplain Configuration configuration class}
  */
 final class InterfaceSchema<T> implements Schema<T> {
-  /**
-   * A cached renderer context (the context is empty).
-   */
+  /** A cached renderer context (the context is empty). */
   private static final Renderer.Context RENDERER_CONTEXT = new Renderer.Context() {};
 
   private final Class<T> configurationClass;
@@ -164,7 +162,9 @@ final class InterfaceSchema<T> implements Schema<T> {
               return proxy == args[0];
             }
           }
-          return mappingConfiguration.render(properties.get(method), RENDERER_CONTEXT).orElseThrow();
+          return mappingConfiguration
+              .render(properties.get(method), RENDERER_CONTEXT)
+              .orElseThrow();
         });
   }
 }

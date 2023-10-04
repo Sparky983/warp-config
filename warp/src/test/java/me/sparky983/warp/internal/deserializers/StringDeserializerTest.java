@@ -40,7 +40,8 @@ class StringDeserializerTest {
   void testDeserialize_NonString() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> STRING.deserialize(node, deserializerContext));
+    assertThrows(
+        DeserializationException.class, () -> STRING.deserialize(node, deserializerContext));
   }
 
   @Test
@@ -55,8 +56,7 @@ class StringDeserializerTest {
   void testRender() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.string("value");
 
-    final String result = STRING.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final String result = STRING.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals("value", result);
   }

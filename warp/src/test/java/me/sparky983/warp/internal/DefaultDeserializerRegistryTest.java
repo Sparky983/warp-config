@@ -14,8 +14,9 @@ class DefaultDeserializerRegistryTest {
   void testBuilderDeserializer_NullType() {
     final DeserializerRegistry.Builder builder = DeserializerRegistry.builder();
 
-    assertThrows(NullPointerException.class, () ->
-        builder.deserializer(null, (node, context) -> Renderer.of("test")));
+    assertThrows(
+        NullPointerException.class,
+        () -> builder.deserializer(null, (node, context) -> Renderer.of("test")));
   }
 
   @Test

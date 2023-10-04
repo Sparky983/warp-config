@@ -45,6 +45,5 @@ public interface Renderer<T extends @Nullable Object> {
    *
    * @since 0.1
    */
-  interface Context {
-  }
+  interface Context {}
 }

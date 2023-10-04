@@ -42,7 +42,8 @@ class BooleanDeserializerTest {
   void testDeserialize_NonBoolean() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> BOOLEAN.deserialize(node, deserializerContext));
+    assertThrows(
+        DeserializationException.class, () -> BOOLEAN.deserialize(node, deserializerContext));
   }
 
   @Test
@@ -58,8 +59,7 @@ class BooleanDeserializerTest {
   void testRender(final boolean value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.bool(value);
 
-    final boolean result = BOOLEAN.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final boolean result = BOOLEAN.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals(value, result);
   }

@@ -42,7 +42,8 @@ class IntegerDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> INTEGER.deserialize(node, deserializerContext));
+    assertThrows(
+        DeserializationException.class, () -> INTEGER.deserialize(node, deserializerContext));
   }
 
   @ParameterizedTest
@@ -51,7 +52,8 @@ class IntegerDeserializerTest {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
     final DeserializationException thrown =
-        assertThrows(DeserializationException.class, () -> INTEGER.deserialize(node, deserializerContext));
+        assertThrows(
+            DeserializationException.class, () -> INTEGER.deserialize(node, deserializerContext));
 
     assertEquals(
         "Must be between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE + " (both inclusive)",
@@ -71,8 +73,7 @@ class IntegerDeserializerTest {
   void testRender(final int value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final int result = INTEGER.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final int result = INTEGER.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals(value, result);
   }

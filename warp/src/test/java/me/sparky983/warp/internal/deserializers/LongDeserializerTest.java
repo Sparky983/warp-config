@@ -58,8 +58,7 @@ class LongDeserializerTest {
   void testRender(final long value) throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(value);
 
-    final long result = LONG.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final long result = LONG.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals(value, result);
   }

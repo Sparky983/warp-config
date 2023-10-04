@@ -40,7 +40,8 @@ class OptionalDeserializerTest {
 
   @Test
   void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
+    assertThrows(
+        NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
   }
 
   @Test
@@ -53,7 +54,10 @@ class OptionalDeserializerTest {
 
   @Test
   void testRender_Nil() throws DeserializationException {
-    final Optional<String> result = deserializer.deserialize(ConfigurationNode.nil(), deserializerContext).render(rendererContext);
+    final Optional<String> result =
+        deserializer
+            .deserialize(ConfigurationNode.nil(), deserializerContext)
+            .render(rendererContext);
 
     assertEquals(Optional.empty(), result);
   }
@@ -62,8 +66,8 @@ class OptionalDeserializerTest {
   void testRender() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(1);
 
-    final Optional<String> result = deserializer.deserialize(node, deserializerContext)
-        .render(rendererContext);
+    final Optional<String> result =
+        deserializer.deserialize(node, deserializerContext).render(rendererContext);
 
     assertEquals(Optional.of("value: 1"), result);
   }
