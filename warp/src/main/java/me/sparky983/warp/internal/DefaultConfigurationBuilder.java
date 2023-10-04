@@ -33,6 +33,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
    */
   private final Collection<ConfigurationSource> sources = new ArrayList<>(1);
 
+  /** The deserializers for the configuration. */
   private final DeserializerRegistry.Builder deserializers =
       DeserializerRegistry.builder()
           .deserializer(Byte.class, Deserializers.BYTE)
@@ -131,8 +132,8 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   }
 
   @Override
-  public <D> ConfigurationBuilder<T> deserializer(final Class<D> type,
-      final Deserializer<? extends D> deserializer) {
+  public <D> ConfigurationBuilder<T> deserializer(
+      final Class<D> type, final Deserializer<? extends D> deserializer) {
     Objects.requireNonNull(type, "type cannot be null");
     Objects.requireNonNull(deserializer, "deserializer cannot be null");
 

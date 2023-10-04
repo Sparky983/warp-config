@@ -51,7 +51,7 @@ public final class MappingConfiguration {
    * @param property the property
    * @param tempValues the values
    * @return an {@link Optional} containing a {@link ConfigurationError} if there was an error, or
-   *     an empty optional
+   *     an {@linkplain Optional#empty() empty optional}
    * @param <T> the type of the property
    * @throws NullPointerException if the property or the values are {@code null}, or if the
    * deserializer associated with the given property's type returns {@code null}.
@@ -113,7 +113,8 @@ public final class MappingConfiguration {
    *
    * @param property the {@link Schema.Property}
    * @param context the renderer context
-   * @return an optional containing the value if it is present, otherwise an empty optional
+   * @return an optional containing the value if it is present, otherwise an
+   *     {@linkplain Optional#empty() empty optional}
    * @param <T> the type of the property
    * @throws NullPointerException if the path is {@code null} or if the renderer returned by the
    * deserializer associated with the given property's type returns {@code null}.
@@ -133,3 +134,4 @@ public final class MappingConfiguration {
             });
   }
 }
+  

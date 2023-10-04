@@ -19,7 +19,8 @@ final class DefaultDeserializerRegistry implements DeserializerRegistry {
    * Gets the deserializer for the given type.
    *
    * @param type the type
-   * @return an optional containing the deserializer if one was found, otherwise an empty optional
+   * @return an optional containing the deserializer if one was found, otherwise an {@linkplain
+   *     Optional#empty() empty optional}
    * @param <T> the type
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -47,6 +48,7 @@ final class DefaultDeserializerRegistry implements DeserializerRegistry {
             });
   }
 
+  /** The default implementation of {@link Builder}. */
   static final class DefaultBuilder implements Builder {
     private final Map<Class<?>, DeserializerFactory<?>> deserializerFactories = new HashMap<>();
 

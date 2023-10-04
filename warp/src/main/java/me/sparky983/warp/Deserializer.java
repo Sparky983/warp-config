@@ -3,6 +3,11 @@ package me.sparky983.warp;
 /**
  * A {@link ConfigurationNode} deserializer.
  *
+ * <p>Deserializers are used to deserialize a {@link ConfigurationNode} into a {@link Renderer}
+ * which is called every time a value is requested. In most cases, {@link Renderer#of(Object)}
+ * should be used to create a {@link Renderer} that always returns the same value, with no
+ * processing.
+ *
  * @param <T> the deserialized type
  * @since 0.1
  */
@@ -13,7 +18,7 @@ public interface Deserializer<T> {
    *
    * @param node the node; never {@code null}
    * @param context the context; never {@code null}
-   * @return TODO
+   * @return a {@link Renderer} that renders the deserialized value
    * @throws DeserializationException if the node was unable to be deserialized.
    * @since 0.1
    */

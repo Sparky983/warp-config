@@ -13,6 +13,9 @@ import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
 
+/**
+* Contains the default {@link Deserializer Deserializers}
+*/
 public final class Deserializers {
   /**
    * A {@link Byte} deserializer
