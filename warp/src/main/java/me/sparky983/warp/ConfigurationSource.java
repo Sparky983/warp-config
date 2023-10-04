@@ -27,6 +27,8 @@ public interface ConfigurationSource {
    *     Optional#empty()}
    * @throws ConfigurationException if there was an error with the configuration.
    * @since 0.1
+   * @warp.implNote Implementations of this method should not produce any side effect. This is to
+   *     create consistent behaviour for this method, no matter how the configuration is provided.
    */
   Optional<ConfigurationNode.Map> configuration() throws ConfigurationException;
 
