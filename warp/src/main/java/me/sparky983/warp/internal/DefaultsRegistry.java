@@ -45,7 +45,7 @@ public final class DefaultsRegistry {
    *
    * @param type the type
    * @return an {@link Optional} containing the default for the specified type if one exists,
-   *     otherwise an empty optional.
+   *     otherwise an {@linkplain Optional#empty() empty optional}.
    * @throws NullPointerException if the type is {@code null}.
    */
   public Optional<ConfigurationNode> get(final Class<?> type) {

@@ -48,6 +48,20 @@ public interface ConfigurationBuilder<T> {
   ConfigurationBuilder<T> source(ConfigurationSource source);
 
   /**
+   * Adds the given deserializer to this builder.
+   *
+   * <p>Existing deserializers are overridden if they have the same type.
+   *
+   * @param type the type
+   * @param deserializer the deserializer
+   * @return this builder
+   * @param <D> the type
+   * @throws NullPointerException if the type or deserializer is {@code null}.
+   * @since 0.1
+   */
+  <D> ConfigurationBuilder<T> deserializer(Class<D> type, Deserializer<? extends D> deserializer);
+
+  /**
    * Builds the configuration class.
    *
    * <p>If multiple sources have values with conflicting paths, the source {@linkplain

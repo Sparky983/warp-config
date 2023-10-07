@@ -9,58 +9,65 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.DeserializationException;
+import me.sparky983.warp.Deserializer;
+import me.sparky983.warp.Renderer;
 
-/**
- * A {@link ConfigurationNode} deserializer.
- *
- * @param <T> the deserialized type
- */
-@FunctionalInterface
-public interface Deserializer<T> {
+/** Contains the default {@link Deserializer Deserializers} */
+public final class Deserializers {
   /** A {@link Byte} deserializer */
-  Deserializer<Byte> BYTE = integer(Byte.MIN_VALUE, Byte.MAX_VALUE, Number::byteValue);
+  public static final Deserializer<Byte> BYTE =
+      integer(Byte.MIN_VALUE, Byte.MAX_VALUE, Number::byteValue);
 
   /** A {@link Short} deserializer. */
-  Deserializer<Short> SHORT = integer(Short.MIN_VALUE, Short.MAX_VALUE, Number::shortValue);
+  public static final Deserializer<Short> SHORT =
+      integer(Short.MIN_VALUE, Short.MAX_VALUE, Number::shortValue);
 
   /** A {@link Integer} deserializer. */
-  Deserializer<Integer> INTEGER = integer(Integer.MIN_VALUE, Integer.MAX_VALUE, Number::intValue);
+  public static final Deserializer<Integer> INTEGER =
+      integer(Integer.MIN_VALUE, Integer.MAX_VALUE, Number::intValue);
 
   /** A {@link Long} deserializer. */
-  Deserializer<Long> LONG = integer(Long.MIN_VALUE, Long.MAX_VALUE, Number::longValue);
+  public static final Deserializer<Long> LONG =
+      integer(Long.MIN_VALUE, Long.MAX_VALUE, Number::longValue);
 
   /** A {@link Float} deserializer. */
-  Deserializer<Float> FLOAT = decimal(Number::floatValue);
+  public static final Deserializer<Float> FLOAT = decimal(Number::floatValue);
 
   /** A {@link Double} deserializer. */
-  Deserializer<Double> DOUBLE = decimal(Number::doubleValue);
+  public static final Deserializer<Double> DOUBLE = decimal(Number::doubleValue);
 
   /** A {@link Boolean} deserializer. */
-  Deserializer<Boolean> BOOLEAN =
-      (node) -> {
+  public static final Deserializer<Boolean> BOOLEAN =
+      (node, context) -> {
         Objects.requireNonNull(node, "node cannot be null");
+        Objects.requireNonNull(context, "context cannot be null");
 
         if (node instanceof final ConfigurationNode.Bool bool) {
-          return bool.value();
+          return Renderer.of(bool.value());
         }
         throw new DeserializationException("Must be a boolean");
       };
 
   /** A {@link String} deserializer. */
-  Deserializer<String> STRING =
-      (node) -> {
+  public static final Deserializer<String> STRING =
+      (node, context) -> {
         Objects.requireNonNull(node, "node cannot be null");
+        Objects.requireNonNull(context, "context cannot be null");
 
         if (node instanceof final ConfigurationNode.String string) {
-          return string.value();
+          return Renderer.of(string.value());
         }
         throw new DeserializationException("Must be a string");
       };
 
+  private Deserializers() {}
+
   private static <T> Deserializer<T> integer(
       final long min, final long max, final Function<? super Long, ? extends T> mapper) {
-    return (node) -> {
+    return (node, context) -> {
       Objects.requireNonNull(node, "node cannot be null");
+      Objects.requireNonNull(context, "context cannot be null");
 
       if (!(node instanceof final ConfigurationNode.Integer integer)) {
         throw new DeserializationException("Must be an integer");
@@ -70,13 +77,14 @@ public interface Deserializer<T> {
         throw new DeserializationException(
             "Must be between " + min + " and " + max + " (both inclusive)");
       }
-      return mapper.apply(integer.value());
+      return Renderer.of(mapper.apply(integer.value()));
     };
   }
 
   private static <T> Deserializer<T> decimal(final Function<? super Double, ? extends T> mapper) {
-    return (node) -> {
+    return (node, context) -> {
       Objects.requireNonNull(node, "node cannot be null");
+      Objects.requireNonNull(context, "context cannot be null");
 
       final double value;
       if (node instanceof final ConfigurationNode.Integer integer) {
@@ -86,7 +94,7 @@ public interface Deserializer<T> {
       } else {
         throw new DeserializationException("Must be a number");
       }
-      return mapper.apply(value);
+      return Renderer.of(mapper.apply(value));
     };
   }
 
@@ -94,22 +102,28 @@ public interface Deserializer<T> {
    * Creates a new list deserializer for the given deserializer registry.
    *
    * @param elementDeserializer the deserializer for the elements
-   * @return the list deserializer
    * @param <E> the element type
+   * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static <E> Deserializer<List<E>> list(final Deserializer<? extends E> elementDeserializer) {
+  public static <E> Deserializer<List<E>> list(
+      final Deserializer<? extends E> elementDeserializer) {
     Objects.requireNonNull(elementDeserializer, "elementDeserializer cannot be null");
 
-    return (node) -> {
+    return (node, deserializerContext) -> {
       Objects.requireNonNull(node, "node cannot be null");
+      Objects.requireNonNull(deserializerContext, "deserializerContext cannot be null");
 
       if (node instanceof final ConfigurationNode.List list) {
-        final List<E> deserializedList = new ArrayList<>();
+        final List<Renderer<? extends E>> renderers = new ArrayList<>();
         for (final ConfigurationNode element : list.values()) {
-          deserializedList.add(elementDeserializer.deserialize(element));
+          renderers.add(elementDeserializer.deserialize(element, deserializerContext));
         }
-        return Collections.unmodifiableList(deserializedList);
+        return (rendererContext) -> {
+          Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
+
+          return renderers.stream().<E>map((renderer) -> renderer.render(rendererContext)).toList();
+        };
       }
       throw new DeserializationException("Must be a list");
     };
@@ -120,28 +134,37 @@ public interface Deserializer<T> {
    *
    * @param keyDeserializer the deserializer for the keys
    * @param valueDeserializer the deserializer for the values
-   * @return the list deserializer
    * @param <K> the key type
    * @param <V> the value type
+   * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static <K, V> Deserializer<Map<K, V>> map(
+  public static <K, V> Deserializer<Map<K, V>> map(
       final Deserializer<? extends K> keyDeserializer,
       final Deserializer<? extends V> valueDeserializer) {
     Objects.requireNonNull(keyDeserializer, "keyDeserializer cannot be null");
     Objects.requireNonNull(valueDeserializer, "valueDeserializer cannot be null");
 
-    return (node) -> {
+    return (node, deserializerContext) -> {
       Objects.requireNonNull(node, "node cannot be null");
+      Objects.requireNonNull(deserializerContext, "deserializerContext cannot be null");
 
       if (node instanceof final ConfigurationNode.Map map) {
-        final Map<K, V> deserializedMap = new HashMap<>();
+        final Map<Renderer<? extends K>, Renderer<? extends V>> renderers = new HashMap<>();
         for (final ConfigurationNode.Map.Entry entry : map.entries()) {
-          final K key = keyDeserializer.deserialize(ConfigurationNode.string(entry.key()));
-          final V value = valueDeserializer.deserialize(entry.value());
-          deserializedMap.put(key, value);
+          renderers.put(
+              keyDeserializer.deserialize(
+                  ConfigurationNode.string(entry.key()), deserializerContext),
+              valueDeserializer.deserialize(entry.value(), deserializerContext));
         }
-        return Collections.unmodifiableMap(deserializedMap);
+        return (rendererContext) -> {
+          Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
+          final Map<K, V> result = new HashMap<>();
+          renderers.forEach(
+              (key, value) ->
+                  result.put(key.render(rendererContext), value.render(rendererContext)));
+          return Collections.unmodifiableMap(result);
+        };
       }
       throw new DeserializationException("Must be a map");
     };
@@ -151,30 +174,25 @@ public interface Deserializer<T> {
    * Creates a new optional deserializer for the given deserializer registry.
    *
    * @param valueDeserializer the deserializer for the value.
-   * @return the list deserializer
    * @param <T> the value type
+   * @return the list deserializer
    * @throws NullPointerException if the deserializer registry is {@code null}.
    */
-  static <T> Deserializer<Optional<T>> optional(final Deserializer<? extends T> valueDeserializer) {
+  public static <T> Deserializer<Optional<T>> optional(
+      final Deserializer<? extends T> valueDeserializer) {
     Objects.requireNonNull(valueDeserializer, "valueDeserializer cannot be null");
 
-    return (node) -> {
+    return (node, context) -> {
       Objects.requireNonNull(node, "node cannot be null");
+      Objects.requireNonNull(context, "context cannot be null");
 
       if (node instanceof ConfigurationNode.Nil) {
-        return Optional.empty();
+        return Renderer.of(Optional.empty());
       }
-      return Optional.of(valueDeserializer.deserialize(node));
+
+      final Renderer<? extends T> renderer = valueDeserializer.deserialize(node, context);
+
+      return (rendererContext) -> Optional.of(renderer.render(rendererContext));
     };
   }
-
-  /**
-   * Deserializes the given node.
-   *
-   * @param node the node; never {@code null}
-   * @return an {@link Optional} containing the deserialized node if it could not be deserialized,
-   *     otherwise an empty optional
-   * @throws DeserializationException if the node was unable to be deserialized.
-   */
-  T deserialize(ConfigurationNode node) throws DeserializationException;
 }
