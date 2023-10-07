@@ -191,21 +191,16 @@ class WarpTest {
 
   @Test
   void testToString() throws ConfigurationException {
-    final Configurations.Nested configuration =
-        Warp.builder(Configurations.Nested.class)
+    final Configurations.String configuration =
+        Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()
-                        .entry(
-                            "nested",
-                            ConfigurationNode.map()
-                                .entry("property", ConfigurationNode.string("value"))
-                                .build())
+                        .entry("property", ConfigurationNode.string("value"))
                         .build()))
             .build();
 
-    assertEquals(
-        "me.sparky983.warp.Configurations$Nested{nested.property=value}", configuration.toString());
+    assertEquals("me.sparky983.warp.Configurations$String", configuration.toString());
   }
 
   @Test

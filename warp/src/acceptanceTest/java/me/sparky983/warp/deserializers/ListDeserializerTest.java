@@ -63,6 +63,9 @@ class ListDeserializerTest {
 
     final Configurations.StringList configuration = builder.build();
 
-    assertEquals(List.of("element 1", "element 2"), configuration.property());
+    final List<String> property = configuration.property();
+
+    assertEquals(List.of("element 1", "element 2"), property);
+    assertThrows(UnsupportedOperationException.class, () -> property.add("element 3"));
   }
 }

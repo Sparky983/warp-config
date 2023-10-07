@@ -20,6 +20,7 @@ import me.sparky983.warp.Configuration;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 
@@ -29,6 +30,9 @@ import me.sparky983.warp.internal.DeserializerRegistry;
  * @param <T> the type of the {@linkplain Configuration configuration class}
  */
 final class InterfaceSchema<T> implements Schema<T> {
+  /** A cached renderer context (the context is empty). */
+  private static final Renderer.Context RENDERER_CONTEXT = new Renderer.Context() {};
+
   private final Class<T> configurationClass;
   private final Map<Method, Property<?>> properties;
 
@@ -151,14 +155,16 @@ final class InterfaceSchema<T> implements Schema<T> {
             final String name = method.getName();
             final int parameterCount = method.getParameterCount();
             if (name.equals("toString") && parameterCount == 0) {
-              return configurationClass.getName() + mappingConfiguration;
+              return configurationClass.getName();
             } else if (name.equals("hashCode") && parameterCount == 0) {
               return super.hashCode(); // this is fine since our configurations are identity-based
             } else if (name.equals("equals") && parameterCount == 1) {
               return proxy == args[0];
             }
           }
-          return mappingConfiguration.get(properties.get(method)).orElseThrow();
+          return mappingConfiguration
+              .render(properties.get(method), RENDERER_CONTEXT)
+              .orElseThrow();
         });
   }
 }

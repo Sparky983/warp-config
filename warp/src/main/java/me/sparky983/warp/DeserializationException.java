@@ -1,4 +1,4 @@
-package me.sparky983.warp.internal;
+package me.sparky983.warp;
 
 import java.util.Objects;
 
