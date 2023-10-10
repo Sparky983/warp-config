@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
@@ -46,7 +48,7 @@ public final class Deserializers {
         if (node instanceof final ConfigurationNode.Bool bool) {
           return Renderer.of(bool.value());
         }
-        throw new DeserializationException("Must be a boolean");
+        throw new DeserializationException(ConfigurationError.error("Must be a boolean"));
       };
 
   /** A {@link String} deserializer. */
@@ -58,7 +60,7 @@ public final class Deserializers {
         if (node instanceof final ConfigurationNode.String string) {
           return Renderer.of(string.value());
         }
-        throw new DeserializationException("Must be a string");
+        throw new DeserializationException(ConfigurationError.error("Must be a string"));
       };
 
   private Deserializers() {}
@@ -70,12 +72,12 @@ public final class Deserializers {
       Objects.requireNonNull(context, "context cannot be null");
 
       if (!(node instanceof final ConfigurationNode.Integer integer)) {
-        throw new DeserializationException("Must be an integer");
+        throw new DeserializationException(ConfigurationError.error("Must be an integer"));
       }
       final long value = integer.value();
       if (value < min || value > max) {
         throw new DeserializationException(
-            "Must be between " + min + " and " + max + " (both inclusive)");
+            ConfigurationError.error("Must be between " + min + " and " + max + " (both inclusive)"));
       }
       return Renderer.of(mapper.apply(integer.value()));
     };
@@ -92,7 +94,7 @@ public final class Deserializers {
       } else if (node instanceof final ConfigurationNode.Decimal decimal) {
         value = decimal.value();
       } else {
-        throw new DeserializationException("Must be a number");
+        throw new DeserializationException(ConfigurationError.error("Must be a number"));
       }
       return Renderer.of(mapper.apply(value));
     };
@@ -125,7 +127,7 @@ public final class Deserializers {
           return renderers.stream().<E>map((renderer) -> renderer.render(rendererContext)).toList();
         };
       }
-      throw new DeserializationException("Must be a list");
+      throw new DeserializationException(ConfigurationError.error("Must be a list"));
     };
   }
 
@@ -166,7 +168,7 @@ public final class Deserializers {
           return Collections.unmodifiableMap(result);
         };
       }
-      throw new DeserializationException("Must be a map");
+      throw new DeserializationException(ConfigurationError.error("Must be a map"));
     };
   }
 

@@ -146,7 +146,7 @@ final class InterfaceSchema<T> implements Schema<T> {
     }
 
     if (!errors.isEmpty()) {
-      throw new ConfigurationException("The configuration was invalid", errors);
+      throw new ConfigurationException(errors);
     }
 
     return newProxyInstance(

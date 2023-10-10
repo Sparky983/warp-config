@@ -92,7 +92,7 @@ public final class MappingConfiguration {
         renderer = deserializer.deserialize(value, CONTEXT);
         properties.putIfAbsent(property, renderer);
       } catch (final DeserializationException e) {
-        errors.add(ConfigurationError.error(e.getMessage()));
+        errors.addAll(e.errors());
         continue;
       }
       if (renderer == null) {

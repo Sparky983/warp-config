@@ -182,8 +182,7 @@ class WarpTest {
         Warp.builder(Configurations.String.class)
             .source(
                 () -> {
-                  throw new ConfigurationException(
-                      "test", Set.of(ConfigurationError.error("message")));
+                  throw new ConfigurationException();
                 });
 
     assertThrows(ConfigurationException.class, builder::build);
