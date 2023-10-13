@@ -45,8 +45,10 @@ class ShortDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
+    final DeserializationException thrown = assertThrows(
         DeserializationException.class, () -> SHORT.deserialize(node, deserializerContext));
+
+    assertIterableEquals(List.of(ConfigurationError.error("Must be an integer")), thrown.errors());
   }
 
   @ParameterizedTest

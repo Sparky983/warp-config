@@ -46,7 +46,9 @@ class ByteDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(DeserializationException.class, () -> BYTE.deserialize(node, deserializerContext));
+    final DeserializationException thrown = assertThrows(DeserializationException.class, () -> BYTE.deserialize(node, deserializerContext));
+
+    assertIterableEquals(List.of(ConfigurationError.error("Must be an integer")), thrown.errors());
   }
 
   @ParameterizedTest

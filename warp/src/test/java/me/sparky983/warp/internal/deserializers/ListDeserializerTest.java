@@ -1,10 +1,12 @@
 package me.sparky983.warp.internal.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.List;
+import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
@@ -55,8 +57,10 @@ class ListDeserializerTest {
   void testDeserialize_NonList() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
+    final DeserializationException thrown = assertThrows(
         DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
+
+    assertIterableEquals(List.of(ConfigurationError.error("Must be a list")), thrown.errors());
   }
 
   @Test
