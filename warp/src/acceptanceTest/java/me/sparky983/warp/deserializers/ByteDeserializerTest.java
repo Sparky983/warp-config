@@ -1,9 +1,10 @@
 package me.sparky983.warp.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Set;
+import java.util.List;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
@@ -27,8 +28,8 @@ class ByteDeserializerTest {
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
 
-    assertEquals(
-        Set.of(
+    assertIterableEquals(
+        List.of(
             ConfigurationError.group("property", ConfigurationError.error("Must be an integer"))),
         thrown.errors());
   }
@@ -47,8 +48,8 @@ class ByteDeserializerTest {
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
 
-    assertEquals(
-        Set.of(
+    assertIterableEquals(
+        List.of(
             ConfigurationError.group(
                 "property",
                 ConfigurationError.error(

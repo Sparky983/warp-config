@@ -9,8 +9,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
@@ -65,8 +65,8 @@ class CustomDeserializerTest {
 
   @Test
   void testCustomDeserializer_DeserializerThrowsDeserializationException() {
-    final Set<ConfigurationError> errors =
-        Set.of(ConfigurationError.error("error 1"), ConfigurationError.error("error 2"));
+    final Collection<ConfigurationError> errors =
+        List.of(ConfigurationError.error("error 1"), ConfigurationError.error("error 2"));
 
     final ConfigurationBuilder<Configurations.String> configuration =
         Warp.builder(Configurations.String.class)

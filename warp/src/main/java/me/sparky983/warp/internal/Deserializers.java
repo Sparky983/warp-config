@@ -118,9 +118,20 @@ public final class Deserializers {
 
       if (node instanceof final ConfigurationNode.List list) {
         final List<Renderer<? extends E>> renderers = new ArrayList<>();
-        for (final ConfigurationNode element : list.values()) {
-          renderers.add(elementDeserializer.deserialize(element, deserializerContext));
+        final List<ConfigurationError> listErrors = new ArrayList<>();
+        for (int i = 0; i < list.values().size(); i++) {
+          final ConfigurationNode element = list.values().get(i);
+          try {
+            renderers.add(elementDeserializer.deserialize(element, deserializerContext));
+          } catch (final DeserializationException exception) {
+            listErrors.add(ConfigurationError.group(String.valueOf(i), exception.errors()));
+          }
         }
+
+        if (!listErrors.isEmpty()) {
+          throw new DeserializationException(listErrors);
+        }
+
         return (rendererContext) -> {
           Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
 
@@ -153,12 +164,40 @@ public final class Deserializers {
 
       if (node instanceof final ConfigurationNode.Map map) {
         final Map<Renderer<? extends K>, Renderer<? extends V>> renderers = new HashMap<>();
+        final List<ConfigurationError> mapErrors = new ArrayList<>();
         for (final ConfigurationNode.Map.Entry entry : map.entries()) {
-          renderers.put(
-              keyDeserializer.deserialize(
-                  ConfigurationNode.string(entry.key()), deserializerContext),
-              valueDeserializer.deserialize(entry.value(), deserializerContext));
+          final String key = entry.key();
+          final List<ConfigurationError> entryErrors = new ArrayList<>();
+
+          // Deserialize both the key and the value, even if the key deserialization fails, we can
+          // still report errors with the value
+          Renderer<? extends K> keyRenderer = null;
+          Renderer<? extends V> valueRenderer = null;
+
+          try {
+            keyRenderer =
+                keyDeserializer.deserialize(ConfigurationNode.string(key), deserializerContext);
+          } catch (final DeserializationException exception) {
+            entryErrors.addAll(exception.errors());
+          }
+
+          try {
+            valueRenderer = valueDeserializer.deserialize(entry.value(), deserializerContext);
+          } catch (final DeserializationException exception) {
+            entryErrors.addAll(exception.errors());
+          }
+
+          if (keyRenderer != null && valueRenderer != null) {
+            renderers.put(keyRenderer, valueRenderer);
+          } else {
+            mapErrors.add(ConfigurationError.group(key, entryErrors));
+          }
         }
+
+        if (!mapErrors.isEmpty()) {
+          throw new DeserializationException(mapErrors);
+        }
+
         return (rendererContext) -> {
           Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
           final Map<K, V> result = new HashMap<>();

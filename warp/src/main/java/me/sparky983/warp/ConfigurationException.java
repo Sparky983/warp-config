@@ -2,11 +2,7 @@ package me.sparky983.warp;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.List;
 
 /**
  * Thrown by {@link ConfigurationBuilder#build()} if there was an error with the configuration.
@@ -16,20 +12,22 @@ import java.util.TreeSet;
 public class ConfigurationException extends Exception {
   private static final int INITIAL_INDENT = 1;
 
-  /** An unmodifiable set of the errors with a configuration. */
-  private final Set<ConfigurationError> errors;
+  /** An unmodifiable collection of the errors with a configuration. */
+  private final Collection<ConfigurationError> errors;
 
   /**
    * Constructs a {@code ConfigurationException}.
    *
-   * @param errors a set of all the {@link ConfigurationError ConfigurationErrors}; changes to this
-   *     set will not be reflected in the set returned by {@link #errors()}
-   * @throws NullPointerException if the message, the errors set is {@code null} or one of the
+   * @param errors a collection of all the {@link ConfigurationError ConfigurationErrors}; changes
+   *     to this collection will not be reflected in the collection returned by {@link #errors()}
+   * @throws NullPointerException if the message, the errors collection is {@code null} or one of the
    *     errors are {@code null}.
    * @since 0.1
    */
-  public ConfigurationException(final Set<? extends ConfigurationError> errors) {
-    this((Collection<? extends ConfigurationError>) errors);
+  public ConfigurationException(final Collection<? extends ConfigurationError> errors) {
+    super(createErrorMessage(ConfigurationError.Group.sorted(errors))); // The groups are sorted only in the message
+
+    this.errors = List.copyOf(errors);
   }
 
   /**
@@ -45,18 +43,7 @@ public class ConfigurationException extends Exception {
     this(Arrays.asList(errors));
   }
 
-  private ConfigurationException(final Collection<? extends ConfigurationError> errors) {
-    super(
-        createErrorMessage(
-            new TreeSet<>(
-                Objects.requireNonNull(
-                    errors,
-                    "errors cannot be null")))); // The groups are sorted only in the message
-
-    this.errors = Collections.unmodifiableSet(new LinkedHashSet<>(errors));
-  }
-
-  private static String createErrorMessage(final Set<? extends ConfigurationError> errors) {
+  private static String createErrorMessage(final Collection<? extends ConfigurationError> errors) {
     final StringBuilder builder = new StringBuilder();
     addErrorMessage(builder, INITIAL_INDENT, errors);
     return builder.toString();
@@ -65,7 +52,7 @@ public class ConfigurationException extends Exception {
   private static void addErrorMessage(
       final StringBuilder builder,
       final int indent,
-      final Set<? extends ConfigurationError> errors) {
+      final Collection<? extends ConfigurationError> errors) {
     int i = 0;
     for (final ConfigurationError error : errors) {
       if (i != 0 || indent != INITIAL_INDENT) {
@@ -96,7 +83,7 @@ public class ConfigurationException extends Exception {
    * @return the errors
    * @since 0.1
    */
-  public Set<ConfigurationError> errors() {
+  public Collection<ConfigurationError> errors() {
     return errors;
   }
 }
