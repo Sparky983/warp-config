@@ -4,9 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Set;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
@@ -31,7 +29,8 @@ class BooleanDeserializerTest {
         assertThrows(ConfigurationException.class, builder::build);
 
     assertIterableEquals(
-        List.of(ConfigurationError.group("property", ConfigurationError.error("Must be a boolean"))),
+        List.of(
+            ConfigurationError.group("property", ConfigurationError.error("Must be a boolean"))),
         thrown.errors());
   }
 

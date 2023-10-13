@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
@@ -77,7 +76,8 @@ public final class Deserializers {
       final long value = integer.value();
       if (value < min || value > max) {
         throw new DeserializationException(
-            ConfigurationError.error("Must be between " + min + " and " + max + " (both inclusive)"));
+            ConfigurationError.error(
+                "Must be between " + min + " and " + max + " (both inclusive)"));
       }
       return Renderer.of(mapper.apply(integer.value()));
     };

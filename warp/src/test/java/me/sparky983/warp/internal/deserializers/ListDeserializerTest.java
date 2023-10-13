@@ -57,8 +57,10 @@ class ListDeserializerTest {
   void testDeserialize_NonList() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    final DeserializationException thrown = assertThrows(
-        DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class,
+            () -> deserializer.deserialize(node, deserializerContext));
 
     assertIterableEquals(List.of(ConfigurationError.error("Must be a list")), thrown.errors());
   }

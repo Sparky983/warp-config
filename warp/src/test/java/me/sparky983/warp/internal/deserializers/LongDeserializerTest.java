@@ -45,7 +45,9 @@ class LongDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    final DeserializationException thrown = assertThrows(DeserializationException.class, () -> LONG.deserialize(node, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> LONG.deserialize(node, deserializerContext));
 
     assertIterableEquals(List.of(ConfigurationError.error("Must be an integer")), thrown.errors());
   }

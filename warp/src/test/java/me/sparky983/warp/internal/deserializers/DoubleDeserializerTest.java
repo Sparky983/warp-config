@@ -43,8 +43,9 @@ class DoubleDeserializerTest {
   void testDeserialize_NonNumber() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    final DeserializationException thrown = assertThrows(
-        DeserializationException.class, () -> DOUBLE.deserialize(node, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> DOUBLE.deserialize(node, deserializerContext));
 
     assertIterableEquals(List.of(ConfigurationError.error("Must be a number")), thrown.errors());
   }

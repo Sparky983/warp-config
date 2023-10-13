@@ -10,27 +10,28 @@ import org.junit.jupiter.api.Test;
 class ConfigurationExceptionTest {
   @Test
   void testNewSet_NullErrors() {
-    assertThrows(NullPointerException.class, () -> new ConfigurationException(
-        (Set<? extends ConfigurationError>) null));
+    assertThrows(
+        NullPointerException.class,
+        () -> new ConfigurationException((Set<? extends ConfigurationError>) null));
   }
 
   @Test
   void testNewSet_NullError() {
     assertThrows(
-        NullPointerException.class,
-        () -> new ConfigurationException(Collections.singleton(null)));
+        NullPointerException.class, () -> new ConfigurationException(Collections.singleton(null)));
   }
 
   @Test
   void testNewVarargs_NullErrors() {
-    assertThrows(NullPointerException.class, () -> new ConfigurationException((ConfigurationError[]) null));
+    assertThrows(
+        NullPointerException.class, () -> new ConfigurationException((ConfigurationError[]) null));
   }
 
   @Test
   void testNewVarargs_NullError() {
     assertThrows(
         NullPointerException.class,
-        () -> new ConfigurationException(new ConfigurationError[] { null }));
+        () -> new ConfigurationException(new ConfigurationError[] {null}));
   }
 
   @Test

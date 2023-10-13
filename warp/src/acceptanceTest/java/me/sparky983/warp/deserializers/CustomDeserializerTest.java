@@ -65,15 +65,22 @@ class CustomDeserializerTest {
 
   @Test
   void testCustomDeserializer_DeserializerThrowsDeserializationException() {
-    final Set<ConfigurationError> errors = Set.of(ConfigurationError.error("error 1"), ConfigurationError.error("error 2"));
+    final Set<ConfigurationError> errors =
+        Set.of(ConfigurationError.error("error 1"), ConfigurationError.error("error 2"));
 
-    final ConfigurationBuilder<Configurations.String> configuration = Warp.builder(Configurations.String.class)
-        .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()))
-        .deserializer(String.class, (node, context) -> {
-          throw new DeserializationException(errors);
-        });
+    final ConfigurationBuilder<Configurations.String> configuration =
+        Warp.builder(Configurations.String.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()))
+            .deserializer(
+                String.class,
+                (node, context) -> {
+                  throw new DeserializationException(errors);
+                });
 
-    final ConfigurationException thrown = assertThrows(ConfigurationException.class, configuration::build);
+    final ConfigurationException thrown =
+        assertThrows(ConfigurationException.class, configuration::build);
 
     assertIterableEquals(List.of(ConfigurationError.group("property", errors)), thrown.errors());
   }

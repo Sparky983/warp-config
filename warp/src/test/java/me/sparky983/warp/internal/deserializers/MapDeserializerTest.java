@@ -65,8 +65,10 @@ class MapDeserializerTest {
   void testDeserialize_NonMap() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    final DeserializationException thrown = assertThrows(
-        DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class,
+            () -> deserializer.deserialize(node, deserializerContext));
 
     assertIterableEquals(List.of(ConfigurationError.error("Must be a map")), thrown.errors());
   }

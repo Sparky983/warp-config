@@ -46,8 +46,9 @@ class BooleanDeserializerTest {
   void testDeserialize_NonBoolean() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    final ConfigurationException thrown = assertThrows(
-        DeserializationException.class, () -> BOOLEAN.deserialize(node, deserializerContext));
+    final ConfigurationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> BOOLEAN.deserialize(node, deserializerContext));
 
     assertIterableEquals(List.of(ConfigurationError.error("Must be a boolean")), thrown.errors());
   }

@@ -43,8 +43,9 @@ class StringDeserializerTest {
   void testDeserialize_NonString() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    final DeserializationException thrown = assertThrows(
-        DeserializationException.class, () -> STRING.deserialize(node, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> STRING.deserialize(node, deserializerContext));
 
     assertIterableEquals(List.of(ConfigurationError.error("Must be a string")), thrown.errors());
   }

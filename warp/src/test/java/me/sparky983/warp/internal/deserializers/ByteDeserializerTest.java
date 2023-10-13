@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.List;
-import java.util.Set;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
@@ -46,7 +45,9 @@ class ByteDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    final DeserializationException thrown = assertThrows(DeserializationException.class, () -> BYTE.deserialize(node, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> BYTE.deserialize(node, deserializerContext));
 
     assertIterableEquals(List.of(ConfigurationError.error("Must be an integer")), thrown.errors());
   }
@@ -60,7 +61,9 @@ class ByteDeserializerTest {
         assertThrows(
             DeserializationException.class, () -> BYTE.deserialize(node, deserializerContext));
 
-    assertIterableEquals(List.of(ConfigurationError.error("Must be between -128 and 127 (both inclusive)")), thrown.errors());
+    assertIterableEquals(
+        List.of(ConfigurationError.error("Must be between -128 and 127 (both inclusive)")),
+        thrown.errors());
   }
 
   @Test

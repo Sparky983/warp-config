@@ -45,8 +45,9 @@ class ShortDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    final DeserializationException thrown = assertThrows(
-        DeserializationException.class, () -> SHORT.deserialize(node, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> SHORT.deserialize(node, deserializerContext));
 
     assertIterableEquals(List.of(ConfigurationError.error("Must be an integer")), thrown.errors());
   }
@@ -61,7 +62,13 @@ class ShortDeserializerTest {
             DeserializationException.class, () -> SHORT.deserialize(node, deserializerContext));
 
     assertIterableEquals(
-        List.of(ConfigurationError.error("Must be between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE + " (both inclusive)")),
+        List.of(
+            ConfigurationError.error(
+                "Must be between "
+                    + Short.MIN_VALUE
+                    + " and "
+                    + Short.MAX_VALUE
+                    + " (both inclusive)")),
         thrown.errors());
   }
 
