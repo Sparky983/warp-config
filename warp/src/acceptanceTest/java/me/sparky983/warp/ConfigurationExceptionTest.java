@@ -48,14 +48,17 @@ class ConfigurationExceptionTest {
                 ConfigurationError.group("version", ConfigurationError.error("Must be a number")),
                 ConfigurationError.error("Something went wrong")));
 
-    assertEquals("""
+    assertEquals(
+        """
         - Something went wrong
         - animals.horse:
           - Invalid horse a
           - Invalid horse b
         - version:
           - Must be a number
-        """.indent(1).stripTrailing(),
+        """
+            .indent(1)
+            .stripTrailing(),
         exception.getMessage());
     assertIterableEquals(
         List.of(
@@ -81,14 +84,17 @@ class ConfigurationExceptionTest {
 
     final Collection<ConfigurationError> errors = exception.errors();
 
-    assertEquals("""
+    assertEquals(
+        """
         - Something went wrong
         - animals.horse:
           - Invalid horse a
           - Invalid horse b
         - version:
           - Must be a number
-        """.indent(1).stripTrailing(),
+        """
+            .indent(1)
+            .stripTrailing(),
         exception.getMessage());
     assertIterableEquals(
         List.of(
@@ -99,6 +105,8 @@ class ConfigurationExceptionTest {
             ConfigurationError.group("version", ConfigurationError.error("Must be a number")),
             ConfigurationError.error("Something went wrong")),
         errors);
-    assertThrows(UnsupportedOperationException.class, () -> errors.add(ConfigurationError.error("some error")));
+    assertThrows(
+        UnsupportedOperationException.class,
+        () -> errors.add(ConfigurationError.error("some error")));
   }
 }

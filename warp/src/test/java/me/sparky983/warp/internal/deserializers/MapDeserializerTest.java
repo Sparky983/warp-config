@@ -90,10 +90,11 @@ class MapDeserializerTest {
 
   @Test
   void testDeserialize_NestedNonDeserializable() {
-    final ConfigurationNode node = ConfigurationNode.map()
-        .entry("1", ConfigurationNode.nil())
-        .entry("not integer", ConfigurationNode.nil())
-        .build();
+    final ConfigurationNode node =
+        ConfigurationNode.map()
+            .entry("1", ConfigurationNode.nil())
+            .entry("not integer", ConfigurationNode.nil())
+            .build();
 
     final DeserializationException thrown =
         assertThrows(

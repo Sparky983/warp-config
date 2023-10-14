@@ -27,13 +27,15 @@ class ListDeserializerTest {
 
   @BeforeEach
   void setUp() {
-    deserializer = Deserializers.list((node, context) -> {
-      if (node instanceof final ConfigurationNode.Integer string) {
-        return Renderer.of("element: " + string.value());
-      } else {
-        throw new DeserializationException(ConfigurationError.error("Must be an integer"));
-      }
-    });
+    deserializer =
+        Deserializers.list(
+            (node, context) -> {
+              if (node instanceof final ConfigurationNode.Integer string) {
+                return Renderer.of("element: " + string.value());
+              } else {
+                throw new DeserializationException(ConfigurationError.error("Must be an integer"));
+              }
+            });
   }
 
   @AfterEach
@@ -75,9 +77,7 @@ class ListDeserializerTest {
   void testDeserialize_NestedNonDeserializable() {
     final ConfigurationNode node =
         ConfigurationNode.list(
-            ConfigurationNode.nil(),
-            ConfigurationNode.integer(1),
-            ConfigurationNode.nil());
+            ConfigurationNode.nil(), ConfigurationNode.integer(1), ConfigurationNode.nil());
 
     final DeserializationException thrown =
         assertThrows(

@@ -20,12 +20,14 @@ public class ConfigurationException extends Exception {
    *
    * @param errors a collection of all the {@link ConfigurationError ConfigurationErrors}; changes
    *     to this collection will not be reflected in the collection returned by {@link #errors()}
-   * @throws NullPointerException if the message, the errors collection is {@code null} or one of the
-   *     errors are {@code null}.
+   * @throws NullPointerException if the message, the errors collection is {@code null} or one of
+   *     the errors are {@code null}.
    * @since 0.1
    */
   public ConfigurationException(final Collection<? extends ConfigurationError> errors) {
-    super(createErrorMessage(ConfigurationError.Group.sorted(errors))); // The groups are sorted only in the message
+    super(
+        createErrorMessage(
+            ConfigurationError.Group.sorted(errors))); // The groups are sorted only in the message
 
     this.errors = List.copyOf(errors);
   }
@@ -35,8 +37,8 @@ public class ConfigurationException extends Exception {
    *
    * @param errors an array of all the {@link ConfigurationError ConfigurationErrors}; changes to
    *     this array will not be reflected in the collection returned by {@link #errors()}
-   * @throws NullPointerException if the message, the errors collection is {@code null} or one of the
-   *     errors are {@code null}.
+   * @throws NullPointerException if the message, the errors collection is {@code null} or one of
+   *     the errors are {@code null}.
    * @since 0.1
    */
   public ConfigurationException(final ConfigurationError... errors) {

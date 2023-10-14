@@ -63,17 +63,19 @@ public sealed interface ConfigurationError {
    * @since 0.1
    */
   record Group(String name, Collection<ConfigurationError> errors) implements ConfigurationError {
-    private static final Comparator<ConfigurationError> COMPARATOR = (error1, error2) -> {
-      if (error1 instanceof Group && error2 instanceof Error) {
-        return 1;
-      } else if (error1 instanceof Error && error2 instanceof Group) {
-        return -1;
-      } else {
-        return 0;
-      }
-    };
+    private static final Comparator<ConfigurationError> COMPARATOR =
+        (error1, error2) -> {
+          if (error1 instanceof Group && error2 instanceof Error) {
+            return 1;
+          } else if (error1 instanceof Error && error2 instanceof Group) {
+            return -1;
+          } else {
+            return 0;
+          }
+        };
 
-    static Collection<ConfigurationError> sorted(final Collection<? extends ConfigurationError> errors) {
+    static Collection<ConfigurationError> sorted(
+        final Collection<? extends ConfigurationError> errors) {
       Objects.requireNonNull(errors, "errors cannot be null");
 
       final List<ConfigurationError> copy = new ArrayList<>(errors);
@@ -92,7 +94,8 @@ public sealed interface ConfigurationError {
      *
      * @param name the name of the group
      * @param errors the errors
-     * @throws NullPointerException if the name, errors collection or one of the errors are {@code null}.
+     * @throws NullPointerException if the name, errors collection or one of the errors are {@code
+     *     null}.
      * @since 0.1
      */
     public Group(final String name, final Collection<ConfigurationError> errors) {

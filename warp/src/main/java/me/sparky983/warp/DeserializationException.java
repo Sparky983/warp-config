@@ -13,8 +13,8 @@ public class DeserializationException extends ConfigurationException {
    *
    * @param errors a collection of all the {@link ConfigurationError ConfigurationErrors}; changes
    *     to this collection will not be reflected in the collection returned by {@link #errors()}
-   * @throws NullPointerException if the message, the errors collection is {@code null} or one of the
-   *     errors are {@code null}.
+   * @throws NullPointerException if the message, the errors collection is {@code null} or one of
+   *     the errors are {@code null}.
    * @since 0.1
    */
   public DeserializationException(final Collection<? extends ConfigurationError> errors) {
