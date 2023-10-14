@@ -34,8 +34,8 @@ public class ConfigurationException extends Exception {
    * Constructs a {@code ConfigurationException}.
    *
    * @param errors an array of all the {@link ConfigurationError ConfigurationErrors}; changes to
-   *     this set will not be reflected in the set returned by {@link #errors()}
-   * @throws NullPointerException if the message, the errors set is {@code null} or one of the
+   *     this array will not be reflected in the collection returned by {@link #errors()}
+   * @throws NullPointerException if the message, the errors collection is {@code null} or one of the
    *     errors are {@code null}.
    * @since 0.1
    */
@@ -78,7 +78,7 @@ public class ConfigurationException extends Exception {
   }
 
   /**
-   * Returns an unmodifiable set of the errors
+   * Returns an unmodifiable collection of the errors
    *
    * @return the errors
    * @since 0.1
