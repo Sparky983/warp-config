@@ -17,40 +17,39 @@ class YamlNodeAdapterTest {
 
   @Test
   void testAdapt_InvalidNode() {
-    final YamlMapping mapping = Yaml.createYamlMappingBuilder()
-        .add("invalid", Yaml.createYamlStreamBuilder().build())
-        .build();
+    final YamlMapping mapping =
+        Yaml.createYamlMappingBuilder()
+            .add("invalid", Yaml.createYamlStreamBuilder().build())
+            .build();
 
     assertThrows(IllegalArgumentException.class, () -> YamlNodeAdapter.adapt(mapping));
   }
 
   @Test
   void testAdapt_NonStringKey() {
-    final YamlMapping mapping = Yaml.createYamlMappingBuilder()
-        .add(Yaml.createYamlSequenceBuilder().build(), "value")
-        .build();
+    final YamlMapping mapping =
+        Yaml.createYamlMappingBuilder()
+            .add(Yaml.createYamlSequenceBuilder().add("element").build(), "value")
+            .build();
 
     assertThrows(IllegalArgumentException.class, () -> YamlNodeAdapter.adapt(mapping));
   }
 
   @Test
   void testNode() {
-    final ConfigurationNode node = YamlNodeAdapter.adapt(Yaml.createYamlMappingBuilder()
-        .add("no value", (YamlNode) null)
-        .add("null", "null")
-        .add("true", "true")
-        .add("false", "false")
-        .add("integer", "10")
-        .add("decimal", "10.0")
-        .add("string", "some string")
-        .add("list", Yaml.createYamlSequenceBuilder()
-            .add("10")
-            .add("some string")
-            .build())
-        .add("map", Yaml.createYamlMappingBuilder()
-            .add("key", "value")
-            .build())
-        .build());
+    final ConfigurationNode node =
+        YamlNodeAdapter.adapt(
+            Yaml.createYamlMappingBuilder()
+                .add("no value", (YamlNode) null)
+                .add("null", "null")
+                .add("true", "true")
+                .add("false", "false")
+                .add("integer", "10")
+                .add("decimal", "10.0")
+                .add("string", "some string")
+                .add("list", Yaml.createYamlSequenceBuilder().add("10").add("some string").build())
+                .add("map", Yaml.createYamlMappingBuilder().add("key", "value").build())
+                .build());
 
     assertEquals(ConfigurationNodes.MIX, node);
   }

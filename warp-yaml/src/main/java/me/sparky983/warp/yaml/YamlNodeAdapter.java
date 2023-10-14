@@ -9,8 +9,8 @@ import me.sparky983.warp.ConfigurationNode;
 import org.jspecify.annotations.Nullable;
 
 /**
- * A utility class that converts {@link YamlNode YamlNodes} to
- * {@link ConfigurationNode ConfigurationNodes}.
+ * A utility class that converts {@link YamlNode YamlNodes} to {@link ConfigurationNode
+ * ConfigurationNodes}.
  */
 final class YamlNodeAdapter {
   private YamlNodeAdapter() {}
@@ -68,11 +68,13 @@ final class YamlNodeAdapter {
 
     try {
       return ConfigurationNode.integer(Long.parseLong(value));
-    } catch (final NumberFormatException ignored) {}
+    } catch (final NumberFormatException ignored) {
+    }
 
     try {
       return ConfigurationNode.decimal(Double.parseDouble(value));
-    } catch (final NumberFormatException ignored) {}
+    } catch (final NumberFormatException ignored) {
+    }
 
     return ConfigurationNode.string(value);
   }

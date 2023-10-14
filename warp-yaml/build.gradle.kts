@@ -3,8 +3,11 @@ plugins {
     id("warp.test-fixtures-conventions")
 }
 
+repositories {
+    maven("https://repo.sparky983.me/snapshots")
+}
+
 dependencies {
     api(project(":warp"))
 
-    implementation("com.amihaiemil.web:eo-yaml:7.0.9")
-}
+    implementation("me.sparky983:eo-yaml:7.0.10-SNAPSHOT")}

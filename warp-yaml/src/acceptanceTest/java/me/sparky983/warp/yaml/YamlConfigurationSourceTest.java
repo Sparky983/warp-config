@@ -4,7 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -26,7 +30,8 @@ class YamlConfigurationSourceTest {
         : value
       """;
 
-  static final String MIX_YAML = """
+  static final String MIX_YAML =
+      """
         no value: null
         null: null
         true: true
@@ -42,8 +47,8 @@ class YamlConfigurationSourceTest {
         """;
 
   /**
-   * A charset that is not compatible with the UTF-8 charset. This is used to test that the
-   * charset is not ignored.
+   * A charset that is not compatible with the UTF-8 charset. This is used to test that the charset
+   * is not ignored.
    */
   static final Charset INCOMPATIBLE_CHARSET = StandardCharsets.UTF_16;
 
@@ -77,7 +82,8 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testOf() throws ConfigurationException {
-    assertEquals(Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.of(MIX_YAML).configuration());
+    assertEquals(
+        Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.of(MIX_YAML).configuration());
   }
 
   @Test
@@ -115,7 +121,10 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadPath_Directory() throws Exception {
-    assertEquals(Optional.empty(), YamlConfigurationSource.read(tempDir).configuration());
+    final Path directory = tempDir.resolve("dir");
+    Files.createDirectory(directory);
+
+    assertThrows(IOException.class, () -> YamlConfigurationSource.read(directory).configuration());
   }
 
   @Test
@@ -124,15 +133,15 @@ class YamlConfigurationSourceTest {
 
     Files.writeString(mix, MIX_YAML);
 
-    assertEquals(Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.read(mix).configuration());
+    assertEquals(
+        Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.read(mix).configuration());
   }
-
-  /*
-  See TODOs in YamlConfigurationSource
 
   @Test
   void testReadPathCharset_NullPath() {
-    assertThrows(NullPointerException.class, () -> YamlConfigurationSource.read(null, INCOMPATIBLE_CHARSET));
+    assertThrows(
+        NullPointerException.class,
+        () -> YamlConfigurationSource.read((Path) null, INCOMPATIBLE_CHARSET));
   }
 
   @Test
@@ -145,7 +154,8 @@ class YamlConfigurationSourceTest {
     final Path invalidYaml = tempDir.resolve("invalid.yaml");
     Files.writeString(invalidYaml, INVALID, INCOMPATIBLE_CHARSET);
 
-    final YamlConfigurationSource source = YamlConfigurationSource.read(invalidYaml, INCOMPATIBLE_CHARSET);
+    final YamlConfigurationSource source =
+        YamlConfigurationSource.read(invalidYaml, INCOMPATIBLE_CHARSET);
 
     assertThrows(ConfigurationException.class, source::configuration);
   }
@@ -155,22 +165,26 @@ class YamlConfigurationSourceTest {
     final Path invalidYaml = tempDir.resolve("invalid.yaml");
     Files.writeString(invalidYaml, INVALID, INCOMPATIBLE_CHARSET);
 
-    final YamlConfigurationSource source = YamlConfigurationSource.read(invalidYaml, INCOMPATIBLE_CHARSET);
+    final YamlConfigurationSource source =
+        YamlConfigurationSource.read(invalidYaml, INCOMPATIBLE_CHARSET);
 
     assertThrows(ConfigurationException.class, source::configuration);
   }
 
   @Test
-  void testReadPathCharset_NotFound() {
+  void testReadPathCharset_NotFound() throws Exception {
     final Path notFound = tempDir.resolve("not-found.yaml");
 
     assertFalse(Files.exists(notFound));
-    assertThrows(IllegalStateException.class, () -> YamlConfigurationSource.read(notFound, INCOMPATIBLE_CHARSET));
+    assertEquals(
+        Optional.empty(),
+        YamlConfigurationSource.read(notFound, INCOMPATIBLE_CHARSET).configuration());
   }
 
   @Test
   void testReadPathCharset_Directory() {
-    assertThrows(IllegalStateException.class, () -> YamlConfigurationSource.read(tempDir, INCOMPATIBLE_CHARSET));
+    assertThrows(
+        IOException.class, () -> YamlConfigurationSource.read(tempDir, INCOMPATIBLE_CHARSET));
   }
 
   @Test
@@ -179,7 +193,86 @@ class YamlConfigurationSourceTest {
 
     Files.writeString(mix, MIX_YAML, INCOMPATIBLE_CHARSET);
 
-    assertEquals(Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.read(mix, INCOMPATIBLE_CHARSET).configuration());
+    assertEquals(
+        Optional.of(ConfigurationNodes.MIX),
+        YamlConfigurationSource.read(mix, INCOMPATIBLE_CHARSET).configuration());
+  }
+
+  @Test
+  void testReadInputStream_Null() {
+    assertThrows(
+        NullPointerException.class, () -> YamlConfigurationSource.read((InputStream) null));
+  }
+
+  @Test
+  void testReadInputStream_InvalidYaml() throws IOException {
+    final InputStream invalid = new ByteArrayInputStream(INVALID_YAML.getBytes());
+
+    final YamlConfigurationSource source = YamlConfigurationSource.read(invalid);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
+  void testReadInputStream_Invalid() throws IOException {
+    final InputStream invalid = new ByteArrayInputStream(INVALID.getBytes());
+
+    final YamlConfigurationSource source = YamlConfigurationSource.read(invalid);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
+  void testReadInputStream() throws Exception {
+    final InputStream input = new ByteArrayInputStream(MIX_YAML.getBytes());
+
+    assertEquals(
+        Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.read(input).configuration());
+  }
+
+  @Test
+  void testReadInputStreamCharset_NullPath() {
+    assertThrows(
+        NullPointerException.class,
+        () -> YamlConfigurationSource.read((InputStream) null, INCOMPATIBLE_CHARSET));
+  }
+
+  @Test
+  void testReadInputStreamCharset_NullCharset() {
+    assertThrows(
+        NullPointerException.class,
+        () -> YamlConfigurationSource.read(InputStream.nullInputStream(), null));
+  }
+
+  @Test
+  void testReadInputStreamCharset_InvalidYaml() throws IOException {
+    final InputStream invalidYaml =
+        new ByteArrayInputStream(INVALID.getBytes(INCOMPATIBLE_CHARSET));
+
+    final YamlConfigurationSource source =
+        YamlConfigurationSource.read(invalidYaml, INCOMPATIBLE_CHARSET);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
+  void testReadInputStreamCharset_Invalid() throws IOException {
+    final InputStream invalidYaml =
+        new ByteArrayInputStream(INVALID.getBytes(INCOMPATIBLE_CHARSET));
+
+    final YamlConfigurationSource source =
+        YamlConfigurationSource.read(invalidYaml, INCOMPATIBLE_CHARSET);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
+  void testReadInputStreamCharset() throws Exception {
+    final InputStream mix = new ByteArrayInputStream(MIX_YAML.getBytes(INCOMPATIBLE_CHARSET));
+
+    assertEquals(
+        Optional.of(ConfigurationNodes.MIX),
+        YamlConfigurationSource.read(mix, INCOMPATIBLE_CHARSET).configuration());
   }
 
   @Test
@@ -188,7 +281,7 @@ class YamlConfigurationSourceTest {
   }
 
   @Test
-  void testReadReader_InvalidYaml() {
+  void testReadReader_InvalidYaml() throws IOException {
     final Reader invalid = new StringReader(INVALID);
 
     final YamlConfigurationSource source = YamlConfigurationSource.read(invalid);
@@ -197,7 +290,7 @@ class YamlConfigurationSourceTest {
   }
 
   @Test
-  void testReadReader_Invalid() {
+  void testReadReader_Invalid() throws IOException {
     final Reader invalid = new StringReader(INVALID);
 
     final YamlConfigurationSource source = YamlConfigurationSource.read(invalid);
@@ -210,14 +303,14 @@ class YamlConfigurationSourceTest {
     final Reader closed = Reader.nullReader();
     closed.close();
 
-    assertThrows(IllegalStateException.class, () -> YamlConfigurationSource.read(closed));
+    assertThrows(IOException.class, () -> YamlConfigurationSource.read(closed));
   }
 
   @Test
   void testReadReader() throws Exception {
     final Reader mix = new StringReader(MIX_YAML);
 
-    assertEquals(Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.read(mix).configuration());
+    assertEquals(
+        Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.read(mix).configuration());
   }
-   */
 }
