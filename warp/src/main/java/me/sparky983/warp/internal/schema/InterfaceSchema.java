@@ -22,6 +22,7 @@ import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@link Schema} for a {@linkplain Configuration configuration class}.
@@ -85,21 +86,21 @@ final class InterfaceSchema<T> implements Schema<T> {
     this.configurationClass = configurationClass;
   }
 
-  private static Optional<ConfigurationNode> get(
+  private static @Nullable ConfigurationNode get(
       final String path, final ConfigurationNode.Map configuration) {
     ConfigurationNode currentNode = configuration;
     final Queue<String> keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
     while (currentNode instanceof final ConfigurationNode.Map map) {
       final Optional<ConfigurationNode> node = map.get(keys.remove());
       if (node.isEmpty()) {
-        return Optional.empty();
+        return null;
       }
       if (keys.isEmpty()) {
-        return node;
+        return node.get();
       }
       currentNode = node.get();
     }
-    return Optional.empty();
+    return null;
   }
 
   /**
@@ -123,25 +124,18 @@ final class InterfaceSchema<T> implements Schema<T> {
   public T create(
       final DeserializerRegistry deserializers,
       final DefaultsRegistry defaults,
-      final List<? extends ConfigurationNode.Map> configurations)
+      final ConfigurationNode.Map configuration)
       throws ConfigurationException {
-    Objects.requireNonNull(configurations, "configurations cannot be null");
+    Objects.requireNonNull(configuration, "configuration cannot be null");
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
     Objects.requireNonNull(defaults, "defaults cannot be null");
-    configurations.forEach(Objects::requireNonNull);
 
     final MappingConfiguration mappingConfiguration =
         new MappingConfiguration(defaults, deserializers);
     final List<ConfigurationError> errors = new ArrayList<>();
 
     for (final Property<?> property : properties.values()) {
-      mappingConfiguration
-          .put(
-              property,
-              configurations.stream()
-                  .flatMap((configuration) -> get(property.path(), configuration).stream())
-                  .toList())
-          .ifPresent(errors::add);
+      mappingConfiguration.put(property, get(property.path(), configuration)).ifPresent(errors::add);
     }
 
     if (!errors.isEmpty()) {
