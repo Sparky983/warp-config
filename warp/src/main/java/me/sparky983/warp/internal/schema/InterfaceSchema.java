@@ -153,7 +153,9 @@ final class InterfaceSchema<T> implements Schema<T> {
               return configurationClass.getName();
             } else if (name.equals("hashCode") && parameterCount == 0) {
               return super.hashCode(); // this is fine since our configurations are identity-based
-            } else if (name.equals("equals") && parameterCount == 1) {
+            } else if (name.equals("equals")
+                && parameterCount == 1
+                && method.getParameters()[0].getType() == Object.class) {
               return proxy == args[0];
             }
           }
