@@ -96,4 +96,7 @@ tasks {
     test {
         useJUnitPlatform()
     }
+    withType<Test> {
+        jvmArgs("-Dfile.encoding=UTF-8")
+    }
 }
