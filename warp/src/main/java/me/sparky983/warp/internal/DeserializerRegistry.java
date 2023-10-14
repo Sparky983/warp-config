@@ -21,11 +21,23 @@ public interface DeserializerRegistry {
    * @return an optional containing the deserializer for the given type if one registered, otherwise
    *     an {@linkplain Optional#empty() empty optional}.
    * @param <T> the type
+   * @throws NullPointerException if the type is {@code null}.
+   * @throws IllegalStateException if a deserializer for the given type could not be created.
    */
   <T> Optional<Deserializer<T>> get(ParameterizedType<? extends T> type);
 
   /** A {@link DeserializerRegistry} builder. */
   interface Builder {
+    /**
+     * Sets the deserializer for given type to the given deserializer for this builder, overriding
+     * any existing deserializers.
+     *
+     * @param type the type to deserialize to
+     * @param deserializer the deserializer
+     * @return this registry
+     * @param <T> the type to deserialize to
+     * @throws NullPointerException if the deserialized type or the deserializer are {@code null}.
+     */
     <T> Builder deserializer(Class<T> type, Deserializer<? extends T> deserializer);
 
     /**

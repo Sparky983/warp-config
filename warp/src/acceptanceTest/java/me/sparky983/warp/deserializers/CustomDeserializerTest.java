@@ -17,6 +17,7 @@ import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.Configurations;
+import me.sparky983.warp.Configurations.NestedString;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
@@ -128,6 +129,26 @@ class CustomDeserializerTest {
             .build();
 
     assertThrows(NullPointerException.class, configuration::property);
+  }
+
+  @Test
+  void testCustomDeserializer_OverridesNestedConfiguration() throws ConfigurationException {
+    final NestedString configuration =
+        Warp.builder(NestedString.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry(
+                            "property",
+                            ConfigurationNode.map()
+                                .entry("property", ConfigurationNode.string("string"))
+                                .build())
+                        .build()))
+            .deserializer(
+                Configurations.String.class, (node, context) -> Renderer.of(() -> "deserializer"))
+            .build();
+
+    assertEquals("deserializer", configuration.property().property());
   }
 
   @Test
