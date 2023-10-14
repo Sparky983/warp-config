@@ -1,6 +1,5 @@
 package me.sparky983.warp.internal;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -138,8 +137,8 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
 
   @Override
   public T build() throws ConfigurationException {
-    final ConfigurationNode.Map configuration = source.configuration()
-        .orElseGet(() -> ConfigurationNode.map().build());
+    final ConfigurationNode.Map configuration =
+        source.configuration().orElseGet(() -> ConfigurationNode.map().build());
     return schema.create(deserializers.build(), DEFAULTS, configuration);
   }
 }

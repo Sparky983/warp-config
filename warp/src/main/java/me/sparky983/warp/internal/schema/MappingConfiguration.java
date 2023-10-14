@@ -74,9 +74,8 @@ public final class MappingConfiguration {
     boolean error = false;
     final List<ConfigurationError> errors = new ArrayList<>();
 
-    final ConfigurationNode actualNode = value == null
-        ? defaultsRegistry.get(property.type().rawType()).orElse(null)
-        : value;
+    final ConfigurationNode actualNode =
+        value == null ? defaultsRegistry.get(property.type().rawType()).orElse(null) : value;
 
     if (actualNode == null) {
       error = true;
@@ -93,7 +92,6 @@ public final class MappingConfiguration {
         errors.addAll(e.errors());
       }
     }
-
 
     if (error) {
       return Optional.of(ConfigurationError.group(path, errors));

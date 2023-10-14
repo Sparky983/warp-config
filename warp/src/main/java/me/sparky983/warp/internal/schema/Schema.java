@@ -1,6 +1,5 @@
 package me.sparky983.warp.internal.schema;
 
-import java.util.List;
 import me.sparky983.warp.Configuration;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -28,7 +27,8 @@ public interface Schema<T> {
   T create(
       DeserializerRegistry deserializers,
       DefaultsRegistry defaults,
-      ConfigurationNode.Map configuration) throws ConfigurationException;
+      ConfigurationNode.Map configuration)
+      throws ConfigurationException;
 
   /**
    * Creates a {@code Schema} for the given configuration class.

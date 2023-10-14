@@ -135,7 +135,9 @@ final class InterfaceSchema<T> implements Schema<T> {
     final List<ConfigurationError> errors = new ArrayList<>();
 
     for (final Property<?> property : properties.values()) {
-      mappingConfiguration.put(property, get(property.path(), configuration)).ifPresent(errors::add);
+      mappingConfiguration
+          .put(property, get(property.path(), configuration))
+          .ifPresent(errors::add);
     }
 
     if (!errors.isEmpty()) {
