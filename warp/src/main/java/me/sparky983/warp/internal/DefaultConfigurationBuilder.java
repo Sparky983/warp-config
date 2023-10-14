@@ -139,6 +139,9 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   public T build() throws ConfigurationException {
     final ConfigurationNode.Map configuration =
         source.configuration().orElseGet(() -> ConfigurationNode.map().build());
-    return schema.create(deserializers.build(), DEFAULTS, configuration);
+    final DeserializerRegistry registry =
+        new FallbackDeserializerRegistry(
+            deserializers.build(), new ConfigurationDeserializerRegistry());
+    return schema.create(registry, DEFAULTS, configuration);
   }
 }

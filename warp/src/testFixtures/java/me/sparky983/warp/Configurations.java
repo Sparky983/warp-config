@@ -171,7 +171,7 @@ public final class Configurations {
   }
 
   @Configuration
-  public interface Nested {
+  public interface NestedProperty {
     @Property("nested.property")
     java.lang.String property();
   }
@@ -193,4 +193,16 @@ public final class Configurations {
 
   @Configuration
   public static class Class {}
+
+  @Configuration
+  public interface NestedString {
+    @Property("property")
+    Configurations.String property();
+  }
+
+  @Configuration
+  public interface NestedSealed {
+    @Property("property")
+    Sealed property();
+  }
 }
