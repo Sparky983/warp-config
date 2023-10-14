@@ -3,7 +3,7 @@ package me.sparky983.warp.yaml;
 import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationException;
-import me.sparky983.warp.ConfigurationNode.Map;
+import me.sparky983.warp.ConfigurationNode;
 
 /**
  * An {@link YamlConfigurationSource} that contains an exception.
@@ -23,7 +23,7 @@ record ErrorYamlConfigurationSource(ConfigurationException exception)
   }
 
   @Override
-  public Optional<Map> configuration() throws ConfigurationException {
+  public Optional<ConfigurationNode.Map> configuration() throws ConfigurationException {
     throw exception;
   }
 }
