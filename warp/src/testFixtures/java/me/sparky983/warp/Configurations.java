@@ -127,6 +127,12 @@ public final class Configurations {
   }
 
   @Configuration
+  public interface IntegerStringMap {
+    @Property("property")
+    java.util.Map<java.lang.Integer, java.lang.String> property();
+  }
+
+  @Configuration
   public interface NonDeserializableKeyMap {
     @Property("property")
     java.util.Map<Random, java.lang.String> property();
@@ -165,7 +171,7 @@ public final class Configurations {
   }
 
   @Configuration
-  public interface Nested {
+  public interface NestedProperty {
     @Property("nested.property")
     java.lang.String property();
   }
@@ -187,4 +193,16 @@ public final class Configurations {
 
   @Configuration
   public static class Class {}
+
+  @Configuration
+  public interface NestedString {
+    @Property("property")
+    Configurations.String property();
+  }
+
+  @Configuration
+  public interface NestedSealed {
+    @Property("property")
+    Sealed property();
+  }
 }

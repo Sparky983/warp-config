@@ -280,7 +280,7 @@ public sealed interface ConfigurationNode {
      *
      * @param key the key.
      * @return an {@link Optional} containing the value associated with the key if one exists,
-     *     otherwise an {@link Optional#empty()}
+     *     otherwise an {@linkplain Optional#empty() empty optional}
      * @throws NullPointerException if the key is {@code null}.
      * @since 0.1
      */

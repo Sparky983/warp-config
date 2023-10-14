@@ -2,12 +2,12 @@ package me.sparky983.warp.internal;
 
 import java.util.Objects;
 import java.util.Optional;
-import me.sparky983.warp.ConfigurationNode.Map;
+import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
 
 /** The default {@link ConfigurationSource} implementation. */
 public final class DefaultConfigurationSource implements ConfigurationSource {
-  private final Map configuration;
+  private final ConfigurationNode.Map configuration;
 
   /**
    * Constructs a {@code DefaultConfigurationSource} from the given map.
@@ -15,14 +15,14 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
    * @param configuration the map
    * @throws NullPointerException if the configuration is {@code null}.
    */
-  public DefaultConfigurationSource(final Map configuration) {
+  public DefaultConfigurationSource(final ConfigurationNode.Map configuration) {
     Objects.requireNonNull(configuration, "configuration cannot be null");
 
     this.configuration = configuration;
   }
 
   @Override
-  public Optional<Map> configuration() {
+  public Optional<ConfigurationNode.Map> configuration() {
     return Optional.of(configuration);
   }
 

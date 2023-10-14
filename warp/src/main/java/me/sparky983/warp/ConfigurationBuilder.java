@@ -34,11 +34,9 @@ import java.util.Optional;
  */
 public interface ConfigurationBuilder<T> {
   /**
-   * Adds the given source to this builder.
+   * Sets the given source of this builder.
    *
-   * <p>If the {@linkplain ConfigurationSource#configuration() configuration} returned by the source
-   * is {@linkplain ConfigurationSource##empty-source-header empty} or {@linkplain
-   * ConfigurationSource##blank-source-header blank}, this has no effect.
+   * <p>By default, the source is empty.
    *
    * @param source the source
    * @return this builder
@@ -48,17 +46,28 @@ public interface ConfigurationBuilder<T> {
   ConfigurationBuilder<T> source(ConfigurationSource source);
 
   /**
+   * Adds the given deserializer to this builder.
+   *
+   * <p>Existing deserializers are overridden if they have the same type.
+   *
+   * @param type the type
+   * @param deserializer the deserializer
+   * @return this builder
+   * @param <D> the type
+   * @throws NullPointerException if the type or deserializer is {@code null}.
+   * @since 0.1
+   */
+  <D> ConfigurationBuilder<T> deserializer(Class<D> type, Deserializer<? extends D> deserializer);
+
+  /**
    * Builds the configuration class.
    *
-   * <p>If multiple sources have values with conflicting paths, the source {@linkplain
-   * #source(ConfigurationSource) added} first takes precedence.
+   * <p>If the source has an error, a {@link ConfigurationException} is thrown.
    *
-   * <p>If one of the sources has an error, a {@link ConfigurationException} is thrown.
+   * <p>If the source cannot conform to the configuration class, a {@link ConfigurationException} is
+   * thrown.
    *
-   * <p>If the sources combined cannot conform to the configuration class, a {@link
-   * ConfigurationException} is thrown.
-   *
-   * <p>If a type was unable to be deserialized, an {@link IllegalStateException} is thrown.
+   * <p>If a required deserializer does not exist, an {@link IllegalStateException} is thrown.
    *
    * @return the built configuration
    * @throws ConfigurationException if there was an error with the configuration.

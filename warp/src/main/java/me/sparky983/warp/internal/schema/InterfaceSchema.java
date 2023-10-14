@@ -4,15 +4,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,8 +19,10 @@ import me.sparky983.warp.Configuration;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@link Schema} for a {@linkplain Configuration configuration class}.
@@ -29,6 +30,9 @@ import me.sparky983.warp.internal.DeserializerRegistry;
  * @param <T> the type of the {@linkplain Configuration configuration class}
  */
 final class InterfaceSchema<T> implements Schema<T> {
+  /** A cached renderer context (the context is empty). */
+  private static final Renderer.Context RENDERER_CONTEXT = new Renderer.Context() {};
+
   private final Class<T> configurationClass;
   private final Map<Method, Property<?>> properties;
 
@@ -82,21 +86,21 @@ final class InterfaceSchema<T> implements Schema<T> {
     this.configurationClass = configurationClass;
   }
 
-  private static Optional<ConfigurationNode> get(
+  private static @Nullable ConfigurationNode get(
       final String path, final ConfigurationNode.Map configuration) {
     ConfigurationNode currentNode = configuration;
     final Queue<String> keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
     while (currentNode instanceof final ConfigurationNode.Map map) {
       final Optional<ConfigurationNode> node = map.get(keys.remove());
       if (node.isEmpty()) {
-        return Optional.empty();
+        return null;
       }
       if (keys.isEmpty()) {
-        return node;
+        return node.get();
       }
       currentNode = node.get();
     }
-    return Optional.empty();
+    return null;
   }
 
   /**
@@ -120,29 +124,24 @@ final class InterfaceSchema<T> implements Schema<T> {
   public T create(
       final DeserializerRegistry deserializers,
       final DefaultsRegistry defaults,
-      final List<? extends ConfigurationNode.Map> configurations)
+      final ConfigurationNode.Map configuration)
       throws ConfigurationException {
-    Objects.requireNonNull(configurations, "configurations cannot be null");
+    Objects.requireNonNull(configuration, "configuration cannot be null");
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
     Objects.requireNonNull(defaults, "defaults cannot be null");
-    configurations.forEach(Objects::requireNonNull);
 
     final MappingConfiguration mappingConfiguration =
         new MappingConfiguration(defaults, deserializers);
-    final Set<ConfigurationError> errors = new HashSet<>();
+    final List<ConfigurationError> errors = new ArrayList<>();
 
     for (final Property<?> property : properties.values()) {
       mappingConfiguration
-          .put(
-              property,
-              configurations.stream()
-                  .flatMap((configuration) -> get(property.path(), configuration).stream())
-                  .toList())
+          .put(property, get(property.path(), configuration))
           .ifPresent(errors::add);
     }
 
     if (!errors.isEmpty()) {
-      throw new ConfigurationException("The configuration was invalid", errors);
+      throw new ConfigurationException(errors);
     }
 
     return newProxyInstance(
@@ -151,14 +150,18 @@ final class InterfaceSchema<T> implements Schema<T> {
             final String name = method.getName();
             final int parameterCount = method.getParameterCount();
             if (name.equals("toString") && parameterCount == 0) {
-              return configurationClass.getName() + mappingConfiguration;
+              return configurationClass.getName();
             } else if (name.equals("hashCode") && parameterCount == 0) {
               return super.hashCode(); // this is fine since our configurations are identity-based
-            } else if (name.equals("equals") && parameterCount == 1) {
+            } else if (name.equals("equals")
+                && parameterCount == 1
+                && method.getParameters()[0].getType() == Object.class) {
               return proxy == args[0];
             }
           }
-          return mappingConfiguration.get(properties.get(method)).orElseThrow();
+          return mappingConfiguration
+              .render(properties.get(method), RENDERER_CONTEXT)
+              .orElseThrow();
         });
   }
 }

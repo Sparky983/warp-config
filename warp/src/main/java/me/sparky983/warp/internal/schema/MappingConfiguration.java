@@ -1,26 +1,29 @@
 package me.sparky983.warp.internal.schema;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.StringJoiner;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.DeserializationException;
+import me.sparky983.warp.Deserializer;
+import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.DefaultsRegistry;
-import me.sparky983.warp.internal.DeserializationException;
-import me.sparky983.warp.internal.Deserializer;
 import me.sparky983.warp.internal.DeserializerRegistry;
+import org.jspecify.annotations.Nullable;
 
 /** A configuration that maps its values to objects as they are put. */
 public final class MappingConfiguration {
+  /** A cached deserializer context (the context is empty). */
+  private static final Deserializer.Context CONTEXT = new Deserializer.Context() {};
+
   private final DefaultsRegistry defaultsRegistry;
   private final DeserializerRegistry deserializerRegistry;
 
-  private final Map<Schema.Property<?>, Object> properties = new HashMap<>();
+  private final Map<Schema.Property<?>, Renderer<?>> properties = new HashMap<>();
 
   /**
    * Constructs a {@code MappingConfiguration}.
@@ -40,20 +43,19 @@ public final class MappingConfiguration {
   }
 
   /**
-   * Serializes the given values and sets the value associated with the given property to the first
-   * value.
+   * Sets the value associated with the given property to the serialized version of the given value.
    *
    * @param property the property
-   * @param tempValues the values
+   * @param value the value
    * @return an {@link Optional} containing a {@link ConfigurationError} if there was an error, or
-   *     an empty optional
+   *     an {@linkplain Optional#empty() empty optional}
    * @param <T> the type of the property
-   * @throws NullPointerException if the property or the values are {@code null}.
+   * @throws NullPointerException if the property is {@code null}, or if the deserializer associated
+   *     with the given property's type returns {@code null}.
    */
   public <T> Optional<ConfigurationError> put(
-      final Schema.Property<T> property, final List<? extends ConfigurationNode> tempValues) {
+      final Schema.Property<T> property, final @Nullable ConfigurationNode value) {
     Objects.requireNonNull(property, "property cannot be null");
-    Objects.requireNonNull(tempValues, "tempValues cannot be null");
 
     final String path = property.path();
 
@@ -69,52 +71,57 @@ public final class MappingConfiguration {
                             + property.type()
                             + ", but none was found"));
 
-    final Set<ConfigurationError> errors = new HashSet<>();
+    boolean error = false;
+    final List<ConfigurationError> errors = new ArrayList<>();
 
-    final List<? extends ConfigurationNode> values =
-        tempValues.isEmpty()
-            ? defaultsRegistry.get(property.type().rawType()).map(List::of).orElseGet(List::of)
-            : tempValues;
+    final ConfigurationNode actualNode =
+        value == null ? defaultsRegistry.get(property.type().rawType()).orElse(null) : value;
 
-    if (values.isEmpty()) {
+    if (actualNode == null) {
+      error = true;
       errors.add(ConfigurationError.error("Must be set to a value"));
-    }
-
-    for (final ConfigurationNode value : values) {
+    } else {
       try {
-        // We still want to deserialize the value, even if it's already been set, so we still get an
-        // error message if it couldn't be deserialized
-        properties.putIfAbsent(property, deserializer.deserialize(value));
+        final Renderer<T> renderer = deserializer.deserialize(actualNode, CONTEXT);
+        properties.putIfAbsent(property, renderer);
+        if (renderer == null) {
+          throw new NullPointerException("Deserializer returned null");
+        }
       } catch (final DeserializationException e) {
-        errors.add(ConfigurationError.error(e.getMessage()));
+        error = true;
+        errors.addAll(e.errors());
       }
     }
 
-    if (errors.isEmpty()) {
-      return Optional.empty();
+    if (error) {
+      return Optional.of(ConfigurationError.group(path, errors));
     }
-    return Optional.of(ConfigurationError.group(path, errors));
+    return Optional.empty();
   }
 
   /**
    * Gets the value associated with the given property.
    *
    * @param property the {@link Schema.Property}
-   * @return an optional containing the value if it is present, otherwise an empty optional
+   * @param context the renderer context
+   * @return an optional containing the value if it is present, otherwise an {@linkplain
+   *     Optional#empty() empty optional}
    * @param <T> the type of the property
-   * @throws NullPointerException if the path is {@code null}
+   * @throws NullPointerException if the path is {@code null} or if the renderer returned by the
+   *     deserializer associated with the given property's type returns {@code null}.
    */
   @SuppressWarnings("unchecked")
-  public <T> Optional<T> get(final Schema.Property<T> property) {
+  public <T> Optional<T> render(final Schema.Property<T> property, final Renderer.Context context) {
     Objects.requireNonNull(property, "property cannot be null");
 
-    return (Optional<T>) Optional.ofNullable(properties.get(property));
-  }
-
-  @Override
-  public String toString() {
-    final StringJoiner joiner = new StringJoiner(", ", "{", "}");
-    properties.forEach((property, value) -> joiner.add(property.path() + "=" + value));
-    return joiner.toString();
+    return Optional.ofNullable((Renderer<T>) properties.get(property))
+        .map(
+            (render) -> {
+              final T t = render.render(context);
+              if (t == null) {
+                throw new NullPointerException("Renderer returned null");
+              }
+              return t;
+            });
   }
 }

@@ -1,16 +1,19 @@
 package me.sparky983.warp.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.Configurations;
+import me.sparky983.warp.DeserializationException;
+import me.sparky983.warp.Renderer;
 import me.sparky983.warp.Warp;
 import org.junit.jupiter.api.Test;
 
@@ -50,8 +53,50 @@ class MapDeserializerTest {
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
 
-    assertEquals(
-        Set.of(ConfigurationError.group("property", ConfigurationError.error("Must be a map"))),
+    assertIterableEquals(
+        List.of(ConfigurationError.group("property", ConfigurationError.error("Must be a map"))),
+        thrown.errors());
+  }
+
+  @Test
+  void testDeserialize_NestedNonDeserializable() {
+    final ConfigurationBuilder<Configurations.IntegerStringMap> builder =
+        Warp.builder(Configurations.IntegerStringMap.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry(
+                            "property",
+                            ConfigurationNode.map()
+                                .entry("1", ConfigurationNode.nil())
+                                .entry("not integer", ConfigurationNode.nil())
+                                .build())
+                        .build()))
+            .deserializer(
+                Integer.class,
+                (node, context) -> {
+                  if (!(node instanceof final ConfigurationNode.String string)) {
+                    throw new DeserializationException();
+                  }
+                  try {
+                    return Renderer.of(Integer.parseInt(string.value()));
+                  } catch (final NumberFormatException e) {
+                    throw new DeserializationException(ConfigurationError.error("Cannot parse"));
+                  }
+                });
+
+    final ConfigurationException thrown =
+        assertThrows(ConfigurationException.class, builder::build);
+
+    assertIterableEquals(
+        List.of(
+            ConfigurationError.group(
+                "property",
+                ConfigurationError.group("1", ConfigurationError.error("Must be a string")),
+                ConfigurationError.group(
+                    "not integer",
+                    ConfigurationError.error("Cannot parse"),
+                    ConfigurationError.error("Must be a string")))),
         thrown.errors());
   }
 
@@ -72,6 +117,9 @@ class MapDeserializerTest {
 
     final Configurations.StringStringMap configuration = builder.build();
 
-    assertEquals(Map.of("key 1", "value 1", "key 2", "value 2"), configuration.property());
+    final Map<String, String> property = configuration.property();
+
+    assertEquals(Map.of("key 1", "value 1", "key 2", "value 2"), property);
+    assertThrows(UnsupportedOperationException.class, () -> property.put("key 3", "value 3"));
   }
 }

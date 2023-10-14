@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.util.Set;
+import me.sparky983.warp.Configurations.NestedProperty;
 import org.junit.jupiter.api.Test;
 
 class WarpTest {
@@ -110,8 +110,8 @@ class WarpTest {
 
   @Test
   void testNestedProperty_NotExists() {
-    final ConfigurationBuilder<Configurations.Nested> builder =
-        Warp.builder(Configurations.Nested.class)
+    final ConfigurationBuilder<NestedProperty> builder =
+        Warp.builder(NestedProperty.class)
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()
@@ -123,8 +123,8 @@ class WarpTest {
 
   @Test
   void testProperty_NotMap() {
-    final ConfigurationBuilder<Configurations.Nested> builder =
-        Warp.builder(Configurations.Nested.class)
+    final ConfigurationBuilder<NestedProperty> builder =
+        Warp.builder(NestedProperty.class)
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()
@@ -158,22 +158,22 @@ class WarpTest {
   }
 
   @Test
-  void testSourcePrecedence() throws ConfigurationException {
+  void testOverwriteSource() throws ConfigurationException {
     final Configurations.String builder =
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.string("overrides"))
+                        .entry("property", ConfigurationNode.string("overwritten"))
                         .build()))
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.string("overriden"))
+                        .entry("property", ConfigurationNode.string("overwrites"))
                         .build()))
             .build();
 
-    assertEquals("overrides", builder.property());
+    assertEquals("overwrites", builder.property());
   }
 
   @Test
@@ -182,8 +182,7 @@ class WarpTest {
         Warp.builder(Configurations.String.class)
             .source(
                 () -> {
-                  throw new ConfigurationException(
-                      "test", Set.of(ConfigurationError.error("message")));
+                  throw new ConfigurationException();
                 });
 
     assertThrows(ConfigurationException.class, builder::build);
@@ -191,21 +190,16 @@ class WarpTest {
 
   @Test
   void testToString() throws ConfigurationException {
-    final Configurations.Nested configuration =
-        Warp.builder(Configurations.Nested.class)
+    final Configurations.String configuration =
+        Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()
-                        .entry(
-                            "nested",
-                            ConfigurationNode.map()
-                                .entry("property", ConfigurationNode.string("value"))
-                                .build())
+                        .entry("property", ConfigurationNode.string("value"))
                         .build()))
             .build();
 
-    assertEquals(
-        "me.sparky983.warp.Configurations$Nested{nested.property=value}", configuration.toString());
+    assertEquals("me.sparky983.warp.Configurations$String", configuration.toString());
   }
 
   @Test

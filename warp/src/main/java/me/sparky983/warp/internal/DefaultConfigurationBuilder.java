@@ -1,7 +1,5 @@
 package me.sparky983.warp.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,6 +9,7 @@ import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
+import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.internal.schema.Schema;
 
 /**
@@ -19,26 +18,35 @@ import me.sparky983.warp.internal.schema.Schema;
  * @param <T> the type of the {@linkplain Configuration configuration class}
  */
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
-  /** The default deserializer registry. */
-  private static final DeserializerRegistry DESERIALIZERS =
-      DeserializerRegistry.create()
-          .register(Byte.class, Deserializer.BYTE)
-          .register(byte.class, Deserializer.BYTE)
-          .register(Short.class, Deserializer.SHORT)
-          .register(short.class, Deserializer.SHORT)
-          .register(Integer.class, Deserializer.INTEGER)
-          .register(int.class, Deserializer.INTEGER)
-          .register(Long.class, Deserializer.LONG)
-          .register(long.class, Deserializer.LONG)
-          .register(Float.class, Deserializer.FLOAT)
-          .register(float.class, Deserializer.FLOAT)
-          .register(Double.class, Deserializer.DOUBLE)
-          .register(double.class, Deserializer.DOUBLE)
-          .register(Boolean.class, Deserializer.BOOLEAN)
-          .register(boolean.class, Deserializer.BOOLEAN)
-          .register(String.class, Deserializer.STRING)
-          .register(CharSequence.class, Deserializer.STRING)
-          .register(
+  /** The default defaults registry */
+  private static final DefaultsRegistry DEFAULTS =
+      DefaultsRegistry.create()
+          .register(Optional.class, ConfigurationNode.nil())
+          .register(List.class, ConfigurationNode.list())
+          .register(Map.class, ConfigurationNode.map().build());
+
+  private ConfigurationSource source = Optional::empty;
+
+  /** The deserializers for the configuration. */
+  private final DeserializerRegistry.Builder deserializers =
+      DeserializerRegistry.builder()
+          .deserializer(Byte.class, Deserializers.BYTE)
+          .deserializer(byte.class, Deserializers.BYTE)
+          .deserializer(Short.class, Deserializers.SHORT)
+          .deserializer(short.class, Deserializers.SHORT)
+          .deserializer(Integer.class, Deserializers.INTEGER)
+          .deserializer(int.class, Deserializers.INTEGER)
+          .deserializer(Long.class, Deserializers.LONG)
+          .deserializer(long.class, Deserializers.LONG)
+          .deserializer(Float.class, Deserializers.FLOAT)
+          .deserializer(float.class, Deserializers.FLOAT)
+          .deserializer(Double.class, Deserializers.DOUBLE)
+          .deserializer(double.class, Deserializers.DOUBLE)
+          .deserializer(Boolean.class, Deserializers.BOOLEAN)
+          .deserializer(boolean.class, Deserializers.BOOLEAN)
+          .deserializer(String.class, Deserializers.STRING)
+          .deserializer(CharSequence.class, Deserializers.STRING)
+          .factory(
               Optional.class,
               (deserializers, type) -> {
                 if (type.isRaw()) {
@@ -52,9 +60,9 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                             () ->
                                 new IllegalStateException(
                                     "Deserializer for the value of " + type + " not found"));
-                return Deserializer.optional(deserializer);
+                return Deserializers.optional(deserializer);
               })
-          .register(
+          .factory(
               Map.class,
               (deserializers, type) -> {
                 if (type.isRaw()) {
@@ -76,9 +84,9 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                             () ->
                                 new IllegalStateException(
                                     "Deserializer for the values of " + type + " not found"));
-                return Deserializer.map(keyDeserializer, valueDeserializer);
+                return Deserializers.map(keyDeserializer, valueDeserializer);
               })
-          .register(
+          .factory(
               List.class,
               (deserializers, type) -> {
                 if (type.isRaw()) {
@@ -92,21 +100,8 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
                             () ->
                                 new IllegalStateException(
                                     "Deserializer for the elements of " + type + " not found"));
-                return Deserializer.list(deserializer);
+                return Deserializers.list(deserializer);
               });
-
-  /** The default defaults registry */
-  private static final DefaultsRegistry DEFAULTS =
-      DefaultsRegistry.create()
-          .register(Optional.class, ConfigurationNode.nil())
-          .register(List.class, ConfigurationNode.list())
-          .register(Map.class, ConfigurationNode.map().build());
-
-  /**
-   * The configuration sources. Initial capacity is set to {@code 1} because usually there is only
-   * one source.
-   */
-  private final Collection<ConfigurationSource> sources = new ArrayList<>(1);
 
   private final Schema<? extends T> schema;
 
@@ -126,16 +121,27 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   public ConfigurationBuilder<T> source(final ConfigurationSource source) {
     Objects.requireNonNull(source, "source cannot be null");
 
-    this.sources.add(source);
+    this.source = source;
+    return this;
+  }
+
+  @Override
+  public <D> ConfigurationBuilder<T> deserializer(
+      final Class<D> type, final Deserializer<? extends D> deserializer) {
+    Objects.requireNonNull(type, "type cannot be null");
+    Objects.requireNonNull(deserializer, "deserializer cannot be null");
+
+    deserializers.deserializer(type, deserializer);
     return this;
   }
 
   @Override
   public T build() throws ConfigurationException {
-    final List<ConfigurationNode.Map> configurations = new ArrayList<>(sources.size());
-    for (final ConfigurationSource source : sources) {
-      source.configuration().ifPresent(configurations::add);
-    }
-    return schema.create(DESERIALIZERS, DEFAULTS, configurations);
+    final ConfigurationNode.Map configuration =
+        source.configuration().orElseGet(() -> ConfigurationNode.map().build());
+    final DeserializerRegistry registry =
+        new FallbackDeserializerRegistry(
+            deserializers.build(), new ConfigurationDeserializerRegistry());
+    return schema.create(registry, DEFAULTS, configuration);
   }
 }

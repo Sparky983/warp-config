@@ -1,9 +1,8 @@
 package me.sparky983.warp.internal.schema;
 
-import java.util.List;
 import me.sparky983.warp.Configuration;
 import me.sparky983.warp.ConfigurationException;
-import me.sparky983.warp.ConfigurationNode.Map;
+import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;
@@ -19,16 +18,16 @@ public interface Schema<T> {
    *
    * @param deserializers the deserializer registry
    * @param defaults the defaults register
-   * @param configurations the configurations
-   * @return a list of the configurations in order of precedence
+   * @param configuration the configuration
+   * @return the created configuration
    * @throws ConfigurationException if any configurations were not compliant with this schema.
    * @throws IllegalStateException if a type can not be deserialized.
-   * @throws NullPointerException if the configurations is {@code null} or contains {@code null}.
+   * @throws NullPointerException if the configurations is {@code null}.
    */
   T create(
       DeserializerRegistry deserializers,
       DefaultsRegistry defaults,
-      List<? extends Map> configurations)
+      ConfigurationNode.Map configuration)
       throws ConfigurationException;
 
   /**
