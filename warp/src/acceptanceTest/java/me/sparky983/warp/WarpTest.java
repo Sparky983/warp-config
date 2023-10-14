@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class WarpTest {
@@ -182,8 +181,7 @@ class WarpTest {
         Warp.builder(Configurations.String.class)
             .source(
                 () -> {
-                  throw new ConfigurationException(
-                      "test", Set.of(ConfigurationError.error("message")));
+                  throw new ConfigurationException();
                 });
 
     assertThrows(ConfigurationException.class, builder::build);

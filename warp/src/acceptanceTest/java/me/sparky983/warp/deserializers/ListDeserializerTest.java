@@ -1,10 +1,10 @@
 package me.sparky983.warp.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import java.util.Set;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
@@ -42,8 +42,8 @@ class ListDeserializerTest {
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
 
-    assertEquals(
-        Set.of(ConfigurationError.group("property", ConfigurationError.error("Must be a list"))),
+    assertIterableEquals(
+        List.of(ConfigurationError.group("property", ConfigurationError.error("Must be a list"))),
         thrown.errors());
   }
 

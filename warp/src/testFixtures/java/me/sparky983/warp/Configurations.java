@@ -127,6 +127,12 @@ public final class Configurations {
   }
 
   @Configuration
+  public interface IntegerStringMap {
+    @Property("property")
+    java.util.Map<java.lang.Integer, java.lang.String> property();
+  }
+
+  @Configuration
   public interface NonDeserializableKeyMap {
     @Property("property")
     java.util.Map<Random, java.lang.String> property();

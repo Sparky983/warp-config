@@ -4,15 +4,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -133,7 +132,7 @@ final class InterfaceSchema<T> implements Schema<T> {
 
     final MappingConfiguration mappingConfiguration =
         new MappingConfiguration(defaults, deserializers);
-    final Set<ConfigurationError> errors = new HashSet<>();
+    final List<ConfigurationError> errors = new ArrayList<>();
 
     for (final Property<?> property : properties.values()) {
       mappingConfiguration
@@ -146,7 +145,7 @@ final class InterfaceSchema<T> implements Schema<T> {
     }
 
     if (!errors.isEmpty()) {
-      throw new ConfigurationException("The configuration was invalid", errors);
+      throw new ConfigurationException(errors);
     }
 
     return newProxyInstance(

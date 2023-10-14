@@ -1,10 +1,12 @@
 package me.sparky983.warp.internal.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.List;
+import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
@@ -25,7 +27,15 @@ class ListDeserializerTest {
 
   @BeforeEach
   void setUp() {
-    deserializer = Deserializers.list((node, context) -> Renderer.of("element: " + node));
+    deserializer =
+        Deserializers.list(
+            (node, context) -> {
+              if (node instanceof final ConfigurationNode.Integer string) {
+                return Renderer.of("element: " + string.value());
+              } else {
+                throw new DeserializationException(ConfigurationError.error("Must be an integer"));
+              }
+            });
   }
 
   @AfterEach
@@ -55,8 +65,30 @@ class ListDeserializerTest {
   void testDeserialize_NonList() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
-        DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class,
+            () -> deserializer.deserialize(node, deserializerContext));
+
+    assertIterableEquals(List.of(ConfigurationError.error("Must be a list")), thrown.errors());
+  }
+
+  @Test
+  void testDeserialize_NestedNonDeserializable() {
+    final ConfigurationNode node =
+        ConfigurationNode.list(
+            ConfigurationNode.nil(), ConfigurationNode.integer(1), ConfigurationNode.nil());
+
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class,
+            () -> deserializer.deserialize(node, deserializerContext));
+
+    assertIterableEquals(
+        List.of(
+            ConfigurationError.group("0", ConfigurationError.error("Must be an integer")),
+            ConfigurationError.group("2", ConfigurationError.error("Must be an integer"))),
+        thrown.errors());
   }
 
   @Test

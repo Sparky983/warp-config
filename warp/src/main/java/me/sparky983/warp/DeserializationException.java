@@ -1,24 +1,36 @@
 package me.sparky983.warp;
 
-import java.util.Objects;
+import java.util.Collection;
 
-/** Thrown when a {@link Deserializer} could not deserialize a value. */
-public final class DeserializationException extends Exception {
-
+/**
+ * Thrown when a {@link Deserializer} could not deserialize a value.
+ *
+ * @since 0.1
+ */
+public class DeserializationException extends ConfigurationException {
   /**
-   * Constructs the {@code DeserializationException}.
+   * Constructs a {@code ConfigurationException}.
    *
-   * @param message the message
-   * @throws NullPointerException if the message is {@code null}.
+   * @param errors a collection of all the {@link ConfigurationError ConfigurationErrors}; changes
+   *     to this collection will not be reflected in the collection returned by {@link #errors()}
+   * @throws NullPointerException if the message, the errors collection is {@code null} or one of
+   *     the errors are {@code null}.
+   * @since 0.1
    */
-  public DeserializationException(final String message) {
-    super(message);
-    Objects.requireNonNull(message, "message");
+  public DeserializationException(final Collection<? extends ConfigurationError> errors) {
+    super(errors);
   }
 
-  @Override
-  public String getMessage() {
-    // Overridden to make the return type non-null
-    return super.getMessage();
+  /**
+   * Constructs a {@code ConfigurationException}.
+   *
+   * @param errors an array of all the {@link ConfigurationError ConfigurationErrors}; changes to
+   *     this array will not be reflected in the collection returned by {@link #errors()}
+   * @throws NullPointerException if the message, the errors array is {@code null} or one of the
+   *     errors are {@code null}.
+   * @since 0.1
+   */
+  public DeserializationException(final ConfigurationError... errors) {
+    super(errors);
   }
 }

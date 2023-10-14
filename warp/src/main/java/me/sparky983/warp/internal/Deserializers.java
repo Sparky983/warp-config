@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
@@ -46,7 +47,7 @@ public final class Deserializers {
         if (node instanceof final ConfigurationNode.Bool bool) {
           return Renderer.of(bool.value());
         }
-        throw new DeserializationException("Must be a boolean");
+        throw new DeserializationException(ConfigurationError.error("Must be a boolean"));
       };
 
   /** A {@link String} deserializer. */
@@ -58,7 +59,7 @@ public final class Deserializers {
         if (node instanceof final ConfigurationNode.String string) {
           return Renderer.of(string.value());
         }
-        throw new DeserializationException("Must be a string");
+        throw new DeserializationException(ConfigurationError.error("Must be a string"));
       };
 
   private Deserializers() {}
@@ -70,12 +71,13 @@ public final class Deserializers {
       Objects.requireNonNull(context, "context cannot be null");
 
       if (!(node instanceof final ConfigurationNode.Integer integer)) {
-        throw new DeserializationException("Must be an integer");
+        throw new DeserializationException(ConfigurationError.error("Must be an integer"));
       }
       final long value = integer.value();
       if (value < min || value > max) {
         throw new DeserializationException(
-            "Must be between " + min + " and " + max + " (both inclusive)");
+            ConfigurationError.error(
+                "Must be between " + min + " and " + max + " (both inclusive)"));
       }
       return Renderer.of(mapper.apply(integer.value()));
     };
@@ -92,7 +94,7 @@ public final class Deserializers {
       } else if (node instanceof final ConfigurationNode.Decimal decimal) {
         value = decimal.value();
       } else {
-        throw new DeserializationException("Must be a number");
+        throw new DeserializationException(ConfigurationError.error("Must be a number"));
       }
       return Renderer.of(mapper.apply(value));
     };
@@ -116,16 +118,27 @@ public final class Deserializers {
 
       if (node instanceof final ConfigurationNode.List list) {
         final List<Renderer<? extends E>> renderers = new ArrayList<>();
-        for (final ConfigurationNode element : list.values()) {
-          renderers.add(elementDeserializer.deserialize(element, deserializerContext));
+        final List<ConfigurationError> listErrors = new ArrayList<>();
+        for (int i = 0; i < list.values().size(); i++) {
+          final ConfigurationNode element = list.values().get(i);
+          try {
+            renderers.add(elementDeserializer.deserialize(element, deserializerContext));
+          } catch (final DeserializationException exception) {
+            listErrors.add(ConfigurationError.group(String.valueOf(i), exception.errors()));
+          }
         }
+
+        if (!listErrors.isEmpty()) {
+          throw new DeserializationException(listErrors);
+        }
+
         return (rendererContext) -> {
           Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
 
           return renderers.stream().<E>map((renderer) -> renderer.render(rendererContext)).toList();
         };
       }
-      throw new DeserializationException("Must be a list");
+      throw new DeserializationException(ConfigurationError.error("Must be a list"));
     };
   }
 
@@ -151,12 +164,40 @@ public final class Deserializers {
 
       if (node instanceof final ConfigurationNode.Map map) {
         final Map<Renderer<? extends K>, Renderer<? extends V>> renderers = new HashMap<>();
+        final List<ConfigurationError> mapErrors = new ArrayList<>();
         for (final ConfigurationNode.Map.Entry entry : map.entries()) {
-          renderers.put(
-              keyDeserializer.deserialize(
-                  ConfigurationNode.string(entry.key()), deserializerContext),
-              valueDeserializer.deserialize(entry.value(), deserializerContext));
+          final String key = entry.key();
+          final List<ConfigurationError> entryErrors = new ArrayList<>();
+
+          // Deserialize both the key and the value, even if the key deserialization fails, we can
+          // still report errors with the value
+          Renderer<? extends K> keyRenderer = null;
+          Renderer<? extends V> valueRenderer = null;
+
+          try {
+            keyRenderer =
+                keyDeserializer.deserialize(ConfigurationNode.string(key), deserializerContext);
+          } catch (final DeserializationException exception) {
+            entryErrors.addAll(exception.errors());
+          }
+
+          try {
+            valueRenderer = valueDeserializer.deserialize(entry.value(), deserializerContext);
+          } catch (final DeserializationException exception) {
+            entryErrors.addAll(exception.errors());
+          }
+
+          if (keyRenderer != null && valueRenderer != null) {
+            renderers.put(keyRenderer, valueRenderer);
+          } else {
+            mapErrors.add(ConfigurationError.group(key, entryErrors));
+          }
         }
+
+        if (!mapErrors.isEmpty()) {
+          throw new DeserializationException(mapErrors);
+        }
+
         return (rendererContext) -> {
           Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
           final Map<K, V> result = new HashMap<>();
@@ -166,7 +207,7 @@ public final class Deserializers {
           return Collections.unmodifiableMap(result);
         };
       }
-      throw new DeserializationException("Must be a map");
+      throw new DeserializationException(ConfigurationError.error("Must be a map"));
     };
   }
 

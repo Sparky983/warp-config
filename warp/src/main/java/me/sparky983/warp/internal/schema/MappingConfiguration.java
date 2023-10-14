@@ -1,12 +1,11 @@
 package me.sparky983.warp.internal.schema;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
@@ -73,7 +72,8 @@ public final class MappingConfiguration {
                             + property.type()
                             + ", but none was found"));
 
-    final Set<ConfigurationError> errors = new HashSet<>();
+    boolean error = false;
+    final List<ConfigurationError> errors = new ArrayList<>();
 
     final List<? extends ConfigurationNode> values =
         tempValues.isEmpty()
@@ -81,6 +81,7 @@ public final class MappingConfiguration {
             : tempValues;
 
     if (values.isEmpty()) {
+      error = true;
       errors.add(ConfigurationError.error("Must be set to a value"));
     }
 
@@ -92,7 +93,8 @@ public final class MappingConfiguration {
         renderer = deserializer.deserialize(value, CONTEXT);
         properties.putIfAbsent(property, renderer);
       } catch (final DeserializationException e) {
-        errors.add(ConfigurationError.error(e.getMessage()));
+        error = true;
+        errors.addAll(e.errors());
         continue;
       }
       if (renderer == null) {
@@ -100,10 +102,10 @@ public final class MappingConfiguration {
       }
     }
 
-    if (errors.isEmpty()) {
-      return Optional.empty();
+    if (error) {
+      return Optional.of(ConfigurationError.group(path, errors));
     }
-    return Optional.of(ConfigurationError.group(path, errors));
+    return Optional.empty();
   }
 
   /**

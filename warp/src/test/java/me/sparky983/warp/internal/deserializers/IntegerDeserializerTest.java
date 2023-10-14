@@ -2,9 +2,12 @@ package me.sparky983.warp.internal.deserializers;
 
 import static me.sparky983.warp.internal.Deserializers.INTEGER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.List;
+import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
@@ -42,8 +45,11 @@ class IntegerDeserializerTest {
   void testDeserialize_NonInteger() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
-        DeserializationException.class, () -> INTEGER.deserialize(node, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> INTEGER.deserialize(node, deserializerContext));
+
+    assertIterableEquals(List.of(ConfigurationError.error("Must be an integer")), thrown.errors());
   }
 
   @ParameterizedTest
@@ -55,9 +61,15 @@ class IntegerDeserializerTest {
         assertThrows(
             DeserializationException.class, () -> INTEGER.deserialize(node, deserializerContext));
 
-    assertEquals(
-        "Must be between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE + " (both inclusive)",
-        thrown.getMessage());
+    assertIterableEquals(
+        List.of(
+            ConfigurationError.error(
+                "Must be between "
+                    + Integer.MIN_VALUE
+                    + " and "
+                    + Integer.MAX_VALUE
+                    + " (both inclusive)")),
+        thrown.errors());
   }
 
   @Test

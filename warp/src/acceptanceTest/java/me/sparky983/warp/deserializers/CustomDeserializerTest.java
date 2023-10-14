@@ -1,6 +1,7 @@
 package me.sparky983.warp.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -8,11 +9,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.Collection;
+import java.util.List;
 import me.sparky983.warp.ConfigurationBuilder;
+import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.Configurations;
+import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
 import me.sparky983.warp.Warp;
@@ -56,6 +61,28 @@ class CustomDeserializerTest {
 
     final Exception thrown = assertThrows(RuntimeException.class, builder::build);
     assertEquals(exception, thrown);
+  }
+
+  @Test
+  void testCustomDeserializer_DeserializerThrowsDeserializationException() {
+    final Collection<ConfigurationError> errors =
+        List.of(ConfigurationError.error("error 1"), ConfigurationError.error("error 2"));
+
+    final ConfigurationBuilder<Configurations.String> configuration =
+        Warp.builder(Configurations.String.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()))
+            .deserializer(
+                String.class,
+                (node, context) -> {
+                  throw new DeserializationException(errors);
+                });
+
+    final ConfigurationException thrown =
+        assertThrows(ConfigurationException.class, configuration::build);
+
+    assertIterableEquals(List.of(ConfigurationError.group("property", errors)), thrown.errors());
   }
 
   @Test

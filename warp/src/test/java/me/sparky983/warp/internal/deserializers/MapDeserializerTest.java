@@ -1,10 +1,13 @@
 package me.sparky983.warp.internal.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.List;
 import java.util.Map;
+import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
@@ -26,8 +29,23 @@ class MapDeserializerTest {
   void setUp() {
     deserializer =
         Deserializers.map(
-            (node, context) -> Renderer.of("key: " + node),
-            (node, context) -> Renderer.of("value: " + node));
+            (node, context) -> {
+              if (node instanceof final ConfigurationNode.String string) {
+                try {
+                  return Renderer.of("key: " + Integer.valueOf(string.value()));
+                } catch (final NumberFormatException e) {
+                  throw new DeserializationException(ConfigurationError.error("Cannot parse"));
+                }
+              }
+              throw new DeserializationException(ConfigurationError.error("Must be a string"));
+            },
+            (node, context) -> {
+              if (node instanceof final ConfigurationNode.Integer integer) {
+                return Renderer.of("value: " + integer.value());
+              } else {
+                throw new DeserializationException(ConfigurationError.error("Must be an integer"));
+              }
+            });
   }
 
   @AfterEach
@@ -62,8 +80,35 @@ class MapDeserializerTest {
   void testDeserialize_NonMap() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
-        DeserializationException.class, () -> deserializer.deserialize(node, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class,
+            () -> deserializer.deserialize(node, deserializerContext));
+
+    assertIterableEquals(List.of(ConfigurationError.error("Must be a map")), thrown.errors());
+  }
+
+  @Test
+  void testDeserialize_NestedNonDeserializable() {
+    final ConfigurationNode node =
+        ConfigurationNode.map()
+            .entry("1", ConfigurationNode.nil())
+            .entry("not integer", ConfigurationNode.nil())
+            .build();
+
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class,
+            () -> deserializer.deserialize(node, deserializerContext));
+
+    assertIterableEquals(
+        List.of(
+            ConfigurationError.group("1", ConfigurationError.error("Must be an integer")),
+            ConfigurationError.group(
+                "not integer",
+                ConfigurationError.error("Cannot parse"),
+                ConfigurationError.error("Must be an integer"))),
+        thrown.errors());
   }
 
   @Test

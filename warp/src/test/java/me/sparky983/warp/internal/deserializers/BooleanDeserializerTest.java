@@ -2,9 +2,13 @@ package me.sparky983.warp.internal.deserializers;
 
 import static me.sparky983.warp.internal.Deserializers.BOOLEAN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.List;
+import me.sparky983.warp.ConfigurationError;
+import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
@@ -42,8 +46,11 @@ class BooleanDeserializerTest {
   void testDeserialize_NonBoolean() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    assertThrows(
-        DeserializationException.class, () -> BOOLEAN.deserialize(node, deserializerContext));
+    final ConfigurationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> BOOLEAN.deserialize(node, deserializerContext));
+
+    assertIterableEquals(List.of(ConfigurationError.error("Must be a boolean")), thrown.errors());
   }
 
   @Test
