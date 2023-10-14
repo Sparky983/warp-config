@@ -13,6 +13,7 @@ import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
+import org.jspecify.annotations.Nullable;
 
 /** A configuration that maps its values to objects as they are put. */
 public final class MappingConfiguration {
@@ -42,21 +43,19 @@ public final class MappingConfiguration {
   }
 
   /**
-   * Serializes the given values and sets the value associated with the given property to the first
-   * value.
+   * Sets the value associated with the given property to the serialized version of the given value.
    *
    * @param property the property
-   * @param tempValues the values
+   * @param value the value
    * @return an {@link Optional} containing a {@link ConfigurationError} if there was an error, or
    *     an {@linkplain Optional#empty() empty optional}
    * @param <T> the type of the property
-   * @throws NullPointerException if the property or the values are {@code null}, or if the
-   *     deserializer associated with the given property's type returns {@code null}.
+   * @throws NullPointerException if the property is {@code null}, or if the deserializer associated
+   *     with the given property's type returns {@code null}.
    */
   public <T> Optional<ConfigurationError> put(
-      final Schema.Property<T> property, final List<? extends ConfigurationNode> tempValues) {
+      final Schema.Property<T> property, final @Nullable ConfigurationNode value) {
     Objects.requireNonNull(property, "property cannot be null");
-    Objects.requireNonNull(tempValues, "tempValues cannot be null");
 
     final String path = property.path();
 
@@ -75,30 +74,22 @@ public final class MappingConfiguration {
     boolean error = false;
     final List<ConfigurationError> errors = new ArrayList<>();
 
-    final List<? extends ConfigurationNode> values =
-        tempValues.isEmpty()
-            ? defaultsRegistry.get(property.type().rawType()).map(List::of).orElseGet(List::of)
-            : tempValues;
+    final ConfigurationNode actualNode =
+        value == null ? defaultsRegistry.get(property.type().rawType()).orElse(null) : value;
 
-    if (values.isEmpty()) {
+    if (actualNode == null) {
       error = true;
       errors.add(ConfigurationError.error("Must be set to a value"));
-    }
-
-    for (final ConfigurationNode value : values) {
-      final Renderer<T> renderer;
+    } else {
       try {
-        // We still want to deserialize the value, even if it's already been set, so we still get an
-        // error message if it couldn't be deserialized
-        renderer = deserializer.deserialize(value, CONTEXT);
+        final Renderer<T> renderer = deserializer.deserialize(actualNode, CONTEXT);
         properties.putIfAbsent(property, renderer);
+        if (renderer == null) {
+          throw new NullPointerException("Deserializer returned null");
+        }
       } catch (final DeserializationException e) {
         error = true;
         errors.addAll(e.errors());
-        continue;
-      }
-      if (renderer == null) {
-        throw new NullPointerException("Deserializer returned null");
       }
     }
 

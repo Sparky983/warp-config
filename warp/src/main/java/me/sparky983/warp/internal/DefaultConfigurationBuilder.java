@@ -1,7 +1,5 @@
 package me.sparky983.warp.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,11 +25,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .register(List.class, ConfigurationNode.list())
           .register(Map.class, ConfigurationNode.map().build());
 
-  /**
-   * The configuration sources. Initial capacity is set to {@code 1} because usually there is only
-   * one source.
-   */
-  private final Collection<ConfigurationSource> sources = new ArrayList<>(1);
+  private ConfigurationSource source = Optional::empty;
 
   /** The deserializers for the configuration. */
   private final DeserializerRegistry.Builder deserializers =
@@ -127,7 +121,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   public ConfigurationBuilder<T> source(final ConfigurationSource source) {
     Objects.requireNonNull(source, "source cannot be null");
 
-    this.sources.add(source);
+    this.source = source;
     return this;
   }
 
@@ -143,10 +137,8 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
 
   @Override
   public T build() throws ConfigurationException {
-    final List<ConfigurationNode.Map> configurations = new ArrayList<>(sources.size());
-    for (final ConfigurationSource source : sources) {
-      source.configuration().ifPresent(configurations::add);
-    }
-    return schema.create(deserializers.build(), DEFAULTS, configurations);
+    final ConfigurationNode.Map configuration =
+        source.configuration().orElseGet(() -> ConfigurationNode.map().build());
+    return schema.create(deserializers.build(), DEFAULTS, configuration);
   }
 }
