@@ -67,7 +67,7 @@ public interface ConfigurationBuilder<T> {
    * <p>If the source cannot conform to the configuration class, a {@link ConfigurationException} is
    * thrown.
    *
-   * <p>If a type was unable to be deserialized, an {@link IllegalStateException} is thrown.
+   * <p>If a required deserializer does not exist, an {@link IllegalStateException} is thrown.
    *
    * @return the built configuration
    * @throws ConfigurationException if there was an error with the configuration.
