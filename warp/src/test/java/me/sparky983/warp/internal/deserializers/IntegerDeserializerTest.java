@@ -1,6 +1,6 @@
 package me.sparky983.warp.internal.deserializers;
 
-import static me.sparky983.warp.internal.Deserializers.INTEGER;
+import static me.sparky983.warp.internal.deserializers.Deserializers.INTEGER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

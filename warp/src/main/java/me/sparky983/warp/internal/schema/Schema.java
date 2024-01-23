@@ -43,7 +43,11 @@ public interface Schema<T> {
     return new InterfaceSchema<>(configurationClass);
   }
 
-  /** A property in a schema. */
+  /**
+   * A property in a schema.
+   *
+   * @param <T> the type of the property
+   */
   interface Property<T> {
     /**
      * Returns the path of this property.

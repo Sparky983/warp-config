@@ -10,6 +10,11 @@ import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.Deserializer;
+import me.sparky983.warp.internal.deserializers.ConfigurationDeserializerFactory;
+import me.sparky983.warp.internal.deserializers.Deserializers;
+import me.sparky983.warp.internal.deserializers.ListDeserializerFactory;
+import me.sparky983.warp.internal.deserializers.MapDeserializerFactory;
+import me.sparky983.warp.internal.deserializers.OptionalDeserializerFactory;
 import me.sparky983.warp.internal.schema.Schema;
 
 /**
@@ -19,7 +24,7 @@ import me.sparky983.warp.internal.schema.Schema;
  */
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
   /** The default defaults registry */
-  private static final DefaultsRegistry DEFAULTS =
+  static final DefaultsRegistry DEFAULTS =
       DefaultsRegistry.create()
           .register(Optional.class, ConfigurationNode.nil())
           .register(List.class, ConfigurationNode.list())
@@ -46,62 +51,10 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .deserializer(boolean.class, Deserializers.BOOLEAN)
           .deserializer(String.class, Deserializers.STRING)
           .deserializer(CharSequence.class, Deserializers.STRING)
-          .factory(
-              Optional.class,
-              (deserializers, type) -> {
-                if (type.isRaw()) {
-                  throw new IllegalStateException("Optional must have a type argument");
-                }
-                final ParameterizedType<?> valueType = type.typeArguments().get(0);
-                final Deserializer<?> deserializer =
-                    deserializers
-                        .get(valueType)
-                        .orElseThrow(
-                            () ->
-                                new IllegalStateException(
-                                    "Deserializer for the value of " + type + " not found"));
-                return Deserializers.optional(deserializer);
-              })
-          .factory(
-              Map.class,
-              (deserializers, type) -> {
-                if (type.isRaw()) {
-                  throw new IllegalStateException("Map must have two type arguments");
-                }
-                final ParameterizedType<?> keyType = type.typeArguments().get(0);
-                final ParameterizedType<?> valueType = type.typeArguments().get(1);
-                final Deserializer<?> keyDeserializer =
-                    deserializers
-                        .get(keyType)
-                        .orElseThrow(
-                            () ->
-                                new IllegalStateException(
-                                    "Deserializer for the keys of " + type + " not found"));
-                final Deserializer<?> valueDeserializer =
-                    deserializers
-                        .get(valueType)
-                        .orElseThrow(
-                            () ->
-                                new IllegalStateException(
-                                    "Deserializer for the values of " + type + " not found"));
-                return Deserializers.map(keyDeserializer, valueDeserializer);
-              })
-          .factory(
-              List.class,
-              (deserializers, type) -> {
-                if (type.isRaw()) {
-                  throw new IllegalStateException("List must have a type argument");
-                }
-                final ParameterizedType<?> valueType = type.typeArguments().get(0);
-                final Deserializer<?> deserializer =
-                    deserializers
-                        .get(valueType)
-                        .orElseThrow(
-                            () ->
-                                new IllegalStateException(
-                                    "Deserializer for the elements of " + type + " not found"));
-                return Deserializers.list(deserializer);
-              });
+          .factory(new OptionalDeserializerFactory())
+          .factory(new MapDeserializerFactory())
+          .factory(new ListDeserializerFactory())
+          .factory(new ConfigurationDeserializerFactory(DEFAULTS));
 
   private final Schema<? extends T> schema;
 
@@ -139,9 +92,6 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   public T build() throws ConfigurationException {
     final ConfigurationNode.Map configuration =
         source.configuration().orElseGet(() -> ConfigurationNode.map().build());
-    final DeserializerRegistry registry =
-        new FallbackDeserializerRegistry(
-            deserializers.build(), new ConfigurationDeserializerRegistry());
-    return schema.create(registry, DEFAULTS, configuration);
+    return schema.create(deserializers.build(), DEFAULTS, configuration);
   }
 }

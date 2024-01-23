@@ -22,7 +22,7 @@ import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
 import me.sparky983.warp.Warp;
-import me.sparky983.warp.internal.Deserializers;
+import me.sparky983.warp.internal.deserializers.Deserializers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
