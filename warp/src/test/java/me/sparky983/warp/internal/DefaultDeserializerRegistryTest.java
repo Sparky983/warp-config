@@ -38,19 +38,10 @@ class DefaultDeserializerRegistryTest {
   }
 
   @Test
-  void testBuilderFactory_NullType() {
-    final DeserializerRegistry.Builder builder = DeserializerRegistry.builder();
-
-    assertThrows(
-        NullPointerException.class,
-        () -> builder.factory(null, (registry, type) -> (node, context) -> Renderer.of("test")));
-  }
-
-  @Test
   void testBuilderFactory_NullFactory() {
     final DeserializerRegistry.Builder builder = DeserializerRegistry.builder();
 
-    assertThrows(NullPointerException.class, () -> builder.factory(String.class, null));
+    assertThrows(NullPointerException.class, () -> builder.factory(null));
   }
 
   @Test
@@ -72,7 +63,7 @@ class DefaultDeserializerRegistryTest {
   void testGet_NotRegistered() {
     final DeserializerRegistry registry = DeserializerRegistry.builder().build();
 
-    final Optional<Deserializer<String>> deserializer =
+    final Optional<Deserializer<? extends String>> deserializer =
         registry.get(ParameterizedType.of(String.class));
 
     assertEquals(Optional.empty(), deserializer);
@@ -85,17 +76,22 @@ class DefaultDeserializerRegistryTest {
     final Deserializer<String> deserializer = (node, context) -> Renderer.of("test");
     final AtomicReference<DeserializerRegistry> registryRef = new AtomicReference<>();
     builder.factory(
-        String.class,
-        (registry, type) -> {
-          assertEquals(registryRef.get(), registry);
-          assertEquals(ParameterizedType.of(String.class), type);
-          return deserializer;
+        new DeserializerFactory() {
+          @SuppressWarnings({"unchecked", "rawtypes"})
+          @Override
+          public <T> Optional<Deserializer<? extends T>> create(
+              DeserializerRegistry registry, ParameterizedType<? extends T> type) {
+            assertEquals(registryRef.get(), registry);
+            assertEquals(ParameterizedType.of(String.class), type);
+            return (Optional) Optional.of(deserializer);
+          }
         });
 
     final DeserializerRegistry registry = builder.build();
     registryRef.set(registry);
 
-    final Optional<Deserializer<String>> result = registry.get(ParameterizedType.of(String.class));
+    final Optional<Deserializer<? extends String>> result =
+        registry.get(ParameterizedType.of(String.class));
 
     assertEquals(Optional.of(deserializer), result);
   }
@@ -106,9 +102,12 @@ class DefaultDeserializerRegistryTest {
     final DeserializerRegistry registry =
         DeserializerRegistry.builder()
             .factory(
-                String.class,
-                (deserializerRegistry, type) -> {
-                  throw exception;
+                new DeserializerFactory() {
+                  @Override
+                  public <T> Optional<Deserializer<? extends T>> create(
+                      DeserializerRegistry registry, ParameterizedType<? extends T> type) {
+                    throw exception;
+                  }
                 })
             .build();
 
@@ -125,9 +124,12 @@ class DefaultDeserializerRegistryTest {
     final DeserializerRegistry registry =
         DeserializerRegistry.builder()
             .factory(
-                String.class,
-                (deserializerRegistry, type) -> {
-                  throw exception;
+                new DeserializerFactory() {
+                  @Override
+                  public <T> Optional<Deserializer<? extends T>> create(
+                      DeserializerRegistry registry, ParameterizedType<? extends T> type) {
+                    throw exception;
+                  }
                 })
             .build();
 
@@ -142,7 +144,14 @@ class DefaultDeserializerRegistryTest {
   void testGet_FactoryReturnsNull() {
     final DeserializerRegistry registry =
         DeserializerRegistry.builder()
-            .factory(String.class, (deserializerRegistry, type) -> null)
+            .factory(
+                new DeserializerFactory() {
+                  @Override
+                  public <T> Optional<Deserializer<? extends T>> create(
+                      DeserializerRegistry registry, ParameterizedType<? extends T> type) {
+                    return null;
+                  }
+                })
             .build();
 
     assertThrows(

@@ -59,7 +59,7 @@ public final class MappingConfiguration {
 
     final String path = property.path();
 
-    final Deserializer<T> deserializer =
+    final Deserializer<? extends T> deserializer =
         deserializerRegistry
             .get(property.type())
             .orElseThrow(
@@ -82,7 +82,7 @@ public final class MappingConfiguration {
       errors.add(ConfigurationError.error("Must be set to a value"));
     } else {
       try {
-        final Renderer<T> renderer = deserializer.deserialize(actualNode, CONTEXT);
+        final Renderer<? extends T> renderer = deserializer.deserialize(actualNode, CONTEXT);
         properties.putIfAbsent(property, renderer);
         if (renderer == null) {
           throw new NullPointerException("Deserializer returned null");
@@ -114,7 +114,7 @@ public final class MappingConfiguration {
   public <T> Optional<T> render(final Schema.Property<T> property, final Renderer.Context context) {
     Objects.requireNonNull(property, "property cannot be null");
 
-    return Optional.ofNullable((Renderer<T>) properties.get(property))
+    return Optional.ofNullable((Renderer<? extends T>) properties.get(property))
         .map(
             (render) -> {
               final T t = render.render(context);

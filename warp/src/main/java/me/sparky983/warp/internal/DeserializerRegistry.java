@@ -24,7 +24,7 @@ public interface DeserializerRegistry {
    * @throws NullPointerException if the type is {@code null}.
    * @throws IllegalStateException if a deserializer for the given type could not be created.
    */
-  <T> Optional<Deserializer<T>> get(ParameterizedType<? extends T> type);
+  <T> Optional<Deserializer<? extends T>> get(ParameterizedType<? extends T> type);
 
   /** A {@link DeserializerRegistry} builder. */
   interface Builder {
@@ -34,23 +34,23 @@ public interface DeserializerRegistry {
      *
      * @param type the type to deserialize to
      * @param deserializer the deserializer
-     * @return this registry
+     * @return this builder
      * @param <T> the type to deserialize to
      * @throws NullPointerException if the deserialized type or the deserializer are {@code null}.
      */
     <T> Builder deserializer(Class<T> type, Deserializer<? extends T> deserializer);
 
     /**
-     * Sets the factory for given type to the given deserializer factory for this builder,
-     * overriding any existing deserializers.
+     * Adds a factory for dynamic deserializer creation to this builder.
      *
-     * @param type the type to deserialize to
+     * <p>If there are no regular deserializers, the least recently registered, non-{@code
+     * null}-returning factory will be used.
+     *
      * @param factory the deserializer factory
-     * @return this registry
-     * @param <T> the type to deserialize to
-     * @throws NullPointerException if the deserialized type or the deserializer are {@code null}.
+     * @return this builder
+     * @throws NullPointerException if factory is {@code null}.
      */
-    <T> Builder factory(final Class<? extends T> type, DeserializerFactory<T> factory);
+    Builder factory(DeserializerFactory factory);
 
     /**
      * Builds the {@link DeserializerRegistry}.

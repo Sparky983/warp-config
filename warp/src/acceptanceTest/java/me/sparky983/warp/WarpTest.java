@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import me.sparky983.warp.Configurations.NestedProperty;
 import org.junit.jupiter.api.Test;
 
 class WarpTest {
@@ -110,8 +109,8 @@ class WarpTest {
 
   @Test
   void testNestedProperty_NotExists() {
-    final ConfigurationBuilder<NestedProperty> builder =
-        Warp.builder(NestedProperty.class)
+    final ConfigurationBuilder<Configurations.NestedProperty> builder =
+        Warp.builder(Configurations.NestedProperty.class)
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()
@@ -123,8 +122,8 @@ class WarpTest {
 
   @Test
   void testProperty_NotMap() {
-    final ConfigurationBuilder<NestedProperty> builder =
-        Warp.builder(NestedProperty.class)
+    final ConfigurationBuilder<Configurations.NestedProperty> builder =
+        Warp.builder(Configurations.NestedProperty.class)
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map()

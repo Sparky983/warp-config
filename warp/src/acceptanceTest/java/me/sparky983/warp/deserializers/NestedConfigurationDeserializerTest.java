@@ -1,13 +1,21 @@
-package me.sparky983.warp;
+package me.sparky983.warp.deserializers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import me.sparky983.warp.ConfigurationBuilder;
+import me.sparky983.warp.ConfigurationError;
+import me.sparky983.warp.ConfigurationException;
+import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.ConfigurationSource;
+import me.sparky983.warp.Configurations;
+import me.sparky983.warp.Renderer;
+import me.sparky983.warp.Warp;
 import org.junit.jupiter.api.Test;
 
-class NestedConfigurationTest {
+class NestedConfigurationDeserializerTest {
   @Test
   void testInvalid() {
     final ConfigurationBuilder<Configurations.NestedSealed> builder =
@@ -56,6 +64,30 @@ class NestedConfigurationTest {
                 ConfigurationError.group(
                     "property", ConfigurationError.error("Must be a string")))),
         thrown.errors());
+  }
+
+  @Test
+  void testNested_CustomDeserializedProperty() throws ConfigurationException {
+    final Configurations.NestedString configuration =
+        Warp.builder(Configurations.NestedString.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map()
+                        .entry(
+                            "property",
+                            ConfigurationNode.map()
+                                .entry("property", ConfigurationNode.string("value"))
+                                .build())
+                        .build()))
+            .deserializer(
+                String.class,
+                (node, context) -> {
+                  assertEquals(node, ConfigurationNode.string("value"));
+                  return Renderer.of("custom value");
+                })
+            .build();
+
+    assertEquals("custom value", configuration.property().property());
   }
 
   @Test

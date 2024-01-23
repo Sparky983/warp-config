@@ -1,4 +1,4 @@
-package me.sparky983.warp.internal;
+package me.sparky983.warp.internal.deserializers;
 
 import java.util.ArrayList;
 import java.util.Collections;

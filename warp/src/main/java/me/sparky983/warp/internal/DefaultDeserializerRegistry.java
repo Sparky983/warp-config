@@ -1,6 +1,8 @@
 package me.sparky983.warp.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -8,11 +10,14 @@ import me.sparky983.warp.Deserializer;
 
 /** The default implementation of {@link DeserializerRegistry}. */
 final class DefaultDeserializerRegistry implements DeserializerRegistry {
-  private final Map<Class<?>, DeserializerFactory<?>> deserializerFactories;
+  private final Map<Class<?>, Deserializer<?>> deserializers;
+  private final List<DeserializerFactory> factories;
 
   private DefaultDeserializerRegistry(
-      final Map<Class<?>, DeserializerFactory<?>> deserializerFactories) {
-    this.deserializerFactories = new HashMap<>(deserializerFactories);
+      final Map<Class<?>, Deserializer<?>> deserializers,
+      final List<DeserializerFactory> factories) {
+    this.deserializers = new HashMap<>(deserializers);
+    this.factories = new ArrayList<>(factories);
   }
 
   /**
@@ -23,57 +28,67 @@ final class DefaultDeserializerRegistry implements DeserializerRegistry {
    *     Optional#empty() empty optional}
    * @param <T> the type
    */
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  public <T> Optional<Deserializer<T>> get(final ParameterizedType<? extends T> type) {
+  @SuppressWarnings("unchecked")
+  public <T> Optional<Deserializer<? extends T>> get(final ParameterizedType<? extends T> type) {
     Objects.requireNonNull(type, "type cannot be null");
 
-    return Optional.ofNullable((DeserializerFactory) deserializerFactories.get(type.rawType()))
-        .map(
-            (factory) -> {
-              final Deserializer<T> deserializer;
-              try {
-                deserializer =
-                    (Deserializer<T>) factory.create(DefaultDeserializerRegistry.this, type);
-              } catch (final IllegalStateException e) {
-                throw e;
-              } catch (final Exception e) {
-                throw new IllegalStateException(
-                    "Exception occurred while creating deserializer for type " + type, e);
-              }
-              if (deserializer == null) {
-                throw new IllegalStateException(
-                    factory + " deserialize factory returned null for type " + type);
-              }
-              return deserializer;
-            });
+    {
+      final Deserializer<? extends T> deserializer =
+          (Deserializer<? extends T>) deserializers.get(type.rawType());
+      if (deserializer != null) {
+        return Optional.of(deserializer);
+      }
+    }
+
+    for (final DeserializerFactory factory : factories) {
+      final Optional<Deserializer<? extends T>> deserializer;
+      try {
+        deserializer = factory.create(DefaultDeserializerRegistry.this, type);
+      } catch (final IllegalStateException e) {
+        throw e;
+      } catch (final Exception e) {
+        throw new IllegalStateException(
+            "Exception occurred while creating deserializer for type " + type, e);
+      }
+
+      if (deserializer == null) {
+        throw new IllegalStateException("Factory returned null for type " + type);
+      }
+
+      if (deserializer.isEmpty()) {
+        continue;
+      }
+      return deserializer;
+    }
+    return Optional.empty();
   }
 
   /** The default implementation of {@link Builder}. */
   static final class DefaultBuilder implements Builder {
-    private final Map<Class<?>, DeserializerFactory<?>> deserializerFactories = new HashMap<>();
+    private final Map<Class<?>, Deserializer<?>> deserializers = new HashMap<>();
+    private final List<DeserializerFactory> factories = new ArrayList<>();
 
     @Override
     public <T> Builder deserializer(
         final Class<T> type, final Deserializer<? extends T> deserializer) {
+      Objects.requireNonNull(type, "type cannot be null");
       Objects.requireNonNull(deserializer, "deserializer cannot be null");
 
-      this.factory(type, (registry, parameterizedType) -> deserializer);
+      deserializers.put(type, deserializer);
       return this;
     }
 
     @Override
-    public <T> Builder factory(
-        final Class<? extends T> type, final DeserializerFactory<T> factory) {
-      Objects.requireNonNull(type, "type cannot be null");
+    public Builder factory(final DeserializerFactory factory) {
       Objects.requireNonNull(factory, "factory cannot be null");
 
-      deserializerFactories.put(type, factory);
+      factories.add(factory);
       return this;
     }
 
     @Override
     public DeserializerRegistry build() {
-      return new DefaultDeserializerRegistry(deserializerFactories);
+      return new DefaultDeserializerRegistry(deserializers, factories);
     }
   }
 }
