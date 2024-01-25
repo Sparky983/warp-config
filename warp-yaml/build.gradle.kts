@@ -10,5 +10,5 @@ repositories {
 dependencies {
     api(project(":warp"))
 
-    implementation("com.amihaiemil.web:eo-yaml:7.0.11")
+    implementation("com.amihaiemil.web:eo-yaml:7.2.0")
 }
