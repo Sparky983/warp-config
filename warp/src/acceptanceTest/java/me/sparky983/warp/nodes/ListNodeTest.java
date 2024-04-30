@@ -1,37 +1,27 @@
 package me.sparky983.warp.nodes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import java.util.List;
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.DeserializationException;
 import org.junit.jupiter.api.Test;
 
 class ListNodeTest {
   @Test
-  void testListValues() {
-    final ConfigurationNode.List list =
+  void testListValues() throws DeserializationException {
+    final ConfigurationNode list =
         ConfigurationNode.list(
             List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")));
 
     assertEquals(
         List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")),
-        list.values());
-  }
-
-  @Test
-  void testListIterator() {
-    final ConfigurationNode.List list =
-        ConfigurationNode.list(
-            List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")));
-
-    assertIterableEquals(
-        List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")), list);
+        list.asList());
   }
 
   @Test
   void testListToString() {
-    final ConfigurationNode.List list =
+    final ConfigurationNode list =
         ConfigurationNode.list(
             List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")));
 
@@ -39,29 +29,19 @@ class ListNodeTest {
   }
 
   @Test
-  void testVarargsValues() {
-    final ConfigurationNode.List list =
+  void testVarargsValues() throws DeserializationException {
+    final ConfigurationNode list =
         ConfigurationNode.list(
             ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value"));
 
     assertEquals(
         List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")),
-        list.values());
-  }
-
-  @Test
-  void testVarargsIterator() {
-    final ConfigurationNode.List list =
-        ConfigurationNode.list(
-            ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value"));
-
-    assertIterableEquals(
-        List.of(ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value")), list);
+        list.asList());
   }
 
   @Test
   void testVarargsToString() {
-    final ConfigurationNode.List list =
+    final ConfigurationNode list =
         ConfigurationNode.list(
             ConfigurationNode.decimal(1.0), ConfigurationNode.string("test value"));
 

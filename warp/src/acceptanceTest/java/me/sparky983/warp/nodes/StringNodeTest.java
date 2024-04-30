@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.DeserializationException;
 import org.junit.jupiter.api.Test;
 
 class StringNodeTest {
@@ -13,15 +14,15 @@ class StringNodeTest {
   }
 
   @Test
-  void testValue() {
-    final ConfigurationNode.String string = ConfigurationNode.string("test value");
+  void testValue() throws DeserializationException {
+    final ConfigurationNode string = ConfigurationNode.string("test value");
 
-    assertEquals("test value", string.value());
+    assertEquals("test value", string.asString());
   }
 
   @Test
   void testToString() {
-    final ConfigurationNode.String string = ConfigurationNode.string("test value");
+    final ConfigurationNode string = ConfigurationNode.string("test value");
 
     assertEquals("test value", string.toString());
   }

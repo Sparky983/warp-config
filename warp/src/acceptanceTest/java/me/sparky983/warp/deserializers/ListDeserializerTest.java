@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.Map;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
@@ -37,7 +38,7 @@ class ListDeserializerTest {
         Warp.builder(Configurations.StringList.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()));
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))));
 
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
@@ -53,13 +54,12 @@ class ListDeserializerTest {
         Warp.builder(Configurations.StringList.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry(
+                    ConfigurationNode.map(
+                        Map.entry(
                             "property",
                             ConfigurationNode.list(
                                 ConfigurationNode.string("element 1"),
-                                ConfigurationNode.string("element 2")))
-                        .build()));
+                                ConfigurationNode.string("element 2"))))));
 
     final Configurations.StringList configuration = builder.build();
 

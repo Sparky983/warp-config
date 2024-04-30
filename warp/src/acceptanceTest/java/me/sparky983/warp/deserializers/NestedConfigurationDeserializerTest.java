@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.Map;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
@@ -30,7 +31,7 @@ class NestedConfigurationDeserializerTest {
         Warp.builder(Configurations.NestedString.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()));
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))));
 
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, configuration::build);
@@ -46,13 +47,11 @@ class NestedConfigurationDeserializerTest {
         Warp.builder(Configurations.NestedString.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry(
+                    ConfigurationNode.map(
+                        Map.entry(
                             "property",
-                            ConfigurationNode.map()
-                                .entry("property", ConfigurationNode.nil())
-                                .build())
-                        .build()));
+                            ConfigurationNode.map(
+                                Map.entry("property", ConfigurationNode.nil()))))));
 
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, configuration::build);
@@ -72,13 +71,11 @@ class NestedConfigurationDeserializerTest {
         Warp.builder(Configurations.NestedString.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry(
+                    ConfigurationNode.map(
+                        Map.entry(
                             "property",
-                            ConfigurationNode.map()
-                                .entry("property", ConfigurationNode.string("value"))
-                                .build())
-                        .build()))
+                            ConfigurationNode.map(
+                                Map.entry("property", ConfigurationNode.string("value")))))))
             .deserializer(
                 String.class,
                 (node, context) -> {
@@ -96,13 +93,11 @@ class NestedConfigurationDeserializerTest {
         Warp.builder(Configurations.NestedString.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry(
+                    ConfigurationNode.map(
+                        Map.entry(
                             "property",
-                            ConfigurationNode.map()
-                                .entry("property", ConfigurationNode.string("nested value"))
-                                .build())
-                        .build()))
+                            ConfigurationNode.map(
+                                Map.entry("property", ConfigurationNode.string("nested value")))))))
             .build();
 
     assertEquals("nested value", configuration.property().property());

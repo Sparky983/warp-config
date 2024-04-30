@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
@@ -113,7 +114,7 @@ class ConfigurationDeserializerFactoryTest {
             .create(deserializers, ParameterizedType.of(Configurations.String.class))
             .orElseThrow(AssertionError::new);
 
-    final ConfigurationNode node = ConfigurationNode.map().build();
+    final ConfigurationNode node = ConfigurationNode.map();
 
     final DeserializationException thrown =
         assertThrows(
@@ -141,7 +142,7 @@ class ConfigurationDeserializerFactoryTest {
 
     // as long as the node is a map, errors about deserializers will occur before ones related to
     // the node
-    final ConfigurationNode node = ConfigurationNode.map().build();
+    final ConfigurationNode node = ConfigurationNode.map();
 
     final DeserializationException thrown =
         assertThrows(
@@ -159,7 +160,7 @@ class ConfigurationDeserializerFactoryTest {
             .orElseThrow(AssertionError::new);
 
     final Renderer<? extends Configurations.Empty> renderer =
-        deserializer.deserialize(ConfigurationNode.map().build(), deserializerContext);
+        deserializer.deserialize(ConfigurationNode.map(), deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
   }
@@ -180,7 +181,7 @@ class ConfigurationDeserializerFactoryTest {
             .create(deserializers, ParameterizedType.of(Configurations.StringOptional.class))
             .orElseThrow(AssertionError::new);
 
-    final ConfigurationNode node = ConfigurationNode.map().build();
+    final ConfigurationNode node = ConfigurationNode.map();
 
     final Renderer<? extends Configurations.StringOptional> renderer =
         deserializer.deserialize(node, deserializerContext);
@@ -206,7 +207,7 @@ class ConfigurationDeserializerFactoryTest {
             .orElseThrow(AssertionError::new);
 
     final ConfigurationNode node =
-        ConfigurationNode.map().entry("property", ConfigurationNode.string("value")).build();
+        ConfigurationNode.map(Map.of("property", ConfigurationNode.string("value")));
 
     final Renderer<? extends Configurations.String> renderer =
         deserializer.deserialize(node, deserializerContext);

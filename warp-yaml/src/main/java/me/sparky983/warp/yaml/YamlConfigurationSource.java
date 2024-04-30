@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationSource;
@@ -82,7 +83,7 @@ public interface YamlConfigurationSource extends ConfigurationSource {
     try {
       return read(Files.newBufferedReader(path, charset));
     } catch (final NoSuchFileException e) {
-      return new EmptyYamlConfigurationSource();
+      return new OkYamlConfigurationSource(Optional.empty());
     }
   }
 
@@ -132,7 +133,7 @@ public interface YamlConfigurationSource extends ConfigurationSource {
 
     try {
       final YamlMapping mapping = Yaml.createYamlInput(reader).readYamlMapping();
-      return new PresentYamlConfigurationSource(YamlNodeAdapter.adapt(mapping));
+      return new OkYamlConfigurationSource(Optional.of(YamlNodeAdapter.adapt(mapping)));
     } catch (final YamlReadingException e) {
       return new ErrorYamlConfigurationSource(new ConfigurationException(error(e)));
     }

@@ -27,14 +27,7 @@ class ListDeserializerTest {
   @BeforeEach
   void setUp() {
     deserializer =
-        Deserializers.list(
-            (node, context) -> {
-              if (node instanceof final ConfigurationNode.Integer string) {
-                return Renderer.of("element: " + string.value());
-              } else {
-                throw new DeserializationException(ConfigurationError.error("Must be an integer"));
-              }
-            });
+        Deserializers.list((node, context) -> Renderer.of("element: " + node.asInteger()));
   }
 
   @AfterEach

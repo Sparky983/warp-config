@@ -28,7 +28,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
       DefaultsRegistry.create()
           .register(Optional.class, ConfigurationNode.nil())
           .register(List.class, ConfigurationNode.list())
-          .register(Map.class, ConfigurationNode.map().build());
+          .register(Map.class, ConfigurationNode.map());
 
   private ConfigurationSource source = Optional::empty;
 
@@ -90,8 +90,8 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
 
   @Override
   public T build() throws ConfigurationException {
-    final ConfigurationNode.Map configuration =
-        source.configuration().orElseGet(() -> ConfigurationNode.map().build());
+    final ConfigurationNode configuration =
+        source.configuration().orElseGet(ConfigurationNode::map);
     return schema.create(deserializers.build(), DEFAULTS, configuration);
   }
 }

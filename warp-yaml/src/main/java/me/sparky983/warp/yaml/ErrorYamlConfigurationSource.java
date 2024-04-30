@@ -23,7 +23,7 @@ record ErrorYamlConfigurationSource(ConfigurationException exception)
   }
 
   @Override
-  public Optional<ConfigurationNode.Map> configuration() throws ConfigurationException {
+  public Optional<ConfigurationNode> configuration() throws ConfigurationException {
     throw exception;
   }
 }

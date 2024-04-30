@@ -27,7 +27,7 @@ public interface Schema<T> {
   T create(
       DeserializerRegistry deserializers,
       DefaultsRegistry defaults,
-      ConfigurationNode.Map configuration)
+      ConfigurationNode configuration)
       throws ConfigurationException;
 
   /**

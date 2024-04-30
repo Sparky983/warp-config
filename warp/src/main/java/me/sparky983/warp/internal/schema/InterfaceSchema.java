@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -19,6 +18,7 @@ import me.sparky983.warp.Configuration;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
@@ -87,20 +87,25 @@ final class InterfaceSchema<T> implements Schema<T> {
   }
 
   private static @Nullable ConfigurationNode get(
-      final String path, final ConfigurationNode.Map configuration) {
+      final String path, final ConfigurationNode configuration) {
     ConfigurationNode currentNode = configuration;
     final Queue<String> keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
-    while (currentNode instanceof final ConfigurationNode.Map map) {
-      final Optional<ConfigurationNode> node = map.get(keys.remove());
-      if (node.isEmpty()) {
+    while (true) {
+      final Map<String, ConfigurationNode> map;
+      try {
+        map = currentNode.asMap();
+      } catch (final DeserializationException e) {
+        return null;
+      }
+      final ConfigurationNode node = map.get(keys.remove());
+      if (node == null) {
         return null;
       }
       if (keys.isEmpty()) {
-        return node.get();
+        return node;
       }
-      currentNode = node.get();
+      currentNode = node;
     }
-    return null;
   }
 
   /**
@@ -124,11 +129,14 @@ final class InterfaceSchema<T> implements Schema<T> {
   public T create(
       final DeserializerRegistry deserializers,
       final DefaultsRegistry defaults,
-      final ConfigurationNode.Map configuration)
+      final ConfigurationNode configuration)
       throws ConfigurationException {
     Objects.requireNonNull(configuration, "configuration cannot be null");
     Objects.requireNonNull(deserializers, "deserializers cannot be null");
     Objects.requireNonNull(defaults, "defaults cannot be null");
+
+    // Ensure the configuration is a map
+    configuration.asMap();
 
     final MappingConfiguration mappingConfiguration =
         new MappingConfiguration(defaults, deserializers);

@@ -7,7 +7,7 @@ import me.sparky983.warp.ConfigurationSource;
 
 /** The default {@link ConfigurationSource} implementation. */
 public final class DefaultConfigurationSource implements ConfigurationSource {
-  private final ConfigurationNode.Map configuration;
+  private final ConfigurationNode configuration;
 
   /**
    * Constructs a {@code DefaultConfigurationSource} from the given map.
@@ -15,14 +15,14 @@ public final class DefaultConfigurationSource implements ConfigurationSource {
    * @param configuration the map
    * @throws NullPointerException if the configuration is {@code null}.
    */
-  public DefaultConfigurationSource(final ConfigurationNode.Map configuration) {
+  public DefaultConfigurationSource(final ConfigurationNode configuration) {
     Objects.requireNonNull(configuration, "configuration cannot be null");
 
     this.configuration = configuration;
   }
 
   @Override
-  public Optional<ConfigurationNode.Map> configuration() {
+  public Optional<ConfigurationNode> configuration() {
     return Optional.of(configuration);
   }
 
