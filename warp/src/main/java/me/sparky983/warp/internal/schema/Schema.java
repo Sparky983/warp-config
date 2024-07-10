@@ -1,7 +1,6 @@
 package me.sparky983.warp.internal.schema;
 
 import me.sparky983.warp.Configuration;
-import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
