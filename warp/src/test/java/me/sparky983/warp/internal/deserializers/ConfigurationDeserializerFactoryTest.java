@@ -121,7 +121,7 @@ class ConfigurationDeserializerFactoryTest {
             DeserializationException.class,
             () -> deserializer.deserialize(node, deserializerContext));
 
-    assertIterableEquals(
+    assertEquals(
         List.of(
             ConfigurationError.group(
                 "property", ConfigurationError.error("Must be set to a value"))),
@@ -135,19 +135,9 @@ class ConfigurationDeserializerFactoryTest {
   void testDeserialize_PropertyHasNoDeserializer() {
     when(deserializers.get(ParameterizedType.of(String.class))).thenReturn(Optional.empty());
 
-    final Deserializer<? extends Configurations.String> deserializer =
-        factory
-            .create(deserializers, ParameterizedType.of(Configurations.String.class))
-            .orElseThrow(AssertionError::new);
-
-    // as long as the node is a map, errors about deserializers will occur before ones related to
-    // the node
-    final ConfigurationNode node = ConfigurationNode.map();
-
-    final DeserializationException thrown =
-        assertThrows(
-            DeserializationException.class,
-            () -> deserializer.deserialize(node, deserializerContext));
+    assertThrows(
+        IllegalStateException.class,
+        () -> factory.create(deserializers, ParameterizedType.of(Configurations.String.class)));
 
     verify(deserializers).get(ParameterizedType.of(String.class));
   }
@@ -167,7 +157,7 @@ class ConfigurationDeserializerFactoryTest {
 
   @Test
   void testRender_DefaultsFromParent() throws DeserializationException {
-    when(defaults.get(Optional.class)).thenReturn(Optional.of(ConfigurationNode.nil()));
+    when(defaults.get(Optional.class)).thenReturn(Optional.of(Renderer.of(Optional.empty())));
     when(deserializers.get(ParameterizedType.of(Optional.class, String.class)))
         .thenReturn(
             Optional.of(

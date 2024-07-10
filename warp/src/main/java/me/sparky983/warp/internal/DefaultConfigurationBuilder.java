@@ -10,6 +10,7 @@ import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
 import me.sparky983.warp.Deserializer;
+import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.deserializers.ConfigurationDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.Deserializers;
 import me.sparky983.warp.internal.deserializers.ListDeserializerFactory;
@@ -26,9 +27,15 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   /** The default defaults registry */
   static final DefaultsRegistry DEFAULTS =
       DefaultsRegistry.create()
-          .register(Optional.class, ConfigurationNode.nil())
-          .register(List.class, ConfigurationNode.list())
-          .register(Map.class, ConfigurationNode.map());
+          .register(Optional.class, Renderer.of(Optional.empty()))
+          .register(List.class, Renderer.of(List.of()))
+          .register(Map.class, Renderer.of(Map.of()));
+
+  /** A cached deserializer context (the context is empty). */
+  private static final Deserializer.Context DESERIALIZER_CONTEXT = new Deserializer.Context() {};
+
+  /** A cached renderer context (the context is empty). */
+  private static final Renderer.Context RENDERER_CONTEXT = new Renderer.Context() {};
 
   private ConfigurationSource source = Optional::empty;
 
@@ -92,6 +99,9 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   public T build() throws ConfigurationException {
     final ConfigurationNode configuration =
         source.configuration().orElseGet(ConfigurationNode::map);
-    return schema.create(deserializers.build(), DEFAULTS, configuration);
+    return schema
+        .deserializer(deserializers.build(), DEFAULTS)
+        .deserialize(configuration, DESERIALIZER_CONTEXT)
+        .render(RENDERER_CONTEXT);
   }
 }
