@@ -66,7 +66,7 @@ final class YamlNodeAdapter {
     return new YamlScalarConfigurationNode(value == null ? "null" : value);
   }
 
-  record YamlScalarConfigurationNode(String value) implements ConfigurationNode {
+  private record YamlScalarConfigurationNode(String value) implements ConfigurationNode {
     @Override
     public String asString() {
       return value;
