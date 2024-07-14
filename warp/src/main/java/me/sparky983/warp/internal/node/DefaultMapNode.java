@@ -24,12 +24,12 @@ public record DefaultMapNode(Map<String, ConfigurationNode> map) implements Conf
    * @throws NullPointerException if the map are {@code null} or one of its entries contain {@code
    *     null}
    */
-  public DefaultMapNode(final Map<String, ConfigurationNode> map) {
+  public DefaultMapNode {
     if (map.isEmpty()) {
-      this.map = Map.of();
+      map = Map.of();
     } else {
-      this.map = Collections.unmodifiableMap(new LinkedHashMap<>(map));
-      this.map.forEach(
+      map = Collections.unmodifiableMap(new LinkedHashMap<>(map));
+      map.forEach(
           (key, value) -> {
             Objects.requireNonNull(key, "map cannot have null key");
             if (value == null) {

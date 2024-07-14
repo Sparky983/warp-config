@@ -21,8 +21,8 @@ public record DefaultListNode(List<ConfigurationNode> elements) implements Confi
    * @throws NullPointerException if the elements list is {@code null} or one of its elements are
    *     {@code null}.
    */
-  public DefaultListNode(final List<ConfigurationNode> elements) {
-    this.elements = List.copyOf(elements);
+  public DefaultListNode {
+    elements = List.copyOf(elements);
   }
 
   @Override
