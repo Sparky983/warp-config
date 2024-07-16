@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -17,7 +16,7 @@ import org.junit.jupiter.api.Test;
 class FloatDeserializerTest {
   @Test
   void testDeserialize_NonNumber() {
-    final ConfigurationBuilder<Configurations.Float> builder =
+    final Warp.Builder<Configurations.Float> builder =
         Warp.builder(Configurations.Float.class)
             .source(
                 ConfigurationSource.of(
@@ -33,7 +32,7 @@ class FloatDeserializerTest {
 
   @Test
   void testDeserialize_Integer() throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.Float> builder =
+    final Warp.Builder<Configurations.Float> builder =
         Warp.builder(Configurations.Float.class)
             .source(
                 ConfigurationSource.of(
@@ -48,7 +47,7 @@ class FloatDeserializerTest {
 
   @Test
   void testDeserialize_Decimal() throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.Float> builder =
+    final Warp.Builder<Configurations.Float> builder =
         Warp.builder(Configurations.Float.class)
             .source(
                 ConfigurationSource.of(

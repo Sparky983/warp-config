@@ -85,15 +85,14 @@ class WarpTest {
 
   @Test
   void testSource_Null() {
-    final ConfigurationBuilder<Configurations.Empty> builder =
-        Warp.builder(Configurations.Empty.class);
+    final Warp.Builder<Configurations.Empty> builder = Warp.builder(Configurations.Empty.class);
 
     assertThrows(NullPointerException.class, () -> builder.source(null));
   }
 
   @Test
   void testHashCode_Self() {
-    final ConfigurationBuilder<Configurations.Empty> configuration =
+    final Warp.Builder<Configurations.Empty> configuration =
         Warp.builder(Configurations.Empty.class);
 
     assertEquals(configuration.hashCode(), configuration.hashCode());
@@ -101,15 +100,14 @@ class WarpTest {
 
   @Test
   void testProperty_NotExists() {
-    final ConfigurationBuilder<Configurations.String> builder =
-        Warp.builder(Configurations.String.class);
+    final Warp.Builder<Configurations.String> builder = Warp.builder(Configurations.String.class);
 
     assertThrows(ConfigurationException.class, builder::build);
   }
 
   @Test
   void testNestedProperty_NotExists() {
-    final ConfigurationBuilder<Configurations.NestedProperty> builder =
+    final Warp.Builder<Configurations.NestedProperty> builder =
         Warp.builder(Configurations.NestedProperty.class)
             .source(
                 ConfigurationSource.of(
@@ -122,7 +120,7 @@ class WarpTest {
 
   @Test
   void testProperty_NotMap() {
-    final ConfigurationBuilder<Configurations.NestedProperty> builder =
+    final Warp.Builder<Configurations.NestedProperty> builder =
         Warp.builder(Configurations.NestedProperty.class)
             .source(
                 ConfigurationSource.of(
@@ -135,7 +133,7 @@ class WarpTest {
 
   @Test
   void testUnserializableProperty() {
-    final ConfigurationBuilder<Configurations.NonDeserializable> builder =
+    final Warp.Builder<Configurations.NonDeserializable> builder =
         Warp.builder(Configurations.NonDeserializable.class);
 
     assertThrows(IllegalStateException.class, builder::build);
@@ -177,7 +175,7 @@ class WarpTest {
 
   @Test
   void testSourceThrows() {
-    final ConfigurationBuilder<Configurations.String> builder =
+    final Warp.Builder<Configurations.String> builder =
         Warp.builder(Configurations.String.class)
             .source(
                 () -> {

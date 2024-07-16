@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -19,7 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class BooleanDeserializerTest {
   @Test
   void testDeserialize_NonBoolean() {
-    final ConfigurationBuilder<Configurations.Boolean> builder =
+    final Warp.Builder<Configurations.Boolean> builder =
         Warp.builder(Configurations.Boolean.class)
             .source(
                 ConfigurationSource.of(
@@ -37,7 +36,7 @@ class BooleanDeserializerTest {
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void testDeserialize(final boolean value) throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.Boolean> builder =
+    final Warp.Builder<Configurations.Boolean> builder =
         Warp.builder(Configurations.Boolean.class)
             .source(
                 ConfigurationSource.of(

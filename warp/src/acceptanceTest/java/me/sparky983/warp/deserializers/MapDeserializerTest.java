@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.Map;
-import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -20,7 +19,7 @@ import org.junit.jupiter.api.Test;
 class MapDeserializerTest {
   @Test
   void testFactory_NonDeserializableKey() {
-    final ConfigurationBuilder<Configurations.NonDeserializableKeyMap> builder =
+    final Warp.Builder<Configurations.NonDeserializableKeyMap> builder =
         Warp.builder(Configurations.NonDeserializableKeyMap.class);
 
     assertThrows(IllegalStateException.class, builder::build);
@@ -28,7 +27,7 @@ class MapDeserializerTest {
 
   @Test
   void testFactory_NonDeserializableValue() {
-    final ConfigurationBuilder<Configurations.NonDeserializableValueMap> builder =
+    final Warp.Builder<Configurations.NonDeserializableValueMap> builder =
         Warp.builder(Configurations.NonDeserializableValueMap.class);
 
     assertThrows(IllegalStateException.class, builder::build);
@@ -36,15 +35,14 @@ class MapDeserializerTest {
 
   @Test
   void testFactory_Raw() {
-    final ConfigurationBuilder<Configurations.RawMap> builder =
-        Warp.builder(Configurations.RawMap.class);
+    final Warp.Builder<Configurations.RawMap> builder = Warp.builder(Configurations.RawMap.class);
 
     assertThrows(IllegalStateException.class, builder::build);
   }
 
   @Test
   void testDeserialize_NonMap() {
-    final ConfigurationBuilder<Configurations.StringStringMap> builder =
+    final Warp.Builder<Configurations.StringStringMap> builder =
         Warp.builder(Configurations.StringStringMap.class)
             .source(
                 ConfigurationSource.of(
@@ -60,7 +58,7 @@ class MapDeserializerTest {
 
   @Test
   void testDeserialize_NestedNonDeserializable() {
-    final ConfigurationBuilder<Configurations.IntegerStringMap> builder =
+    final Warp.Builder<Configurations.IntegerStringMap> builder =
         Warp.builder(Configurations.IntegerStringMap.class)
             .source(
                 ConfigurationSource.of(
@@ -102,7 +100,7 @@ class MapDeserializerTest {
 
   @Test
   void testDeserialize() throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.StringStringMap> builder =
+    final Warp.Builder<Configurations.StringStringMap> builder =
         Warp.builder(Configurations.StringStringMap.class)
             .source(
                 ConfigurationSource.of(

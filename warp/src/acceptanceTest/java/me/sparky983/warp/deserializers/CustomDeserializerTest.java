@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 import java.util.List;
-import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -31,8 +30,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 class CustomDeserializerTest {
   @Test
   void testCustomDeserializer_NullType() {
-    final ConfigurationBuilder<Configurations.String> builder =
-        Warp.builder(Configurations.String.class);
+    final Warp.Builder<Configurations.String> builder = Warp.builder(Configurations.String.class);
 
     assertThrows(
         NullPointerException.class, () -> builder.deserializer(null, Deserializers.STRING));
@@ -40,8 +38,7 @@ class CustomDeserializerTest {
 
   @Test
   void testCustomDeserializer_NullDeserializer() {
-    final ConfigurationBuilder<Configurations.String> builder =
-        Warp.builder(Configurations.String.class);
+    final Warp.Builder<Configurations.String> builder = Warp.builder(Configurations.String.class);
 
     assertThrows(NullPointerException.class, () -> builder.deserializer(String.class, null));
   }
@@ -49,7 +46,7 @@ class CustomDeserializerTest {
   @Test
   void testCustomDeserializer_DeserializerThrows() {
     final RuntimeException exception = new RuntimeException();
-    final ConfigurationBuilder<Configurations.String> builder =
+    final Warp.Builder<Configurations.String> builder =
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
@@ -69,7 +66,7 @@ class CustomDeserializerTest {
     final Collection<ConfigurationError> errors =
         List.of(ConfigurationError.error("error 1"), ConfigurationError.error("error 2"));
 
-    final ConfigurationBuilder<Configurations.String> configuration =
+    final Warp.Builder<Configurations.String> configuration =
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
@@ -88,7 +85,7 @@ class CustomDeserializerTest {
 
   @Test
   void testCustomDeserializer_DeserializerReturnsNull() {
-    final ConfigurationBuilder<Configurations.String> builder =
+    final Warp.Builder<Configurations.String> builder =
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(

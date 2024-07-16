@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Optional;
-import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
@@ -15,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class OptionalDeserializerTest {
   @Test
   void testFactory_NonDeserializableValue() {
-    final ConfigurationBuilder<Configurations.NonDeserializableOptional> builder =
+    final Warp.Builder<Configurations.NonDeserializableOptional> builder =
         Warp.builder(Configurations.NonDeserializableOptional.class)
             .source(
                 ConfigurationSource.of(
@@ -28,7 +27,7 @@ class OptionalDeserializerTest {
 
   @Test
   void testFactory_Raw() {
-    final ConfigurationBuilder<Configurations.RawOptional> builder =
+    final Warp.Builder<Configurations.RawOptional> builder =
         Warp.builder(Configurations.RawOptional.class);
 
     assertThrows(IllegalStateException.class, builder::build);
@@ -36,7 +35,7 @@ class OptionalDeserializerTest {
 
   @Test
   void testDeserialize_Nil() throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.StringOptional> builder =
+    final Warp.Builder<Configurations.StringOptional> builder =
         Warp.builder(Configurations.StringOptional.class)
             .source(
                 ConfigurationSource.of(
@@ -49,7 +48,7 @@ class OptionalDeserializerTest {
 
   @Test
   void testDeserialize() throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.StringOptional> builder =
+    final Warp.Builder<Configurations.StringOptional> builder =
         Warp.builder(Configurations.StringOptional.class)
             .source(
                 ConfigurationSource.of(

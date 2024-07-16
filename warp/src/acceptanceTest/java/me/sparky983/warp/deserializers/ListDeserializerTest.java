@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -17,7 +16,7 @@ import org.junit.jupiter.api.Test;
 class ListDeserializerTest {
   @Test
   void testFactory_NonDeserializableElement() {
-    final ConfigurationBuilder<Configurations.NonDeserializableList> builder =
+    final Warp.Builder<Configurations.NonDeserializableList> builder =
         Warp.builder(Configurations.NonDeserializableList.class);
 
     assertThrows(IllegalStateException.class, builder::build);
@@ -25,15 +24,14 @@ class ListDeserializerTest {
 
   @Test
   void testFactory_Raw() {
-    final ConfigurationBuilder<Configurations.RawList> builder =
-        Warp.builder(Configurations.RawList.class);
+    final Warp.Builder<Configurations.RawList> builder = Warp.builder(Configurations.RawList.class);
 
     assertThrows(IllegalStateException.class, builder::build);
   }
 
   @Test
   void testDeserialize_NonList() {
-    final ConfigurationBuilder<Configurations.StringList> builder =
+    final Warp.Builder<Configurations.StringList> builder =
         Warp.builder(Configurations.StringList.class)
             .source(
                 ConfigurationSource.of(
@@ -49,7 +47,7 @@ class ListDeserializerTest {
 
   @Test
   void testDeserialize() throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.StringList> builder =
+    final Warp.Builder<Configurations.StringList> builder =
         Warp.builder(Configurations.StringList.class)
             .source(
                 ConfigurationSource.of(

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -19,7 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class IntegerDeserializerTest {
   @Test
   void testDeserialize_NonInteger() {
-    final ConfigurationBuilder<Configurations.Integer> builder =
+    final Warp.Builder<Configurations.Integer> builder =
         Warp.builder(Configurations.Integer.class)
             .source(
                 ConfigurationSource.of(
@@ -37,7 +36,7 @@ class IntegerDeserializerTest {
   @ParameterizedTest
   @ValueSource(longs = {-2147483649L, 2147483648L})
   void testDeserialize_OutOfRange(final long value) {
-    final ConfigurationBuilder<Configurations.Integer> builder =
+    final Warp.Builder<Configurations.Integer> builder =
         Warp.builder(Configurations.Integer.class)
             .source(
                 ConfigurationSource.of(
@@ -64,7 +63,7 @@ class IntegerDeserializerTest {
   @ParameterizedTest
   @ValueSource(ints = {Integer.MIN_VALUE, 0, Integer.MAX_VALUE})
   void testDeserialize(final int value) throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.Integer> builder =
+    final Warp.Builder<Configurations.Integer> builder =
         Warp.builder(Configurations.Integer.class)
             .source(
                 ConfigurationSource.of(

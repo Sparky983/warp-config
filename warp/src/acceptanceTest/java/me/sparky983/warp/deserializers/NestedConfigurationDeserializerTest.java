@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.Test;
 class NestedConfigurationDeserializerTest {
   @Test
   void testInvalid() {
-    final ConfigurationBuilder<Configurations.NestedSealed> builder =
+    final Warp.Builder<Configurations.NestedSealed> builder =
         Warp.builder(Configurations.NestedSealed.class);
 
     assertThrows(IllegalStateException.class, builder::build);
@@ -26,7 +25,7 @@ class NestedConfigurationDeserializerTest {
 
   @Test
   void testNonMap() {
-    final ConfigurationBuilder<Configurations.NestedString> configuration =
+    final Warp.Builder<Configurations.NestedString> configuration =
         Warp.builder(Configurations.NestedString.class)
             .source(
                 ConfigurationSource.of(
@@ -42,7 +41,7 @@ class NestedConfigurationDeserializerTest {
 
   @Test
   void testNestedNonDeserializable() {
-    final ConfigurationBuilder<Configurations.NestedString> configuration =
+    final Warp.Builder<Configurations.NestedString> configuration =
         Warp.builder(Configurations.NestedString.class)
             .source(
                 ConfigurationSource.of(

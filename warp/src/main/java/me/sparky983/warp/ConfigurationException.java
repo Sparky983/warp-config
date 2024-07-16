@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Thrown by {@link ConfigurationBuilder#build()} if there was an error with the configuration.
+ * Thrown by {@link Warp.Builder#build()} if there was an error with the configuration.
  *
  * @since 0.1
  */
