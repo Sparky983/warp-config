@@ -22,13 +22,14 @@ public final class DefaultsRegistry {
   }
 
   /**
-   * Registers a default for the given type.
+   * Registers a default renderer for the given type.
    *
-   * @param type the type
-   * @param node the default value
+   * @param type the type to register the default for
+   * @param defaultRenderer the default renderer
    * @return this registry
-   * @throws IllegalStateException if a default for the given type is already registered.
-   * @throws NullPointerException if the type or the node are {@code null}.
+   * @throws IllegalStateException if a default renderer for the given type is already registered.
+   * @throws NullPointerException if the type or the renderer are {@code null}.
+   * @param <T> the type to register the default for
    */
   public <T> DefaultsRegistry register(
       final Class<T> type, final Renderer<? extends T> defaultRenderer) {
@@ -42,13 +43,13 @@ public final class DefaultsRegistry {
   }
 
   /**
-   * Returns the default for the given type.
+   * Returns the default renderer for the given type.
    *
    * @param type the type
-   * @return an {@link Optional} containing the default for the specified type if one exists,
-   *     otherwise an {@linkplain Optional#empty() empty optional}.
+   * @return an {@link Optional} containing the default renderer for the specified type if one
+   *     exists, otherwise an {@linkplain Optional#empty() empty optional}.
    * @throws NullPointerException if the type is {@code null}.
-   * @param <T>
+   * @param <T> the type
    */
   @SuppressWarnings("unchecked")
   public <T> Optional<Renderer<? extends T>> get(final Class<? extends T> type) {
