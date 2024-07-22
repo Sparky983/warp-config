@@ -63,7 +63,7 @@ final class YamlNodeAdapter {
     final String value = scalar.value();
 
     // no value can't be differentiated from "null" so is convertible to a string
-    return new YamlScalarConfigurationNode(value == null ? "null" : value);
+    return new YamlScalarConfigurationNode(Objects.toString(value));
   }
 
   private record YamlScalarConfigurationNode(String value) implements ConfigurationNode {
