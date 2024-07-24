@@ -33,15 +33,15 @@ public interface ConfigurationSource {
   Optional<ConfigurationNode> configuration() throws ConfigurationException;
 
   /**
-   * Returns a {@code ConfigurationSource} from the configuration.
+   * Returns a {@code ConfigurationSource} for the given node.
    *
-   * @param configuration the configuration
+   * @param node the node
    * @return the new source
-   * @throws NullPointerException if the configuration is {@code null}.
+   * @throws NullPointerException if the node is {@code null}.
    * @since 0.1
    */
   @ApiStatus.Experimental
-  static ConfigurationSource of(final ConfigurationNode configuration) {
-    return new DefaultConfigurationSource(configuration);
+  static ConfigurationSource of(final ConfigurationNode node) {
+    return new DefaultConfigurationSource(node);
   }
 }
