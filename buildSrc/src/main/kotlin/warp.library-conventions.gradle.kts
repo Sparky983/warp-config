@@ -27,7 +27,7 @@ dependencies {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(20))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
     withJavadocJar()
     withSourcesJar()
@@ -82,6 +82,9 @@ tasks {
         classpath = configurations[acceptanceTest.runtimeClasspathConfigurationName] + acceptanceTest.output
 
         shouldRunAfter(tasks.test)
+    }
+    withType<JavaCompile> {
+        options.release.set(17)
     }
     javadoc {
         options {
