@@ -215,7 +215,7 @@ public interface ConfigurationNode {
    */
   @SafeVarargs
   static ConfigurationNode map(final Map.Entry<String, ConfigurationNode>... entries) {
-    final Map<String, ConfigurationNode> map = LinkedHashMap.newLinkedHashMap(entries.length);
+    final Map<String, ConfigurationNode> map = new LinkedHashMap<>();
     for (final Map.Entry<String, ConfigurationNode> entry : entries) {
       final String key = Objects.requireNonNull(entry.getKey()); // TODO: error message?
       final ConfigurationNode value = Objects.requireNonNull(entry.getValue());
