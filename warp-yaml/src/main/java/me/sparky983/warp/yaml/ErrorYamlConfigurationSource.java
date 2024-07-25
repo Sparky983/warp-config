@@ -13,7 +13,7 @@ import me.sparky983.warp.ConfigurationNode;
 record ErrorYamlConfigurationSource(ConfigurationException exception)
     implements YamlConfigurationSource {
   /**
-   * Constructs a {@link ErrorYamlConfigurationSource}.
+   * Constructs a {@code ErrorYamlConfigurationSource}.
    *
    * @param exception the exception
    * @throws NullPointerException if {@code exception} is {@code null}
@@ -23,7 +23,7 @@ record ErrorYamlConfigurationSource(ConfigurationException exception)
   }
 
   @Override
-  public Optional<ConfigurationNode.Map> configuration() throws ConfigurationException {
+  public Optional<ConfigurationNode> configuration() throws ConfigurationException {
     throw exception;
   }
 }

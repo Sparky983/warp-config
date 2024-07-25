@@ -68,6 +68,7 @@ spotless {
     java {
         googleJavaFormat("1.17.0")
         formatAnnotations()
+        toggleOffOn()
     }
 }
 

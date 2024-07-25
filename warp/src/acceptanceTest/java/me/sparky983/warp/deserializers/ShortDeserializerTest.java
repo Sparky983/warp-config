@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.Map;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
@@ -23,7 +24,7 @@ class ShortDeserializerTest {
         Warp.builder(Configurations.Short.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()));
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))));
 
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
@@ -41,9 +42,8 @@ class ShortDeserializerTest {
         Warp.builder(Configurations.Short.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.integer(value))
-                        .build()));
+                    ConfigurationNode.map(
+                        Map.entry("property", ConfigurationNode.integer(value)))));
 
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
@@ -68,9 +68,8 @@ class ShortDeserializerTest {
         Warp.builder(Configurations.Short.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.integer(value))
-                        .build()));
+                    ConfigurationNode.map(
+                        Map.entry("property", ConfigurationNode.integer(value)))));
 
     final Configurations.Short configuration = builder.build();
 

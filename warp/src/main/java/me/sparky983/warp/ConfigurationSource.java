@@ -15,7 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <h2>Blank Source</h2>
  *
  * A blank source refers to a configuration where {@link #configuration()} returns a {@link
- * ConfigurationNode.Map} with no entries.
+ * ConfigurationNode} with no entries.
  *
  * @since 0.1
  */
@@ -30,18 +30,18 @@ public interface ConfigurationSource {
    * @warp.implNote Implementations of this method should not produce any side effect. This is to
    *     create consistent behaviour for this method, no matter how the configuration is provided.
    */
-  Optional<ConfigurationNode.Map> configuration() throws ConfigurationException;
+  Optional<ConfigurationNode> configuration() throws ConfigurationException;
 
   /**
-   * Returns a {@code ConfigurationSource} from the given map.
+   * Returns a {@code ConfigurationSource} for the given node.
    *
-   * @param map the {@link ConfigurationNode.Map}
+   * @param node the node
    * @return the new source
-   * @throws NullPointerException if the map is {@code null}.
+   * @throws NullPointerException if the node is {@code null}.
    * @since 0.1
    */
   @ApiStatus.Experimental
-  static ConfigurationSource of(final ConfigurationNode.Map map) {
-    return new DefaultConfigurationSource(map);
+  static ConfigurationSource of(final ConfigurationNode node) {
+    return new DefaultConfigurationSource(node);
   }
 }

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
@@ -53,7 +54,7 @@ class CustomDeserializerTest {
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()))
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))))
             .deserializer(
                 String.class,
                 (node, context) -> {
@@ -73,7 +74,7 @@ class CustomDeserializerTest {
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()))
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))))
             .deserializer(
                 String.class,
                 (node, context) -> {
@@ -92,7 +93,7 @@ class CustomDeserializerTest {
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()))
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))))
             .deserializer(String.class, (node, context) -> null);
 
     assertThrows(NullPointerException.class, builder::build);
@@ -105,7 +106,7 @@ class CustomDeserializerTest {
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()))
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))))
             .deserializer(
                 String.class,
                 (node, deserializerContext) ->
@@ -124,7 +125,7 @@ class CustomDeserializerTest {
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()))
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))))
             .deserializer(String.class, (node, deserializerContext) -> (rendererContext) -> null)
             .build();
 
@@ -137,13 +138,11 @@ class CustomDeserializerTest {
         Warp.builder(NestedString.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry(
+                    ConfigurationNode.map(
+                        Map.entry(
                             "property",
-                            ConfigurationNode.map()
-                                .entry("property", ConfigurationNode.string("string"))
-                                .build())
-                        .build()))
+                            ConfigurationNode.map(
+                                Map.entry("property", ConfigurationNode.string("string")))))))
             .deserializer(
                 Configurations.String.class, (node, context) -> Renderer.of(() -> "deserializer"))
             .build();
@@ -155,14 +154,14 @@ class CustomDeserializerTest {
   void testCustomDeserializer(
       @Mock final Deserializer<String> deserializer, @Mock final Renderer<String> renderer)
       throws Exception {
-    final ConfigurationNode.String node = ConfigurationNode.string("value");
+    final ConfigurationNode node = ConfigurationNode.string("value");
 
     when(deserializer.deserialize(eq(node), any())).thenReturn(renderer);
     when(renderer.render(any())).thenReturn("value");
 
     final Configurations.String configuration =
         Warp.builder(Configurations.String.class)
-            .source(ConfigurationSource.of(ConfigurationNode.map().entry("property", node).build()))
+            .source(ConfigurationSource.of(ConfigurationNode.map(Map.entry("property", node))))
             .deserializer(String.class, deserializer)
             .build();
 

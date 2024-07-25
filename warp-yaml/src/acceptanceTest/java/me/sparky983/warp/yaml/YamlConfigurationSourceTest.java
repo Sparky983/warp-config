@@ -1,8 +1,10 @@
 package me.sparky983.warp.yaml;
 
+import static me.sparky983.warp.yaml.ConfigurationNodes.sourceIsMix;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,7 +34,7 @@ class YamlConfigurationSourceTest {
 
   static final String MIX_YAML =
       """
-        no value: null
+        no value:
         null: null
         true: true
         false: false
@@ -82,8 +84,7 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testOf() throws ConfigurationException {
-    assertEquals(
-        Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.of(MIX_YAML).configuration());
+    assertTrue(sourceIsMix(YamlConfigurationSource.of(MIX_YAML)));
   }
 
   @Test
@@ -133,8 +134,7 @@ class YamlConfigurationSourceTest {
 
     Files.writeString(mix, MIX_YAML);
 
-    assertEquals(
-        Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.read(mix).configuration());
+    assertTrue(sourceIsMix(YamlConfigurationSource.read(mix)));
   }
 
   @Test
@@ -193,9 +193,7 @@ class YamlConfigurationSourceTest {
 
     Files.writeString(mix, MIX_YAML, INCOMPATIBLE_CHARSET);
 
-    assertEquals(
-        Optional.of(ConfigurationNodes.MIX),
-        YamlConfigurationSource.read(mix, INCOMPATIBLE_CHARSET).configuration());
+    assertTrue(sourceIsMix(YamlConfigurationSource.read(mix, INCOMPATIBLE_CHARSET)));
   }
 
   @Test
@@ -226,8 +224,7 @@ class YamlConfigurationSourceTest {
   void testReadInputStream() throws Exception {
     final InputStream input = new ByteArrayInputStream(MIX_YAML.getBytes());
 
-    assertEquals(
-        Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.read(input).configuration());
+    assertTrue(sourceIsMix(YamlConfigurationSource.read(input)));
   }
 
   @Test
@@ -270,9 +267,7 @@ class YamlConfigurationSourceTest {
   void testReadInputStreamCharset() throws Exception {
     final InputStream mix = new ByteArrayInputStream(MIX_YAML.getBytes(INCOMPATIBLE_CHARSET));
 
-    assertEquals(
-        Optional.of(ConfigurationNodes.MIX),
-        YamlConfigurationSource.read(mix, INCOMPATIBLE_CHARSET).configuration());
+    assertTrue(sourceIsMix(YamlConfigurationSource.read(mix, INCOMPATIBLE_CHARSET)));
   }
 
   @Test
@@ -310,7 +305,6 @@ class YamlConfigurationSourceTest {
   void testReadReader() throws Exception {
     final Reader mix = new StringReader(MIX_YAML);
 
-    assertEquals(
-        Optional.of(ConfigurationNodes.MIX), YamlConfigurationSource.read(mix).configuration());
+    assertTrue(sourceIsMix(YamlConfigurationSource.read(mix)));
   }
 }

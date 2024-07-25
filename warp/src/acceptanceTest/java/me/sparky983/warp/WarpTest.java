@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class WarpTest {
@@ -113,9 +114,7 @@ class WarpTest {
         Warp.builder(Configurations.NestedProperty.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("nested", ConfigurationNode.map().build())
-                        .build()));
+                    ConfigurationNode.map(Map.entry("nested", ConfigurationNode.map()))));
 
     assertThrows(ConfigurationException.class, builder::build);
   }
@@ -126,9 +125,8 @@ class WarpTest {
         Warp.builder(Configurations.NestedProperty.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("nested", ConfigurationNode.string("not a map"))
-                        .build()));
+                    ConfigurationNode.map(
+                        Map.entry("nested", ConfigurationNode.string("not a map")))));
 
     assertThrows(ConfigurationException.class, builder::build);
   }
@@ -147,9 +145,20 @@ class WarpTest {
         Warp.builder(Configurations.Conflicting.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.integer(10))
-                        .build()))
+                    ConfigurationNode.map(
+                        Map.entry(
+                            "property",
+                            new ConfigurationNode() {
+                              @Override
+                              public double asDecimal() {
+                                return 10;
+                              }
+
+                              @Override
+                              public long asInteger() {
+                                return 10;
+                              }
+                            }))))
             .build();
 
     assertEquals(10, builder.property1());
@@ -162,14 +171,12 @@ class WarpTest {
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.string("overwritten"))
-                        .build()))
+                    ConfigurationNode.map(
+                        Map.entry("property", ConfigurationNode.string("overwritten")))))
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.string("overwrites"))
-                        .build()))
+                    ConfigurationNode.map(
+                        Map.entry("property", ConfigurationNode.string("overwrites")))))
             .build();
 
     assertEquals("overwrites", builder.property());
@@ -193,9 +200,8 @@ class WarpTest {
         Warp.builder(Configurations.String.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.string("value"))
-                        .build()))
+                    ConfigurationNode.map(
+                        Map.entry("property", ConfigurationNode.string("value")))))
             .build();
 
     assertEquals("me.sparky983.warp.Configurations$String", configuration.toString());

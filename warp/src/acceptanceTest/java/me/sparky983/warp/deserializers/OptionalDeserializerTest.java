@@ -3,6 +3,7 @@ package me.sparky983.warp.deserializers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Map;
 import java.util.Optional;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationException;
@@ -19,9 +20,8 @@ class OptionalDeserializerTest {
         Warp.builder(Configurations.NonDeserializableOptional.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.string("value"))
-                        .build()));
+                    ConfigurationNode.map(
+                        Map.entry("property", ConfigurationNode.string("value")))));
 
     assertThrows(IllegalStateException.class, builder::build);
   }
@@ -40,7 +40,7 @@ class OptionalDeserializerTest {
         Warp.builder(Configurations.StringOptional.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()));
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))));
 
     final Configurations.StringOptional configuration = builder.build();
 
@@ -53,9 +53,8 @@ class OptionalDeserializerTest {
         Warp.builder(Configurations.StringOptional.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.string("value"))
-                        .build()));
+                    ConfigurationNode.map(
+                        Map.entry("property", ConfigurationNode.string("value")))));
 
     final Configurations.StringOptional configuration = builder.build();
 

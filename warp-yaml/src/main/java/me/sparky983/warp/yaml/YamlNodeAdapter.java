@@ -4,9 +4,12 @@ import com.amihaiemil.eoyaml.Scalar;
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.amihaiemil.eoyaml.YamlNode;
 import com.amihaiemil.eoyaml.YamlSequence;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import me.sparky983.warp.ConfigurationNode;
-import org.jspecify.annotations.Nullable;
+import me.sparky983.warp.DeserializationException;
 
 /**
  * A utility class that converts {@link YamlNode YamlNodes} to {@link ConfigurationNode
@@ -15,10 +18,10 @@ import org.jspecify.annotations.Nullable;
 final class YamlNodeAdapter {
   private YamlNodeAdapter() {}
 
-  private static ConfigurationNode adapt(final @Nullable YamlNode node) {
-    if (node == null) {
-      return ConfigurationNode.nil();
-    } else if (node instanceof final YamlMapping mapping) {
+  static ConfigurationNode adapt(final YamlNode node) {
+    Objects.requireNonNull(node, "node cannot be null");
+
+    if (node instanceof final YamlMapping mapping) {
       return adapt(mapping);
     } else if (node instanceof final YamlSequence sequence) {
       return adapt(sequence);
@@ -29,21 +32,26 @@ final class YamlNodeAdapter {
     }
   }
 
-  static ConfigurationNode.Map adapt(final YamlMapping mapping) {
+  private static ConfigurationNode adapt(final YamlMapping mapping) {
     Objects.requireNonNull(mapping, "mapping cannot be null");
 
-    final ConfigurationNode.Map.Builder builder = ConfigurationNode.map();
-    for (final YamlNode key : mapping.keys()) {
+    final Set<YamlNode> keys = mapping.keys();
+    final Map<String, ConfigurationNode> map = new HashMap<>(keys.size());
+
+    for (final YamlNode key : keys) {
       if (key instanceof final Scalar scalar) {
-        builder.entry(scalar.value(), adapt(mapping.value(key)));
-      } else {
-        throw new IllegalArgumentException("Unknown key type: " + key.getClass());
+        final String value = scalar.value();
+        if (value != null) {
+          map.put(value, adapt(mapping.value(key)));
+        }
+        continue;
       }
+      throw new IllegalArgumentException("Invalid key: " + key);
     }
-    return builder.build();
+    return ConfigurationNode.map(map);
   }
 
-  private static ConfigurationNode.List adapt(final YamlSequence sequence) {
+  private static ConfigurationNode adapt(final YamlSequence sequence) {
     Objects.requireNonNull(sequence, "sequence cannot be null");
 
     return ConfigurationNode.list(sequence.values().stream().map(YamlNodeAdapter::adapt).toList());
@@ -54,28 +62,51 @@ final class YamlNodeAdapter {
 
     final String value = scalar.value();
 
-    if (value == null || value.equals("null")) {
-      return ConfigurationNode.nil();
+    // no value can't be differentiated from "null" so is convertible to a string
+    return new YamlScalarConfigurationNode(Objects.toString(value));
+  }
+
+  private record YamlScalarConfigurationNode(String value) implements ConfigurationNode {
+    @Override
+    public String asString() {
+      return value;
     }
 
-    if (value.equals("true")) {
-      return ConfigurationNode.bool(true);
+    @Override
+    public double asDecimal() throws DeserializationException {
+      try {
+        return Double.parseDouble(value);
+      } catch (final NumberFormatException exception) {
+        return ConfigurationNode.super.asDecimal();
+      }
     }
 
-    if (value.equals("false")) {
-      return ConfigurationNode.bool(false);
+    @Override
+    public long asInteger() throws DeserializationException {
+      try {
+        return Long.parseLong(value);
+      } catch (final NumberFormatException exception) {
+        return ConfigurationNode.super.asInteger();
+      }
     }
 
-    try {
-      return ConfigurationNode.integer(Long.parseLong(value));
-    } catch (final NumberFormatException ignored) {
+    @Override
+    public boolean asBoolean() throws DeserializationException {
+      return switch (value) {
+        case "true" -> true;
+        case "false" -> false;
+        default -> ConfigurationNode.super.asBoolean();
+      };
     }
 
-    try {
-      return ConfigurationNode.decimal(Double.parseDouble(value));
-    } catch (final NumberFormatException ignored) {
+    @Override
+    public boolean isNil() {
+      return value.equals("null");
     }
 
-    return ConfigurationNode.string(value);
+    @Override
+    public String toString() {
+      return value;
+    }
   }
 }

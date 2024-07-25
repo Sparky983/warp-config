@@ -47,7 +47,7 @@ class DoubleDeserializerTest {
         assertThrows(
             DeserializationException.class, () -> DOUBLE.deserialize(node, deserializerContext));
 
-    assertIterableEquals(List.of(ConfigurationError.error("Must be a number")), thrown.errors());
+    assertIterableEquals(List.of(ConfigurationError.error("Must be a decimal")), thrown.errors());
   }
 
   @Test
@@ -56,15 +56,6 @@ class DoubleDeserializerTest {
     final Renderer<Double> renderer = DOUBLE.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
-  }
-
-  @Test
-  void testRender_Integer() throws DeserializationException {
-    final ConfigurationNode node = ConfigurationNode.integer(1);
-
-    final double result = DOUBLE.deserialize(node, deserializerContext).render(rendererContext);
-
-    assertEquals(1.0, result);
   }
 
   @Test

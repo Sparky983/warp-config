@@ -3,6 +3,7 @@ package me.sparky983.warp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -14,11 +15,10 @@ class ConfigurationSourceTest {
 
   @Test
   void testOf() throws ConfigurationException {
-    final ConfigurationNode.Map value =
-        ConfigurationNode.map()
-            .entry("test", ConfigurationNode.string("value 1"))
-            .entry("test-2", ConfigurationNode.string("value 2"))
-            .build();
+    final ConfigurationNode value =
+        ConfigurationNode.map(
+            Map.entry("test", ConfigurationNode.string("value 1")),
+            Map.entry("test-2", ConfigurationNode.string("value 2")));
 
     final ConfigurationSource source = ConfigurationSource.of(value);
 
@@ -29,7 +29,7 @@ class ConfigurationSourceTest {
   void testToString() {
     final ConfigurationSource source =
         ConfigurationSource.of(
-            ConfigurationNode.map().entry("key", ConfigurationNode.string("value")).build());
+            ConfigurationNode.map(Map.entry("key", ConfigurationNode.string("value"))));
 
     assertEquals("{key=value}", source.toString());
   }

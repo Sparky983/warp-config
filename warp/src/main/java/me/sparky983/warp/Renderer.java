@@ -1,7 +1,6 @@
 package me.sparky983.warp;
 
 import java.util.Objects;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Renders a value.
@@ -11,7 +10,7 @@ import org.jspecify.annotations.Nullable;
  * @param <T> the type of the value
  * @since 0.1
  */
-public interface Renderer<T extends @Nullable Object> {
+public interface Renderer<T> {
   /**
    * Creates a renderer that always returns the given value.
    *
@@ -21,7 +20,7 @@ public interface Renderer<T extends @Nullable Object> {
    * @throws NullPointerException if the value is {@code null}.
    * @since 0.1
    */
-  static <T extends @Nullable Object> Renderer<T> of(final T value) {
+  static <T> Renderer<T> of(final T value) {
     Objects.requireNonNull(value, "value cannot be null");
 
     return (context) -> {

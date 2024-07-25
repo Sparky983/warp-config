@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.Map;
 import me.sparky983.warp.ConfigurationBuilder;
 import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
@@ -21,29 +22,15 @@ class DoubleDeserializerTest {
         Warp.builder(Configurations.Double.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()));
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))));
 
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
 
     assertIterableEquals(
-        List.of(ConfigurationError.group("property", ConfigurationError.error("Must be a number"))),
+        List.of(
+            ConfigurationError.group("property", ConfigurationError.error("Must be a decimal"))),
         thrown.errors());
-  }
-
-  @Test
-  void testDeserialize_Integer() throws ConfigurationException {
-    final ConfigurationBuilder<Configurations.Double> builder =
-        Warp.builder(Configurations.Double.class)
-            .source(
-                ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.integer(1))
-                        .build()));
-
-    final Configurations.Double configuration = builder.build();
-
-    assertEquals(1.0, configuration.property());
   }
 
   @Test
@@ -52,9 +39,7 @@ class DoubleDeserializerTest {
         Warp.builder(Configurations.Double.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry("property", ConfigurationNode.decimal(1.5))
-                        .build()));
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.decimal(1.5)))));
 
     final Configurations.Double configuration = builder.build();
 

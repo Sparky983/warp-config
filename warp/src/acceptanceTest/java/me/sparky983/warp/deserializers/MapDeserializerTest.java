@@ -48,7 +48,7 @@ class MapDeserializerTest {
         Warp.builder(Configurations.StringStringMap.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map().entry("property", ConfigurationNode.nil()).build()));
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))));
 
     final ConfigurationException thrown =
         assertThrows(ConfigurationException.class, builder::build);
@@ -64,22 +64,17 @@ class MapDeserializerTest {
         Warp.builder(Configurations.IntegerStringMap.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry(
+                    ConfigurationNode.map(
+                        Map.entry(
                             "property",
-                            ConfigurationNode.map()
-                                .entry("1", ConfigurationNode.nil())
-                                .entry("not integer", ConfigurationNode.nil())
-                                .build())
-                        .build()))
+                            ConfigurationNode.map(
+                                Map.entry("1", ConfigurationNode.nil()),
+                                Map.entry("not integer", ConfigurationNode.nil()))))))
             .deserializer(
                 Integer.class,
                 (node, context) -> {
-                  if (!(node instanceof final ConfigurationNode.String string)) {
-                    throw new DeserializationException();
-                  }
                   try {
-                    return Renderer.of(Integer.parseInt(string.value()));
+                    return Renderer.of(Integer.parseInt(node.asString()));
                   } catch (final NumberFormatException e) {
                     throw new DeserializationException(ConfigurationError.error("Cannot parse"));
                   }
@@ -106,14 +101,12 @@ class MapDeserializerTest {
         Warp.builder(Configurations.StringStringMap.class)
             .source(
                 ConfigurationSource.of(
-                    ConfigurationNode.map()
-                        .entry(
+                    ConfigurationNode.map(
+                        Map.entry(
                             "property",
-                            ConfigurationNode.map()
-                                .entry("key 1", ConfigurationNode.string("value 1"))
-                                .entry("key 2", ConfigurationNode.string("value 2"))
-                                .build())
-                        .build()));
+                            ConfigurationNode.map(
+                                Map.entry("key 1", ConfigurationNode.string("value 1")),
+                                Map.entry("key 2", ConfigurationNode.string("value 2")))))));
 
     final Configurations.StringStringMap configuration = builder.build();
 

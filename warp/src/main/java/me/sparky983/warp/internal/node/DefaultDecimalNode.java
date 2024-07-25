@@ -3,17 +3,17 @@ package me.sparky983.warp.internal.node;
 import me.sparky983.warp.ConfigurationNode;
 
 /**
- * The default implementation of {@link Decimal}.
+ * The default {@code double} implementation of {@link ConfigurationNode}.
  *
  * @param value the value
  */
-public record DefaultDecimalNode(@Override double value) implements ConfigurationNode.Decimal {
+public record DefaultDecimalNode(double value) implements ConfigurationNode {
   /**
    * Constructs a {@code DefaultDecimalNode}.
    *
    * @param value the value
-   * @throws IllegalArgumentException if the value is {@link Double#isNaN(double) NaN} or {@link
-   *     Double#isInfinite(double) infinite}.
+   * @throws IllegalArgumentException if the value is {@linkplain Double#isNaN(double) NaN} or
+   *     {@linkplain Double#isInfinite(double) infinite}.
    */
   public DefaultDecimalNode {
     if (Double.isNaN(value)) {
@@ -25,7 +25,12 @@ public record DefaultDecimalNode(@Override double value) implements Configuratio
   }
 
   @Override
-  public java.lang.String toString() {
-    return java.lang.String.valueOf(value);
+  public double asDecimal() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
   }
 }

@@ -47,7 +47,7 @@ class FloatDeserializerTest {
         assertThrows(
             DeserializationException.class, () -> FLOAT.deserialize(node, deserializerContext));
 
-    assertIterableEquals(List.of(ConfigurationError.error("Must be a number")), thrown.errors());
+    assertIterableEquals(List.of(ConfigurationError.error("Must be a decimal")), thrown.errors());
   }
 
   @Test
@@ -62,9 +62,11 @@ class FloatDeserializerTest {
   void testRender_Integer() throws DeserializationException {
     final ConfigurationNode node = ConfigurationNode.integer(1);
 
-    final float result = FLOAT.deserialize(node, deserializerContext).render(rendererContext);
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> FLOAT.deserialize(node, deserializerContext));
 
-    assertEquals(1.0, result);
+    assertEquals(List.of(ConfigurationError.error("Must be a decimal")), thrown.errors());
   }
 
   @Test

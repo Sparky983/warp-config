@@ -50,7 +50,8 @@ class BooleanDeserializerTest {
         assertThrows(
             DeserializationException.class, () -> BOOLEAN.deserialize(node, deserializerContext));
 
-    assertIterableEquals(List.of(ConfigurationError.error("Must be a boolean")), thrown.errors());
+    assertIterableEquals(
+        List.of(ConfigurationError.error("Must be a boolean (true/false)")), thrown.errors());
   }
 
   @Test

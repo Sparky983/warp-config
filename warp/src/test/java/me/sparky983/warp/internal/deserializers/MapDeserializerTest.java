@@ -29,22 +29,13 @@ class MapDeserializerTest {
     deserializer =
         Deserializers.map(
             (node, context) -> {
-              if (node instanceof final ConfigurationNode.String string) {
-                try {
-                  return Renderer.of("key: " + Integer.valueOf(string.value()));
-                } catch (final NumberFormatException e) {
-                  throw new DeserializationException(ConfigurationError.error("Cannot parse"));
-                }
+              try {
+                return Renderer.of("key: " + Integer.valueOf(node.asString()));
+              } catch (final NumberFormatException e) {
+                throw new DeserializationException(ConfigurationError.error("Cannot parse"));
               }
-              throw new DeserializationException(ConfigurationError.error("Must be a string"));
             },
-            (node, context) -> {
-              if (node instanceof final ConfigurationNode.Integer integer) {
-                return Renderer.of("value: " + integer.value());
-              } else {
-                throw new DeserializationException(ConfigurationError.error("Must be an integer"));
-              }
-            });
+            (node, context) -> Renderer.of("value: " + node.asInteger()));
   }
 
   @AfterEach
@@ -70,7 +61,7 @@ class MapDeserializerTest {
 
   @Test
   void testDeserialize_NullContext() {
-    final ConfigurationNode node = ConfigurationNode.map().build();
+    final ConfigurationNode node = ConfigurationNode.map();
 
     assertThrows(NullPointerException.class, () -> deserializer.deserialize(node, null));
   }
@@ -90,10 +81,9 @@ class MapDeserializerTest {
   @Test
   void testDeserialize_NestedNonDeserializable() {
     final ConfigurationNode node =
-        ConfigurationNode.map()
-            .entry("1", ConfigurationNode.nil())
-            .entry("not integer", ConfigurationNode.nil())
-            .build();
+        ConfigurationNode.map(
+            Map.entry("1", ConfigurationNode.nil()),
+            Map.entry("not integer", ConfigurationNode.nil()));
 
     final DeserializationException thrown =
         assertThrows(
@@ -113,10 +103,10 @@ class MapDeserializerTest {
   @Test
   void testRender_NullContext() throws DeserializationException {
     final ConfigurationNode node =
-        ConfigurationNode.map()
-            .entry("1", ConfigurationNode.integer(2))
-            .entry("3", ConfigurationNode.integer(4))
-            .build();
+        ConfigurationNode.map(
+            Map.of(
+                "1", ConfigurationNode.integer(2),
+                "3", ConfigurationNode.integer(4)));
 
     final Renderer<Map<String, String>> renderer =
         deserializer.deserialize(node, deserializerContext);
@@ -127,10 +117,10 @@ class MapDeserializerTest {
   @Test
   void testRender() throws DeserializationException {
     final ConfigurationNode node =
-        ConfigurationNode.map()
-            .entry("1", ConfigurationNode.integer(2))
-            .entry("3", ConfigurationNode.integer(4))
-            .build();
+        ConfigurationNode.map(
+            Map.of(
+                "1", ConfigurationNode.integer(2),
+                "3", ConfigurationNode.integer(4)));
 
     final Map<String, String> result =
         deserializer.deserialize(node, deserializerContext).render(rendererContext);

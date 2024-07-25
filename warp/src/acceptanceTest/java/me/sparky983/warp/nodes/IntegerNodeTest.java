@@ -3,19 +3,20 @@ package me.sparky983.warp.nodes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.DeserializationException;
 import org.junit.jupiter.api.Test;
 
 class IntegerNodeTest {
   @Test
-  void testValue() {
-    final ConfigurationNode.Integer integer = ConfigurationNode.integer(1);
+  void testAsInteger() throws DeserializationException {
+    final ConfigurationNode integer = ConfigurationNode.integer(1);
 
-    assertEquals(1, integer.value());
+    assertEquals(1, integer.asInteger());
   }
 
   @Test
   void testToString() {
-    final ConfigurationNode.Integer integer = ConfigurationNode.integer(1);
+    final ConfigurationNode integer = ConfigurationNode.integer(1);
 
     assertEquals("1", integer.toString());
   }

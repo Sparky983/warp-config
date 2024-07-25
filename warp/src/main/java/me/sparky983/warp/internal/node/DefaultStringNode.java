@@ -4,12 +4,11 @@ import java.util.Objects;
 import me.sparky983.warp.ConfigurationNode;
 
 /**
- * The default implementation of {@link String}.
+ * The default {@link String} implementation of {@link ConfigurationNode}.
  *
  * @param value the value
  */
-public record DefaultStringNode(@Override java.lang.String value)
-    implements ConfigurationNode.String {
+public record DefaultStringNode(String value) implements ConfigurationNode {
   /**
    * Constructs a {@code DefaultStringNode}.
    *
@@ -21,7 +20,12 @@ public record DefaultStringNode(@Override java.lang.String value)
   }
 
   @Override
-  public java.lang.String toString() {
+  public String asString() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
     return value;
   }
 }
