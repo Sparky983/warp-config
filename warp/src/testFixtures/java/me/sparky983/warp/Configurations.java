@@ -205,4 +205,31 @@ public final class Configurations {
     @Property("property")
     Sealed property();
   }
+
+  @Configuration
+  public interface Combined {
+    @Property("first")
+    java.lang.String first();
+
+    @Property("second")
+    java.lang.String second();
+
+    @Property("both")
+    java.lang.String both();
+
+    @Property("nested")
+    NestedCombined nested();
+  }
+
+  @Configuration
+  public interface NestedCombined {
+    @Property("first")
+    java.lang.String first();
+
+    @Property("second")
+    java.lang.String second();
+
+    @Property("both")
+    java.lang.String both();
+  }
 }

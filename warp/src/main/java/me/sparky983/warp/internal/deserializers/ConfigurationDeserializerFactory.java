@@ -3,11 +3,7 @@ package me.sparky983.warp.internal.deserializers;
 import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.Configuration;
-import me.sparky983.warp.ConfigurationError;
-import me.sparky983.warp.ConfigurationException;
-import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
-import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerFactory;
 import me.sparky983.warp.internal.DeserializerRegistry;
@@ -40,30 +36,15 @@ public final class ConfigurationDeserializerFactory implements DeserializerFacto
     Objects.requireNonNull(type, "type cannot be null");
 
     final Class<? extends T> rawType = type.rawType();
-    if (rawType.isAnnotationPresent(Configuration.class)) {
-      final Schema<? extends T> schema;
-      try {
-        schema = Schema.fromClass(rawType);
-      } catch (final IllegalArgumentException e) {
-        throw new IllegalStateException(e);
-      }
-      return Optional.of(
-          (node, context) -> {
-            Objects.requireNonNull(node, "node cannot be null");
-            Objects.requireNonNull(context, "context cannot be null");
-
-            try {
-              return Renderer.of(schema.create(registry, defaults, node));
-            } catch (final ConfigurationException e) {
-              throw new DeserializationException(e.errors());
-            } catch (final IllegalStateException e) {
-              // TODO: verify that the nested configuration has the required deserializers inside
-              //  at creation time rather than deserialization time
-              throw new DeserializationException(ConfigurationError.error(e.getMessage()));
-            }
-          });
+    if (!rawType.isAnnotationPresent(Configuration.class)) {
+      return Optional.empty();
     }
-
-    return Optional.empty();
+    final Schema<? extends T> schema;
+    try {
+      schema = Schema.fromClass(rawType);
+    } catch (final IllegalArgumentException e) {
+      throw new IllegalStateException(e);
+    }
+    return Optional.of(schema.deserializer(registry, defaults));
   }
 }

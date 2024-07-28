@@ -79,7 +79,7 @@ class NestedConfigurationDeserializerTest {
             .deserializer(
                 String.class,
                 (node, context) -> {
-                  assertEquals(node, ConfigurationNode.string("value"));
+                  assertEquals(node.asString(), "value");
                   return Renderer.of("custom value");
                 })
             .build();

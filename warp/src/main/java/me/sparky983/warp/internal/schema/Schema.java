@@ -1,8 +1,7 @@
 package me.sparky983.warp.internal.schema;
 
 import me.sparky983.warp.Configuration;
-import me.sparky983.warp.ConfigurationException;
-import me.sparky983.warp.ConfigurationNode;
+import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;
@@ -16,19 +15,13 @@ public interface Schema<T> {
   /**
    * Creates a configurations compliant with this schema.
    *
-   * @param deserializers the deserializer registry
-   * @param defaults the defaults register
-   * @param configuration the configuration
+   * @param deserializers a registry of the allowed deserializers
+   * @param defaults a registry that holds default values for types
    * @return the created configuration
-   * @throws ConfigurationException if any configurations were not compliant with this schema.
    * @throws IllegalStateException if a type can not be deserialized.
    * @throws NullPointerException if the configurations is {@code null}.
    */
-  T create(
-      DeserializerRegistry deserializers,
-      DefaultsRegistry defaults,
-      ConfigurationNode configuration)
-      throws ConfigurationException;
+  Deserializer<T> deserializer(DeserializerRegistry deserializers, DefaultsRegistry defaults);
 
   /**
    * Creates a {@code Schema} for the given configuration class.
