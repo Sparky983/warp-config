@@ -1,5 +1,6 @@
 package me.sparky983.warp.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -16,6 +17,7 @@ import me.sparky983.warp.internal.deserializers.Deserializers;
 import me.sparky983.warp.internal.deserializers.ListDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.MapDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.OptionalDeserializerFactory;
+import me.sparky983.warp.internal.node.CompositeNode;
 import me.sparky983.warp.internal.schema.Schema;
 
 /**
@@ -37,7 +39,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   /** A cached renderer context (the context is empty). */
   private static final Renderer.Context RENDERER_CONTEXT = new Renderer.Context() {};
 
-  private ConfigurationSource source = Optional::empty;
+  private final List<ConfigurationSource> sources = new ArrayList<>(1);
 
   /** The deserializers for the configuration. */
   private final DeserializerRegistry.Builder deserializers =
@@ -81,7 +83,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   public ConfigurationBuilder<T> source(final ConfigurationSource source) {
     Objects.requireNonNull(source, "source cannot be null");
 
-    this.source = source;
+    sources.add(source);
     return this;
   }
 
@@ -97,8 +99,17 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
 
   @Override
   public T build() throws ConfigurationException {
-    final ConfigurationNode configuration =
-        source.configuration().orElseGet(ConfigurationNode::map);
+    final List<ConfigurationNode> nodes = new ArrayList<>(sources.size());
+    for (final ConfigurationSource source : sources) {
+      source.configuration().ifPresent(nodes::add);
+    }
+
+    final ConfigurationNode configuration = switch (nodes.size()) {
+      case 0 -> ConfigurationNode.map();
+      case 1 -> nodes.get(0);
+      default -> new CompositeNode(nodes);
+    };
+
     return schema
         .deserializer(deserializers.build(), DEFAULTS)
         .deserialize(configuration, DESERIALIZER_CONTEXT)

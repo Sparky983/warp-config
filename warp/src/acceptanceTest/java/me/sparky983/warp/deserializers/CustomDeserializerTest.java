@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -25,6 +26,7 @@ import me.sparky983.warp.Renderer;
 import me.sparky983.warp.Warp;
 import me.sparky983.warp.internal.deserializers.Deserializers;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 
@@ -156,7 +158,14 @@ class CustomDeserializerTest {
       throws Exception {
     final ConfigurationNode node = ConfigurationNode.string("value");
 
-    when(deserializer.deserialize(eq(node), any())).thenReturn(renderer);
+    final ArgumentMatcher<ConfigurationNode> isValue = arg -> {
+      try {
+        return arg.asString().equals("value");
+      } catch (final DeserializationException e) {
+        return false;
+      }
+    };
+    when(deserializer.deserialize(argThat(isValue), any())).thenReturn(renderer);
     when(renderer.render(any())).thenReturn("value");
 
     final Configurations.String configuration =
@@ -166,7 +175,7 @@ class CustomDeserializerTest {
             .build();
 
     assertEquals("value", configuration.property());
-    verify(deserializer).deserialize(eq(node), any());
+    verify(deserializer).deserialize(argThat(isValue), any());
     verify(renderer).render(any());
     verifyNoMoreInteractions(deserializer, renderer);
   }
