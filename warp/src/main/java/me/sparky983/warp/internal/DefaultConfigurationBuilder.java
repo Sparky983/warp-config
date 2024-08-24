@@ -104,11 +104,12 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
       source.configuration().ifPresent(nodes::add);
     }
 
-    final ConfigurationNode configuration = switch (nodes.size()) {
-      case 0 -> ConfigurationNode.map();
-      case 1 -> nodes.get(0);
-      default -> new CompositeNode(nodes);
-    };
+    final ConfigurationNode configuration =
+        switch (nodes.size()) {
+          case 0 -> ConfigurationNode.map();
+          case 1 -> nodes.get(0);
+          default -> new CompositeNode(nodes);
+        };
 
     return schema
         .deserializer(deserializers.build(), DEFAULTS)

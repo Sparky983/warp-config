@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -158,13 +157,14 @@ class CustomDeserializerTest {
       throws Exception {
     final ConfigurationNode node = ConfigurationNode.string("value");
 
-    final ArgumentMatcher<ConfigurationNode> isValue = arg -> {
-      try {
-        return arg.asString().equals("value");
-      } catch (final DeserializationException e) {
-        return false;
-      }
-    };
+    final ArgumentMatcher<ConfigurationNode> isValue =
+        arg -> {
+          try {
+            return arg.asString().equals("value");
+          } catch (final DeserializationException e) {
+            return false;
+          }
+        };
     when(deserializer.deserialize(argThat(isValue), any())).thenReturn(renderer);
     when(renderer.render(any())).thenReturn("value");
 

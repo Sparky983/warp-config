@@ -71,14 +71,14 @@ class CompositeNodeTest {
   @Test
   void testAsDecimal_NoneDecimal() {
     final ConfigurationNode nonDecimal = ConfigurationNode.string("non-decimal");
-    final ConfigurationNode composite =
-        new CompositeNode(List.of(nonDecimal, nonDecimal));
+    final ConfigurationNode composite = new CompositeNode(List.of(nonDecimal, nonDecimal));
 
     final DeserializationException thrown =
         assertThrows(DeserializationException.class, composite::asDecimal);
 
     assertIterableEquals(List.of(ConfigurationError.error("Must be a decimal")), thrown.errors());
   }
+
   @Test
   void testAsInteger_FirstInteger() throws DeserializationException {
     final ConfigurationNode first = ConfigurationNode.integer(1);
@@ -104,8 +104,7 @@ class CompositeNodeTest {
   @Test
   void testAsInteger_NoneInteger() {
     final ConfigurationNode nonInteger = ConfigurationNode.string("non-integer");
-    final ConfigurationNode composite =
-        new CompositeNode(List.of(nonInteger, nonInteger));
+    final ConfigurationNode composite = new CompositeNode(List.of(nonInteger, nonInteger));
 
     final DeserializationException thrown =
         assertThrows(DeserializationException.class, composite::asInteger);
@@ -138,13 +137,13 @@ class CompositeNodeTest {
   @Test
   void testAsBoolean_NoneBoolean() {
     final ConfigurationNode nonBoolean = ConfigurationNode.string("non-boolean");
-    final ConfigurationNode composite =
-        new CompositeNode(List.of(nonBoolean, nonBoolean));
+    final ConfigurationNode composite = new CompositeNode(List.of(nonBoolean, nonBoolean));
 
     final DeserializationException thrown =
         assertThrows(DeserializationException.class, composite::asBoolean);
 
-    assertIterableEquals(List.of(ConfigurationError.error("Must be a boolean (true/false)")), thrown.errors());
+    assertIterableEquals(
+        List.of(ConfigurationError.error("Must be a boolean (true/false)")), thrown.errors());
   }
 
   @Test
@@ -172,8 +171,7 @@ class CompositeNodeTest {
   @Test
   void testIsNil_NoneNil() {
     final ConfigurationNode nonNil = ConfigurationNode.string("non-nil");
-    final ConfigurationNode composite =
-        new CompositeNode(List.of(nonNil, nonNil));
+    final ConfigurationNode composite = new CompositeNode(List.of(nonNil, nonNil));
 
     final boolean isNil = composite.isNil();
 

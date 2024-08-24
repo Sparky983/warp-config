@@ -1,12 +1,9 @@
 package me.sparky983.warp.internal.node;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 
@@ -94,9 +91,11 @@ public final class CompositeNode implements ConfigurationNode {
 
     for (final ConfigurationNode node : nodes) {
       try {
-        node.asMap().forEach((key, value) -> {
-          flattened.computeIfAbsent(key, (k) -> new ArrayList<>()).add(value);
-        });
+        node.asMap()
+            .forEach(
+                (key, value) -> {
+                  flattened.computeIfAbsent(key, (k) -> new ArrayList<>()).add(value);
+                });
         containsMap = true;
       } catch (final DeserializationException e) {
         // continue
@@ -104,9 +103,10 @@ public final class CompositeNode implements ConfigurationNode {
     }
     if (containsMap) {
       final Map<String, ConfigurationNode> merged = new HashMap<>();
-      flattened.forEach((key, values) -> {
-        merged.putIfAbsent(key, new CompositeNode(values));
-      });
+      flattened.forEach(
+          (key, values) -> {
+            merged.putIfAbsent(key, new CompositeNode(values));
+          });
       return merged;
     } else {
       return ConfigurationNode.super.asMap();
