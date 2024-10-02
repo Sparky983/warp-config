@@ -36,8 +36,8 @@ public interface ConfigurationBuilder<T> {
   /**
    * Adds the given source to this builder.
    *
-   * <p>Sources added earlier will have precedence, meaning that if source A and B are added in the
-   * order A, then B, duplicate properties from B will have no effect.
+   * <p>Sources added earlier will have precedence, meaning that if source A and B are added, for a
+   * duplicate property, "X", the value from A will be used.
    *
    * <p>By default, the source is empty.
    *
