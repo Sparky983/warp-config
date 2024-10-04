@@ -34,7 +34,10 @@ import java.util.Optional;
  */
 public interface ConfigurationBuilder<T> {
   /**
-   * Sets the given source of this builder.
+   * Adds the given source to this builder.
+   *
+   * <p>Sources added earlier will have precedence, meaning that if source A and B are added, for a
+   * duplicate property, "X", the value from A will be used.
    *
    * <p>By default, the source is empty.
    *

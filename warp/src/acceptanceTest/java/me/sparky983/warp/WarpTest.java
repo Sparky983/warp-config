@@ -166,23 +166,6 @@ class WarpTest {
   }
 
   @Test
-  void testOverwriteSource() throws ConfigurationException {
-    final Configurations.String builder =
-        Warp.builder(Configurations.String.class)
-            .source(
-                ConfigurationSource.of(
-                    ConfigurationNode.map(
-                        Map.entry("property", ConfigurationNode.string("overwritten")))))
-            .source(
-                ConfigurationSource.of(
-                    ConfigurationNode.map(
-                        Map.entry("property", ConfigurationNode.string("overwrites")))))
-            .build();
-
-    assertEquals("overwrites", builder.property());
-  }
-
-  @Test
   void testSourceThrows() {
     final ConfigurationBuilder<Configurations.String> builder =
         Warp.builder(Configurations.String.class)
