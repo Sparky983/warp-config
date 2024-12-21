@@ -1,7 +1,5 @@
 package me.sparky983.warp.internal;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.Configuration;
@@ -24,13 +22,6 @@ import me.sparky983.warp.internal.schema.Schema;
  * @param <T> the type of the {@linkplain Configuration configuration class}
  */
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
-  /** The default defaults registry */
-  static final DefaultsRegistry DEFAULTS =
-      DefaultsRegistry.create()
-          .register(Optional.class, Renderer.of(Optional.empty()))
-          .register(List.class, Renderer.of(List.of()))
-          .register(Map.class, Renderer.of(Map.of()));
-
   /** A cached deserializer context (the context is empty). */
   private static final Deserializer.Context DESERIALIZER_CONTEXT = new Deserializer.Context() {};
 
@@ -61,7 +52,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .factory(new OptionalDeserializerFactory())
           .factory(new MapDeserializerFactory())
           .factory(new ListDeserializerFactory())
-          .factory(new ConfigurationDeserializerFactory(DEFAULTS));
+          .factory(new ConfigurationDeserializerFactory());
 
   private final Schema<? extends T> schema;
 
@@ -100,7 +91,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
     final ConfigurationNode configuration =
         source.configuration().orElseGet(ConfigurationNode::map);
     return schema
-        .deserializer(deserializers.build(), DEFAULTS)
+        .deserializer(deserializers.build())
         .deserialize(configuration, DESERIALIZER_CONTEXT)
         .render(RENDERER_CONTEXT);
   }

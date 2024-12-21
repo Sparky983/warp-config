@@ -30,15 +30,20 @@ class IntegerDeserializerTest {
   }
 
   @Test
-  void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> INTEGER.deserialize(null, deserializerContext));
-  }
-
-  @Test
   void testDeserialize_NullContext() {
     final ConfigurationNode node = ConfigurationNode.integer(0);
 
     assertThrows(NullPointerException.class, () -> INTEGER.deserialize(node, null));
+  }
+
+  @Test
+  void testDeserialize_NullNode() {
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> INTEGER.deserialize(null, deserializerContext));
+
+    assertIterableEquals(
+        List.of(ConfigurationError.error("Must be set to a value")), thrown.errors());
   }
 
   @Test

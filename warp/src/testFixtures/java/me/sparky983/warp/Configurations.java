@@ -201,6 +201,12 @@ public final class Configurations {
   }
 
   @Configuration
+  public interface NestedStringOptional {
+    @Property("property")
+    Configurations.StringOptional property();
+  }
+
+  @Configuration
   public interface NestedSealed {
     @Property("property")
     Sealed property();

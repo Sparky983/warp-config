@@ -28,15 +28,20 @@ class StringDeserializerTest {
   }
 
   @Test
-  void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> STRING.deserialize(null, deserializerContext));
-  }
-
-  @Test
   void testDeserialize_NullContext() {
     final ConfigurationNode node = ConfigurationNode.string("value");
 
     assertThrows(NullPointerException.class, () -> STRING.deserialize(node, null));
+  }
+
+  @Test
+  void testDeserializer_NullNode() {
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> STRING.deserialize(null, deserializerContext));
+
+    assertIterableEquals(
+        List.of(ConfigurationError.error("Must be set to a value")), thrown.errors());
   }
 
   @Test

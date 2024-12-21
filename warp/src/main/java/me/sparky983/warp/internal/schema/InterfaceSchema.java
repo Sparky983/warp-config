@@ -6,13 +6,11 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -23,7 +21,6 @@ import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
-import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;
 import org.jspecify.annotations.Nullable;
@@ -123,8 +120,7 @@ final class InterfaceSchema<T> implements Schema<T> {
   }
 
   @Override
-  public Deserializer<T> deserializer(
-      final DeserializerRegistry deserializers, final DefaultsRegistry defaults) {
+  public Deserializer<T> deserializer(final DeserializerRegistry deserializers) {
     final Map<Property<?>, Deserializer<?>> propertyDeserializers =
         properties.values().stream()
             .collect(
@@ -145,44 +141,42 @@ final class InterfaceSchema<T> implements Schema<T> {
                     }));
 
     return (node, deserializerContext) -> {
-      Objects.requireNonNull(node, "node cannot be null");
       Objects.requireNonNull(deserializerContext, "context cannot be null");
 
-      final Map<String, ConfigurationNode> nodeConfiguration = node.asMap();
-      final Map<Method, Renderer<?>> mappedConfiguration = new HashMap<>();
       final List<ConfigurationError> errors = new ArrayList<>();
+      boolean erroneous = false;
 
-      properties.forEach(
-          (method, property) -> {
-            final ConfigurationNode value = get(property.path(), nodeConfiguration);
-            final Renderer<?> renderer;
-            final Collection<ConfigurationError> propertyErrors;
-            if (value == null) {
-              final Optional<Renderer<?>> defaultRenderer = defaults.get(property.type().rawType());
-              if (defaultRenderer.isPresent()) {
-                renderer = defaultRenderer.get();
-                mappedConfiguration.put(method, renderer);
-                return;
-              } else {
-                propertyErrors = List.of(ConfigurationError.error("Must be set to a value"));
-              }
-            } else {
-              try {
-                final Deserializer<?> deserializer = propertyDeserializers.get(property);
-                renderer =
-                    Objects.requireNonNull(
-                        deserializer.deserialize(value, deserializerContext),
-                        "Deserializer returned null");
-                mappedConfiguration.put(method, renderer);
-                return;
-              } catch (final DeserializationException e) {
-                propertyErrors = e.errors();
-              }
-            }
-            errors.add(ConfigurationError.group(property.path(), propertyErrors));
-          });
+      final Map<String, ConfigurationNode> nodeConfiguration;
+      if (node == null) {
+        nodeConfiguration = Map.of();
+        erroneous = true;
+      } else {
+        nodeConfiguration = node.asMap();
+      }
+      final Map<Method, Renderer<?>> mappedConfiguration = new HashMap<>();
 
-      if (!errors.isEmpty()) {
+      for (final Map.Entry<Method, Property<?>> entry : properties.entrySet()) {
+        final Method key = entry.getKey();
+        final Property<?> property = entry.getValue();
+        final ConfigurationNode value = get(property.path(), nodeConfiguration);
+        final Renderer<?> renderer;
+        try {
+          final Deserializer<?> deserializer = propertyDeserializers.get(property);
+          renderer =
+              Objects.requireNonNull(
+                  deserializer.deserialize(value, deserializerContext),
+                  "Deserializer returned null");
+          mappedConfiguration.put(key, renderer);
+        } catch (final DeserializationException e) {
+          erroneous = true;
+          errors.add(ConfigurationError.group(property.path(), e.errors()));
+        }
+      }
+
+      if (erroneous) {
+        if (errors.isEmpty()) {
+          errors.add(ConfigurationError.error("Must be set to a value"));
+        }
         throw new DeserializationException(errors);
       }
 

@@ -28,15 +28,20 @@ class FloatDeserializerTest {
   }
 
   @Test
-  void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> FLOAT.deserialize(null, deserializerContext));
-  }
-
-  @Test
   void testDeserialize_NullContext() {
     final ConfigurationNode node = ConfigurationNode.decimal(0.0);
 
     assertThrows(NullPointerException.class, () -> FLOAT.deserialize(node, null));
+  }
+
+  @Test
+  void testDeserialize_NullNode() {
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> FLOAT.deserialize(null, deserializerContext));
+
+    assertIterableEquals(
+        List.of(ConfigurationError.error("Must be set to a value")), thrown.errors());
   }
 
   @Test
