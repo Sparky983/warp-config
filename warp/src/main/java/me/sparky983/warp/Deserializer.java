@@ -39,15 +39,15 @@ public interface Deserializer<T> {
     // become invalid
 
     /**
-    * Returns the {@link Deserializer} for the given type.
+     * Returns the {@link Deserializer} for the given type.
      *
      * @param type the type
      * @return an {@link Optional} containing the deserializer, otherwise {@link Optional#empty()}
-     * if no deserializer exists for the given type
+     *     if no deserializer exists for the given type
      * @param <T> the type
      * @throws NullPointerException if the type is {@code null}.
      * @since 0.1
-    */
+     */
     <T> Optional<Deserializer<T>> deserializer(Class<T> type);
   }
 }

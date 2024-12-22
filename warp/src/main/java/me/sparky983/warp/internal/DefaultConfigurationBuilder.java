@@ -90,16 +90,18 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
 
     final DeserializerRegistry deserializers = this.deserializers.build();
 
-    final Deserializer.Context deserializerContext = new Deserializer.Context() {
-      @SuppressWarnings({"unchecked", "rawtypes"})
-      @Override
-      public <T> Optional<Deserializer<T>> deserializer(final Class<T> type) {
-        Objects.requireNonNull(type, "type cannot be null");
+    final Deserializer.Context deserializerContext =
+        new Deserializer.Context() {
+          @SuppressWarnings({"unchecked", "rawtypes"})
+          @Override
+          public <T> Optional<Deserializer<T>> deserializer(final Class<T> type) {
+            Objects.requireNonNull(type, "type cannot be null");
 
-        // Cast is safe because Deserializer is covariant
-        return (Optional<Deserializer<T>>) (Optional) deserializers.get(ParameterizedType.of(type));
-      }
-    };
+            // Cast is safe because Deserializer is covariant
+            return (Optional<Deserializer<T>>)
+                (Optional) deserializers.get(ParameterizedType.of(type));
+          }
+        };
 
     return schema
         .deserializer(deserializers)
