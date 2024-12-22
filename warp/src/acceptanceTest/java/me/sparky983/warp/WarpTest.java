@@ -22,11 +22,6 @@ class WarpTest {
   }
 
   @Test
-  void testBuilder_NotPublic() {
-    assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.Private.class));
-  }
-
-  @Test
   void testBuilder_NotInterface() {
     assertThrows(IllegalArgumentException.class, () -> Warp.builder(Configurations.Class.class));
   }
@@ -90,6 +85,15 @@ class WarpTest {
         Warp.builder(Configurations.Empty.class);
 
     assertThrows(NullPointerException.class, () -> builder.source(null));
+  }
+
+  @Test
+  void testBuilder_NotPublic() throws ConfigurationException {
+    final Configurations.Private configuration = Warp.builder(Configurations.Private.class)
+        .source(ConfigurationSource.of(ConfigurationNode.map(Map.entry("property", ConfigurationNode.string("some string")))))
+        .build();
+
+    assertEquals("some string", configuration.property());
   }
 
   @Test

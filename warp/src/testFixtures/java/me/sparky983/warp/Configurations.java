@@ -10,7 +10,10 @@ public final class Configurations {
   public interface MissingAnnotation {}
 
   @Configuration
-  interface Private {}
+  interface Private {
+    @Property("property")
+    java.lang.String property();
+  }
 
   @Configuration
   public interface Hidden {}
