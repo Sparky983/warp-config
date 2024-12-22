@@ -3,6 +3,7 @@ package me.sparky983.warp.deserializers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -130,6 +131,47 @@ class CustomDeserializerTest {
             .build();
 
     assertThrows(NullPointerException.class, configuration::property);
+  }
+
+  @Test
+  void testCustomDeserializer_ContextDeserializerNotFound() throws ConfigurationException {
+    final Deserializer<Boolean> deserializer =
+        (node, context) ->
+            context
+                .deserializer(Object.class)
+                .map((objectDeserializer) -> Renderer.of(false))
+                .orElseGet(() -> Renderer.of(true));
+
+    final Configurations.Boolean configuration =
+        Warp.builder(Configurations.Boolean.class)
+            .source(ConfigurationSource.of(ConfigurationNode.map()))
+            .deserializer(boolean.class, deserializer)
+            .build();
+
+    assertTrue(configuration.property());
+  }
+
+  @Test
+  void testCustomDeserializer_ContextDeserializer() throws ConfigurationException {
+    final Deserializer<String> deserializer =
+        (node, deserializerContext) -> {
+          final Renderer<? extends Integer> renderer =
+              deserializerContext
+                  .deserializer(int.class)
+                  .orElseThrow(IllegalStateException::new)
+                  .deserialize(node, deserializerContext);
+          return (rendererContext) -> String.valueOf(renderer.render(rendererContext));
+        };
+
+    final Configurations.String configuration =
+        Warp.builder(Configurations.String.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map(Map.entry("property", ConfigurationNode.integer(10)))))
+            .deserializer(String.class, deserializer)
+            .build();
+
+    assertEquals("10", configuration.property());
   }
 
   @Test
