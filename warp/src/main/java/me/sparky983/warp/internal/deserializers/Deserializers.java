@@ -232,4 +232,33 @@ public final class Deserializers {
       return (rendererContext) -> Optional.of(renderer.render(rendererContext));
     };
   }
+
+  /**
+   * Creates a new enum deserializer for the given enum type.
+   *
+   * @param type the deserializer for the value
+   * @param <E> the enum type
+   * @return the list deserializer
+   * @throws NullPointerException if the deserializer registry is {@code null}.
+   */
+  public static <E extends Enum<E>> Deserializer<E> enumeration(final Class<E> type) {
+    Objects.requireNonNull(type, "type cannot be null");
+
+    return (node, context) -> {
+      Objects.requireNonNull(context, "context cannot be null");
+
+      if (node == null) {
+        throw new DeserializationException(ConfigurationError.error("Must be set to a value"));
+      }
+
+      final String name = node.asString();
+
+      try {
+        return Renderer.of(Enum.valueOf(type, name));
+      } catch (final IllegalArgumentException e) {
+        throw new DeserializationException(
+            ConfigurationError.error(name + " is not a valid value"));
+      }
+    };
+  }
 }
