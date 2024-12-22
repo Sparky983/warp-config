@@ -11,6 +11,7 @@ import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.deserializers.ConfigurationDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.Deserializers;
+import me.sparky983.warp.internal.deserializers.EnumDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.ListDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.MapDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.OptionalDeserializerFactory;
@@ -49,6 +50,7 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .factory(new OptionalDeserializerFactory())
           .factory(new MapDeserializerFactory())
           .factory(new ListDeserializerFactory())
+          .factory(new EnumDeserializerFactory())
           .factory(new ConfigurationDeserializerFactory());
 
   private final Schema<? extends T> schema;
