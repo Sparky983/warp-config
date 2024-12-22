@@ -30,15 +30,20 @@ class ShortDeserializerTest {
   }
 
   @Test
-  void testDeserialize_NullNode() {
-    assertThrows(NullPointerException.class, () -> SHORT.deserialize(null, deserializerContext));
-  }
-
-  @Test
   void testDeserialize_NullContext() {
     final ConfigurationNode node = ConfigurationNode.integer(0);
 
     assertThrows(NullPointerException.class, () -> SHORT.deserialize(node, null));
+  }
+
+  @Test
+  void testDeserialize_NullNode() {
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class, () -> SHORT.deserialize(null, deserializerContext));
+
+    assertIterableEquals(
+        List.of(ConfigurationError.error("Must be set to a value")), thrown.errors());
   }
 
   @Test
