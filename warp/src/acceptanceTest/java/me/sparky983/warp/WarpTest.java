@@ -89,9 +89,13 @@ class WarpTest {
 
   @Test
   void testBuilder_NotPublic() throws ConfigurationException {
-    final Configurations.Private configuration = Warp.builder(Configurations.Private.class)
-        .source(ConfigurationSource.of(ConfigurationNode.map(Map.entry("property", ConfigurationNode.string("some string")))))
-        .build();
+    final Configurations.Private configuration =
+        Warp.builder(Configurations.Private.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map(
+                        Map.entry("property", ConfigurationNode.string("some string")))))
+            .build();
 
     assertEquals("some string", configuration.property());
   }
