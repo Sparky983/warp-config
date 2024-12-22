@@ -24,7 +24,7 @@ public interface DeserializerRegistry {
    * @throws NullPointerException if the type is {@code null}.
    * @throws IllegalStateException if a deserializer for the given type could not be created.
    */
-  <T> Optional<Deserializer<? extends T>> get(ParameterizedType<? extends T> type);
+  <T> Optional<Deserializer<? extends T>> get(ParameterizedType<T> type);
 
   /** A {@link DeserializerRegistry} builder. */
   interface Builder {

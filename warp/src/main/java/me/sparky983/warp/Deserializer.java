@@ -1,5 +1,6 @@
 package me.sparky983.warp;
 
+import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -36,5 +37,17 @@ public interface Deserializer<T> {
     // Maintenance note: make sure internal passing of the context arguments is valid
     // e.g. the list deserializer passing its own context off to element deserializer which may
     // become invalid
+
+    /**
+    * Returns the {@link Deserializer} for the given type.
+     *
+     * @param type the type
+     * @return an {@link Optional} containing the deserializer, otherwise {@link Optional#empty()}
+     * if no deserializer exists for the given type
+     * @param <T> the type
+     * @throws NullPointerException if the type is {@code null}.
+     * @since 0.1
+    */
+    <T> Optional<Deserializer<T>> deserializer(Class<T> type);
   }
 }

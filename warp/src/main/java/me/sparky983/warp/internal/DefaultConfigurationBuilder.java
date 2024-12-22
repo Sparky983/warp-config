@@ -22,9 +22,6 @@ import me.sparky983.warp.internal.schema.Schema;
  * @param <T> the type of the {@linkplain Configuration configuration class}
  */
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
-  /** A cached deserializer context (the context is empty). */
-  private static final Deserializer.Context DESERIALIZER_CONTEXT = new Deserializer.Context() {};
-
   /** A cached renderer context (the context is empty). */
   private static final Renderer.Context RENDERER_CONTEXT = new Renderer.Context() {};
 
@@ -90,9 +87,23 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   public T build() throws ConfigurationException {
     final ConfigurationNode configuration =
         source.configuration().orElseGet(ConfigurationNode::map);
+
+    final DeserializerRegistry deserializers = this.deserializers.build();
+
+    final Deserializer.Context deserializerContext = new Deserializer.Context() {
+      @SuppressWarnings({"unchecked", "rawtypes"})
+      @Override
+      public <T> Optional<Deserializer<T>> deserializer(final Class<T> type) {
+        Objects.requireNonNull(type, "type cannot be null");
+
+        // Cast is safe because Deserializer is covariant
+        return (Optional<Deserializer<T>>) (Optional) deserializers.get(ParameterizedType.of(type));
+      }
+    };
+
     return schema
-        .deserializer(deserializers.build())
-        .deserialize(configuration, DESERIALIZER_CONTEXT)
+        .deserializer(deserializers)
+        .deserialize(configuration, deserializerContext)
         .render(RENDERER_CONTEXT);
   }
 }
