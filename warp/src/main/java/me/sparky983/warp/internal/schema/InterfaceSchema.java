@@ -57,10 +57,6 @@ final class InterfaceSchema<T> implements Schema<T> {
       throw new IllegalArgumentException(configurationClass + " must be an interface");
     }
 
-    if (!Modifier.isPublic(configurationClass.getModifiers())) {
-      throw new IllegalArgumentException(configurationClass + " must be public");
-    }
-
     if (configurationClass.isSealed()) {
       throw new IllegalArgumentException(configurationClass + " must not be sealed");
     }
