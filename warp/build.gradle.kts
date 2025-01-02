@@ -4,8 +4,8 @@ plugins {
 }
 
 dependencies {
-    testImplementation("org.mockito:mockito-core:5.14.2")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
+    testImplementation("org.mockito:mockito-core:5.15.2")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.15.2")
 }
 
 idea {
