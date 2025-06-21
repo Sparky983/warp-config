@@ -1,5 +1,6 @@
 package me.sparky983.warp;
 
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -10,7 +11,10 @@ public final class Configurations {
   public interface MissingAnnotation {}
 
   @Configuration
-  interface Private {}
+  interface Private {
+    @Property("property")
+    java.lang.String property();
+  }
 
   @Configuration
   public interface Hidden {}
@@ -201,8 +205,26 @@ public final class Configurations {
   }
 
   @Configuration
+  public interface NestedStringOptional {
+    @Property("property")
+    Configurations.StringOptional property();
+  }
+
+  @Configuration
   public interface NestedSealed {
     @Property("property")
     Sealed property();
+  }
+
+  @Configuration
+  public interface Enum {
+    @Property("property")
+    RetentionPolicy property();
+  }
+
+  @Configuration
+  public interface EnumExact {
+    @Property("property")
+    java.lang.Enum<?> property();
   }
 }

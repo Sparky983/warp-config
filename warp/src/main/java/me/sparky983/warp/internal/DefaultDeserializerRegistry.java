@@ -29,7 +29,7 @@ final class DefaultDeserializerRegistry implements DeserializerRegistry {
    * @param <T> the type
    */
   @SuppressWarnings("unchecked")
-  public <T> Optional<Deserializer<? extends T>> get(final ParameterizedType<? extends T> type) {
+  public <T> Optional<Deserializer<? extends T>> get(final ParameterizedType<T> type) {
     Objects.requireNonNull(type, "type cannot be null");
 
     {

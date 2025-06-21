@@ -54,12 +54,6 @@ class MapDeserializerTest {
   }
 
   @Test
-  void testDeserialize_NullNode() {
-    assertThrows(
-        NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
-  }
-
-  @Test
   void testDeserialize_NullContext() {
     final ConfigurationNode node = ConfigurationNode.map();
 
@@ -112,6 +106,14 @@ class MapDeserializerTest {
         deserializer.deserialize(node, deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
+  }
+
+  @Test
+  void testRender_NullNode() throws DeserializationException {
+    final Map<String, String> result =
+        deserializer.deserialize(null, deserializerContext).render(rendererContext);
+
+    assertEquals(Map.of(), result);
   }
 
   @Test

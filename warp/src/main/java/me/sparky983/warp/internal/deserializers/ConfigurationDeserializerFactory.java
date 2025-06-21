@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.Configuration;
 import me.sparky983.warp.Deserializer;
-import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerFactory;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;
@@ -15,21 +14,6 @@ import me.sparky983.warp.internal.schema.Schema;
  * types.
  */
 public final class ConfigurationDeserializerFactory implements DeserializerFactory {
-  private final DefaultsRegistry defaults;
-
-  /**
-   * Constructs a {@code ConfigurationDeserializerFactory} that uses the given defaults to construct
-   * {@link Configuration @Configuration} objects.
-   *
-   * @param defaults the defaults
-   * @throws NullPointerException if the defaults registry is {@code null}.
-   */
-  public ConfigurationDeserializerFactory(final DefaultsRegistry defaults) {
-    Objects.requireNonNull(defaults, "defaults cannot be null");
-
-    this.defaults = defaults;
-  }
-
   @Override
   public <T> Optional<Deserializer<? extends T>> create(
       final DeserializerRegistry registry, final ParameterizedType<? extends T> type) {
@@ -45,6 +29,6 @@ public final class ConfigurationDeserializerFactory implements DeserializerFacto
     } catch (final IllegalArgumentException e) {
       throw new IllegalStateException(e);
     }
-    return Optional.of(schema.deserializer(registry, defaults));
+    return Optional.of(schema.deserializer(registry));
   }
 }

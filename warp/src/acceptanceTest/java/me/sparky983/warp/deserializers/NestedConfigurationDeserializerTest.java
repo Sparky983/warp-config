@@ -42,6 +42,40 @@ class NestedConfigurationDeserializerTest {
   }
 
   @Test
+  void testAbsence_HasRequiredProperty() {
+    final ConfigurationBuilder<Configurations.NestedString> configuration =
+        Warp.builder(Configurations.NestedString.class)
+            .source(ConfigurationSource.of(ConfigurationNode.map()));
+
+    final ConfigurationException thrown =
+        assertThrows(ConfigurationException.class, configuration::build);
+
+    assertIterableEquals(
+        List.of(
+            ConfigurationError.group(
+                "property",
+                ConfigurationError.group(
+                    "property", ConfigurationError.error("Must be set to a value")))),
+        thrown.errors());
+  }
+
+  @Test
+  void testAbsence_HasOptionalProperties() {
+    final ConfigurationBuilder<Configurations.NestedStringOptional> configuration =
+        Warp.builder(Configurations.NestedStringOptional.class)
+            .source(ConfigurationSource.of(ConfigurationNode.map()));
+
+    final ConfigurationException thrown =
+        assertThrows(ConfigurationException.class, configuration::build);
+
+    assertIterableEquals(
+        List.of(
+            ConfigurationError.group(
+                "property", ConfigurationError.error("Must be set to a value"))),
+        thrown.errors());
+  }
+
+  @Test
   void testNestedNonDeserializable() {
     final ConfigurationBuilder<Configurations.NestedString> configuration =
         Warp.builder(Configurations.NestedString.class)

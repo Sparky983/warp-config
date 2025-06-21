@@ -42,8 +42,11 @@ public final class Deserializers {
   /** A {@link Boolean} deserializer. */
   public static final Deserializer<Boolean> BOOLEAN =
       (node, context) -> {
-        Objects.requireNonNull(node, "node cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
+
+        if (node == null) {
+          throw new DeserializationException(ConfigurationError.error("Must be set to a value"));
+        }
 
         return Renderer.of(node.asBoolean());
       };
@@ -51,8 +54,11 @@ public final class Deserializers {
   /** A {@link String} deserializer. */
   public static final Deserializer<String> STRING =
       (node, context) -> {
-        Objects.requireNonNull(node, "node cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
+
+        if (node == null) {
+          throw new DeserializationException(ConfigurationError.error("Must be set to a value"));
+        }
 
         return Renderer.of(node.asString());
       };
@@ -62,8 +68,11 @@ public final class Deserializers {
   private static <T> Deserializer<T> integer(
       final long min, final long max, final Function<? super Long, ? extends T> mapper) {
     return (node, context) -> {
-      Objects.requireNonNull(node, "node cannot be null");
       Objects.requireNonNull(context, "context cannot be null");
+
+      if (node == null) {
+        throw new DeserializationException(ConfigurationError.error("Must be set to a value"));
+      }
 
       final long value = node.asInteger();
       if (value < min || value > max) {
@@ -77,8 +86,11 @@ public final class Deserializers {
 
   private static <T> Deserializer<T> decimal(final Function<? super Double, ? extends T> mapper) {
     return (node, context) -> {
-      Objects.requireNonNull(node, "node cannot be null");
       Objects.requireNonNull(context, "context cannot be null");
+
+      if (node == null) {
+        throw new DeserializationException(ConfigurationError.error("Must be set to a value"));
+      }
 
       return Renderer.of(mapper.apply(node.asDecimal()));
     };
@@ -97,8 +109,11 @@ public final class Deserializers {
     Objects.requireNonNull(elementDeserializer, "elementDeserializer cannot be null");
 
     return (node, deserializerContext) -> {
-      Objects.requireNonNull(node, "node cannot be null");
       Objects.requireNonNull(deserializerContext, "deserializerContext cannot be null");
+
+      if (node == null) {
+        return Renderer.of(List.of());
+      }
 
       final List<ConfigurationNode> list = node.asList();
       final List<Renderer<? extends E>> renderers = new ArrayList<>();
@@ -141,8 +156,11 @@ public final class Deserializers {
     Objects.requireNonNull(valueDeserializer, "valueDeserializer cannot be null");
 
     return (node, deserializerContext) -> {
-      Objects.requireNonNull(node, "node cannot be null");
       Objects.requireNonNull(deserializerContext, "deserializerContext cannot be null");
+
+      if (node == null) {
+        return Renderer.of(Map.of());
+      }
 
       final Map<String, ConfigurationNode> map = node.asMap();
       final Map<Renderer<? extends K>, Renderer<? extends V>> renderers = new HashMap<>();
@@ -203,16 +221,44 @@ public final class Deserializers {
     Objects.requireNonNull(valueDeserializer, "valueDeserializer cannot be null");
 
     return (node, context) -> {
-      Objects.requireNonNull(node, "node cannot be null");
       Objects.requireNonNull(context, "context cannot be null");
 
-      if (node.isNil()) {
+      if (node == null || node.isNil()) {
         return Renderer.of(Optional.empty());
       }
 
       final Renderer<? extends T> renderer = valueDeserializer.deserialize(node, context);
 
       return (rendererContext) -> Optional.of(renderer.render(rendererContext));
+    };
+  }
+
+  /**
+   * Creates a new enum deserializer for the given enum type.
+   *
+   * @param type the deserializer for the value
+   * @param <E> the enum type
+   * @return the list deserializer
+   * @throws NullPointerException if the deserializer registry is {@code null}.
+   */
+  public static <E extends Enum<E>> Deserializer<E> enumeration(final Class<E> type) {
+    Objects.requireNonNull(type, "type cannot be null");
+
+    return (node, context) -> {
+      Objects.requireNonNull(context, "context cannot be null");
+
+      if (node == null) {
+        throw new DeserializationException(ConfigurationError.error("Must be set to a value"));
+      }
+
+      final String name = node.asString();
+
+      try {
+        return Renderer.of(Enum.valueOf(type, name));
+      } catch (final IllegalArgumentException e) {
+        throw new DeserializationException(
+            ConfigurationError.error(name + " is not a valid value"));
+      }
     };
   }
 }

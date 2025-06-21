@@ -1,6 +1,7 @@
 package me.sparky983.warp.internal.deserializers;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -14,7 +15,6 @@ import me.sparky983.warp.Configurations;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
-import me.sparky983.warp.internal.DefaultsRegistry;
 import me.sparky983.warp.internal.DeserializerFactory;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;
@@ -26,7 +26,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class ConfigurationDeserializerFactoryTest {
-  @Mock DefaultsRegistry defaults;
   @Mock DeserializerRegistry deserializers;
   @Mock Deserializer.Context deserializerContext;
   @Mock Renderer.Context rendererContext;
@@ -35,12 +34,12 @@ class ConfigurationDeserializerFactoryTest {
 
   @BeforeEach
   void setUp() {
-    factory = new ConfigurationDeserializerFactory(defaults);
+    factory = new ConfigurationDeserializerFactory();
   }
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(defaults, deserializers, deserializerContext, rendererContext);
+    verifyNoMoreInteractions(deserializers, deserializerContext, rendererContext);
   }
 
   @Test
@@ -64,14 +63,48 @@ class ConfigurationDeserializerFactoryTest {
   }
 
   @Test
-  void testDeserialize_NullNode() {
-    final Deserializer<? extends Configurations.Empty> deserializer =
+  void testDeserialize_NullNodeRequiredProperty(@Mock final Deserializer<String> stringDeserializer)
+      throws DeserializationException {
+    final ConfigurationError error = ConfigurationError.error("Some error");
+
+    when(stringDeserializer.deserialize(null, deserializerContext))
+        .thenThrow(new DeserializationException(error));
+    when(deserializers.get(ParameterizedType.of(String.class)))
+        .thenReturn(Optional.of(stringDeserializer));
+
+    final Deserializer<? extends Configurations.String> deserializer =
         factory
-            .create(deserializers, ParameterizedType.of(Configurations.Empty.class))
+            .create(deserializers, ParameterizedType.of(Configurations.String.class))
             .orElseThrow(AssertionError::new);
 
-    assertThrows(
-        NullPointerException.class, () -> deserializer.deserialize(null, deserializerContext));
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class,
+            () -> deserializer.deserialize(null, deserializerContext));
+
+    assertIterableEquals(List.of(ConfigurationError.group("property", error)), thrown.errors());
+  }
+
+  @Test
+  void testDeserialize_NullNodeOptionalProperties(
+      @Mock final Deserializer<String> stringDeserializer) throws DeserializationException {
+    when(stringDeserializer.deserialize(null, deserializerContext))
+        .thenReturn(Renderer.of("some string"));
+    when(deserializers.get(ParameterizedType.of(String.class)))
+        .thenReturn(Optional.of(stringDeserializer));
+
+    final Deserializer<? extends Configurations.String> deserializer =
+        factory
+            .create(deserializers, ParameterizedType.of(Configurations.String.class))
+            .orElseThrow(AssertionError::new);
+
+    final DeserializationException thrown =
+        assertThrows(
+            DeserializationException.class,
+            () -> deserializer.deserialize(null, deserializerContext));
+
+    assertIterableEquals(
+        List.of(ConfigurationError.error("Must be set to a value")), thrown.errors());
   }
 
   @Test
@@ -105,7 +138,12 @@ class ConfigurationDeserializerFactoryTest {
 
   @Test
   void testDeserialize_PropertyHasErrorDuringDeserialization(
-      @Mock final Deserializer<String> stringDeserializer) {
+      @Mock final Deserializer<String> stringDeserializer) throws DeserializationException {
+    final ConfigurationNode property = ConfigurationNode.string("some string");
+    final ConfigurationError error = ConfigurationError.error("Some error");
+
+    when(stringDeserializer.deserialize(property, deserializerContext))
+        .thenThrow(new DeserializationException(error));
     when(deserializers.get(ParameterizedType.of(String.class)))
         .thenReturn(Optional.of(stringDeserializer));
 
@@ -114,21 +152,18 @@ class ConfigurationDeserializerFactoryTest {
             .create(deserializers, ParameterizedType.of(Configurations.String.class))
             .orElseThrow(AssertionError::new);
 
-    final ConfigurationNode node = ConfigurationNode.map();
+    final ConfigurationNode node = ConfigurationNode.map(Map.entry("property", property));
 
     final DeserializationException thrown =
         assertThrows(
             DeserializationException.class,
             () -> deserializer.deserialize(node, deserializerContext));
 
-    assertEquals(
-        List.of(
-            ConfigurationError.group(
-                "property", ConfigurationError.error("Must be set to a value"))),
-        thrown.errors());
+    assertIterableEquals(List.of(ConfigurationError.group("property", error)), thrown.errors());
 
-    verify(defaults).get(String.class);
+    verify(stringDeserializer).deserialize(any(), any());
     verify(deserializers).get(ParameterizedType.of(String.class));
+    verifyNoMoreInteractions(stringDeserializer);
   }
 
   @Test
@@ -153,32 +188,6 @@ class ConfigurationDeserializerFactoryTest {
         deserializer.deserialize(ConfigurationNode.map(), deserializerContext);
 
     assertThrows(NullPointerException.class, () -> renderer.render(null));
-  }
-
-  @Test
-  void testRender_DefaultsFromParent() throws DeserializationException {
-    when(defaults.get(Optional.class)).thenReturn(Optional.of(Renderer.of(Optional.empty())));
-    when(deserializers.get(ParameterizedType.of(Optional.class, String.class)))
-        .thenReturn(
-            Optional.of(
-                (node, context) -> {
-                  assertEquals(node, ConfigurationNode.nil());
-                  return Renderer.of(Optional.empty());
-                }));
-
-    final Deserializer<? extends Configurations.StringOptional> deserializer =
-        factory
-            .create(deserializers, ParameterizedType.of(Configurations.StringOptional.class))
-            .orElseThrow(AssertionError::new);
-
-    final ConfigurationNode node = ConfigurationNode.map();
-
-    final Renderer<? extends Configurations.StringOptional> renderer =
-        deserializer.deserialize(node, deserializerContext);
-
-    final Configurations.StringOptional stringOptional = renderer.render(rendererContext);
-
-    assertEquals(Optional.empty(), stringOptional.property());
   }
 
   @Test

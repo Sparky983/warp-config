@@ -1,7 +1,5 @@
 package me.sparky983.warp.internal;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.Configuration;
@@ -13,6 +11,7 @@ import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.deserializers.ConfigurationDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.Deserializers;
+import me.sparky983.warp.internal.deserializers.EnumDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.ListDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.MapDeserializerFactory;
 import me.sparky983.warp.internal.deserializers.OptionalDeserializerFactory;
@@ -24,16 +23,6 @@ import me.sparky983.warp.internal.schema.Schema;
  * @param <T> the type of the {@linkplain Configuration configuration class}
  */
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
-  /** The default defaults registry */
-  static final DefaultsRegistry DEFAULTS =
-      DefaultsRegistry.create()
-          .register(Optional.class, Renderer.of(Optional.empty()))
-          .register(List.class, Renderer.of(List.of()))
-          .register(Map.class, Renderer.of(Map.of()));
-
-  /** A cached deserializer context (the context is empty). */
-  private static final Deserializer.Context DESERIALIZER_CONTEXT = new Deserializer.Context() {};
-
   /** A cached renderer context (the context is empty). */
   private static final Renderer.Context RENDERER_CONTEXT = new Renderer.Context() {};
 
@@ -61,7 +50,8 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
           .factory(new OptionalDeserializerFactory())
           .factory(new MapDeserializerFactory())
           .factory(new ListDeserializerFactory())
-          .factory(new ConfigurationDeserializerFactory(DEFAULTS));
+          .factory(new EnumDeserializerFactory())
+          .factory(new ConfigurationDeserializerFactory());
 
   private final Schema<? extends T> schema;
 
@@ -99,9 +89,25 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
   public T build() throws ConfigurationException {
     final ConfigurationNode configuration =
         source.configuration().orElseGet(ConfigurationNode::map);
+
+    final DeserializerRegistry deserializers = this.deserializers.build();
+
+    final Deserializer.Context deserializerContext =
+        new Deserializer.Context() {
+          @SuppressWarnings({"unchecked", "rawtypes"})
+          @Override
+          public <T> Optional<Deserializer<T>> deserializer(final Class<T> type) {
+            Objects.requireNonNull(type, "type cannot be null");
+
+            // Cast is safe because Deserializer is covariant
+            return (Optional<Deserializer<T>>)
+                (Optional) deserializers.get(ParameterizedType.of(type));
+          }
+        };
+
     return schema
-        .deserializer(deserializers.build(), DEFAULTS)
-        .deserialize(configuration, DESERIALIZER_CONTEXT)
+        .deserializer(deserializers)
+        .deserialize(configuration, deserializerContext)
         .render(RENDERER_CONTEXT);
   }
 }
