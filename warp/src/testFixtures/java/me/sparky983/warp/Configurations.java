@@ -64,7 +64,7 @@ public final class Configurations {
       return "<default>";
     }
   }
-  
+
   @Configuration
   public interface DefaultList {
     @Property("property")
@@ -92,7 +92,7 @@ public final class Configurations {
   @Configuration
   public interface DefaultThrowing {
     Throwable EXCEPTION = new Throwable();
-    
+
     @Property("property")
     default Configurations.String property() throws Throwable {
       throw EXCEPTION;

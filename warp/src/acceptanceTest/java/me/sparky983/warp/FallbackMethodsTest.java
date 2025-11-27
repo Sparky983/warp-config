@@ -2,11 +2,11 @@ package me.sparky983.warp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
 class FallbackMethodsTest {
   @Test
@@ -16,7 +16,7 @@ class FallbackMethodsTest {
 
     assertEquals("<default>", configuration.property());
   }
-  
+
   @Test
   void testOverriddenDefault_List() throws ConfigurationException {
     final Configurations.DefaultList configuration =
@@ -46,7 +46,7 @@ class FallbackMethodsTest {
   void testOverriddenDefault_Throws() throws ConfigurationException {
     final Configurations.DefaultThrowing configuration =
         Warp.builder(Configurations.DefaultThrowing.class).build();
-    
+
     final Throwable thrown = assertThrows(Throwable.class, configuration::property);
     assertEquals(Configurations.DefaultThrowing.EXCEPTION, thrown);
   }

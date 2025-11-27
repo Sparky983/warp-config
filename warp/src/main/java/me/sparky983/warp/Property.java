@@ -11,9 +11,10 @@ import org.intellij.lang.annotations.Pattern;
  * Marks the annotated method as a property method.
  *
  * <h2>Default Values</h2>
- * 
+ *
  * If the property method defined a default implementation and the property is absent, it will be
  * used as the fallback.
+ *
  * <pre>{@code
  * @Configuration
  * interface Configuration {
@@ -23,7 +24,7 @@ import org.intellij.lang.annotations.Pattern;
  *   }
  * }
  * }</pre>
- * 
+ *
  * <h2>Requirements</h2>
  *
  * <p>The following is a list of requirements for a property class:
@@ -45,7 +46,7 @@ import org.intellij.lang.annotations.Pattern;
  *   <li>Never return {@code null}
  *   <li>Never throw an exception
  * </ul>
- * 
+ *
  * It should be noted that user-defined default implementations may break these requirements.
  *
  * @since 0.1

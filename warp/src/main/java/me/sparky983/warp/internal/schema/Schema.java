@@ -2,7 +2,6 @@ package me.sparky983.warp.internal.schema;
 
 import me.sparky983.warp.Configuration;
 import me.sparky983.warp.Deserializer;
-import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;
 import org.jspecify.annotations.Nullable;
@@ -50,10 +49,9 @@ public interface Schema<T> {
     String path();
 
     /**
-     * Returns the renderer for the default value or {@code null} if the 
-     * property doesn't have a default value; a default implementation hasn't 
-     * been specified.
-     * 
+     * Returns the renderer for the default value or {@code null} if the property doesn't have a
+     * default value; a default implementation hasn't been specified.
+     *
      * @return the renderer for the default value
      */
     @Nullable InternalRenderer<T> defaultRenderer();

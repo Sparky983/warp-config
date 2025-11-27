@@ -34,7 +34,7 @@ final class MethodProperty<T> implements Schema.Property<T> {
     if (!Modifier.isPublic(method.getModifiers())) {
       throw new IllegalArgumentException("Method " + method + " must be public");
     }
-    
+
     if (Modifier.isStatic(method.getModifiers())) {
       throw new IllegalArgumentException("Method " + method + " must be non-static");
     }
@@ -46,7 +46,7 @@ final class MethodProperty<T> implements Schema.Property<T> {
     if (method.getTypeParameters().length != 0) {
       throw new IllegalArgumentException("Method " + method + " must not be generic");
     }
-    
+
     if (method.isDefault()) {
       this.defaultRenderer = (proxy, context) -> (T) InvocationHandler.invokeDefault(proxy, method);
     } else {

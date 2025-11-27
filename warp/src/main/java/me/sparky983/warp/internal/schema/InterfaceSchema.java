@@ -162,9 +162,10 @@ final class InterfaceSchema<T> implements Schema<T> {
         } else {
           try {
             final Deserializer<?> deserializer = propertyDeserializers.get(property);
-            final Renderer<?> renderer = Objects.requireNonNull(
-                deserializer.deserialize(value, deserializerContext),
-                "Deserializer returned null");
+            final Renderer<?> renderer =
+                Objects.requireNonNull(
+                    deserializer.deserialize(value, deserializerContext),
+                    "Deserializer returned null");
             mappedConfiguration.put(key, (proxy, context) -> renderer.render(context));
           } catch (final DeserializationException e) {
             erroneous = true;
@@ -191,7 +192,7 @@ final class InterfaceSchema<T> implements Schema<T> {
                 if (name.equals("toString") && parameterCount == 0) {
                   return configurationClass.getName();
                 } else if (name.equals("hashCode") && parameterCount == 0) {
-                  return super.hashCode(); 
+                  return super.hashCode();
                   // this is fine since our configurations are identity-based
                 } else if (name.equals("equals")
                     && parameterCount == 1
@@ -199,8 +200,7 @@ final class InterfaceSchema<T> implements Schema<T> {
                   return proxy == args[0];
                 }
               }
-              final Object result = mappedConfiguration.get(method)
-                  .render(proxy, rendererContext);
+              final Object result = mappedConfiguration.get(method).render(proxy, rendererContext);
 
               return Objects.requireNonNull(result, "Renderer returned null");
             });
