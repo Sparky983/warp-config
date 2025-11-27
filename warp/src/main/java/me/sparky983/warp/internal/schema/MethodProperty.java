@@ -34,7 +34,7 @@ final class MethodProperty<T> implements Schema.Property<T> {
     if (!Modifier.isPublic(method.getModifiers())) {
       throw new IllegalArgumentException("Method " + method + " must be public");
     }
-    
+
     if (Modifier.isStatic(method.getModifiers())) {
       throw new IllegalArgumentException("Method " + method + " must be non-static");
     }
