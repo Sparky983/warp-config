@@ -149,23 +149,27 @@ final class InterfaceSchema<T> implements Schema<T> {
       } else {
         nodeConfiguration = node.asMap();
       }
-      final Map<Method, Renderer<?>> mappedConfiguration = new HashMap<>();
+
+      final Map<Method, InternalRenderer<?>> mappedConfiguration = new HashMap<>();
 
       for (final Map.Entry<Method, Property<?>> entry : properties.entrySet()) {
         final Method key = entry.getKey();
         final Property<?> property = entry.getValue();
         final ConfigurationNode value = get(property.path(), nodeConfiguration);
-        final Renderer<?> renderer;
-        try {
-          final Deserializer<?> deserializer = propertyDeserializers.get(property);
-          renderer =
-              Objects.requireNonNull(
-                  deserializer.deserialize(value, deserializerContext),
-                  "Deserializer returned null");
-          mappedConfiguration.put(key, renderer);
-        } catch (final DeserializationException e) {
-          erroneous = true;
-          errors.add(ConfigurationError.group(property.path(), e.errors()));
+        final InternalRenderer<?> defaultRenderer = property.defaultRenderer();
+        if (value == null && defaultRenderer != null) {
+          mappedConfiguration.put(key, defaultRenderer);
+        } else {
+          try {
+            final Deserializer<?> deserializer = propertyDeserializers.get(property);
+            final Renderer<?> renderer = Objects.requireNonNull(
+                deserializer.deserialize(value, deserializerContext),
+                "Deserializer returned null");
+            mappedConfiguration.put(key, (proxy, context) -> renderer.render(context));
+          } catch (final DeserializationException e) {
+            erroneous = true;
+            errors.add(ConfigurationError.group(property.path(), e.errors()));
+          }
         }
       }
 
@@ -187,15 +191,16 @@ final class InterfaceSchema<T> implements Schema<T> {
                 if (name.equals("toString") && parameterCount == 0) {
                   return configurationClass.getName();
                 } else if (name.equals("hashCode") && parameterCount == 0) {
-                  return super
-                      .hashCode(); // this is fine since our configurations are identity-based
+                  return super.hashCode(); 
+                  // this is fine since our configurations are identity-based
                 } else if (name.equals("equals")
                     && parameterCount == 1
                     && method.getParameters()[0].getType() == Object.class) {
                   return proxy == args[0];
                 }
               }
-              final Object result = mappedConfiguration.get(method).render(rendererContext);
+              final Object result = mappedConfiguration.get(method)
+                  .render(proxy, rendererContext);
 
               return Objects.requireNonNull(result, "Renderer returned null");
             });

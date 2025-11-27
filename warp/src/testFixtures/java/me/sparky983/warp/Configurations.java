@@ -58,6 +58,48 @@ public final class Configurations {
   public interface Empty {}
 
   @Configuration
+  public interface DefaultString {
+    @Property("property")
+    default java.lang.String property() {
+      return "<default>";
+    }
+  }
+  
+  @Configuration
+  public interface DefaultList {
+    @Property("property")
+    default List<java.lang.String> property() {
+      return List.of("<default>");
+    }
+  }
+
+  @Configuration
+  public interface DefaultMap {
+    @Property("property")
+    default java.util.Map<java.lang.String, java.lang.String> property() {
+      return java.util.Map.of("<default-key>", "<default-value>");
+    }
+  }
+
+  @Configuration
+  public interface DefaultOptional {
+    @Property("property")
+    default Optional<java.lang.String> property() {
+      return Optional.of("<default>");
+    }
+  }
+
+  @Configuration
+  public interface DefaultThrowing {
+    Throwable EXCEPTION = new Throwable();
+    
+    @Property("property")
+    default Configurations.String property() throws Throwable {
+      throw EXCEPTION;
+    }
+  }
+
+  @Configuration
   public interface Byte {
     @Property("property")
     byte property();
