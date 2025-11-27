@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -54,7 +56,8 @@ class YamlConfigurationSourceTest {
    */
   static final Charset INCOMPATIBLE_CHARSET = StandardCharsets.UTF_16;
 
-  @TempDir Path tempDir;
+  @TempDir Path tempDirPath;
+  @TempDir File tempDirFile;
 
   @Test
   void testDefaultCharset() {
@@ -94,7 +97,7 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadPath_InvalidYaml() throws IOException {
-    final Path invalidYaml = tempDir.resolve("invalid.yaml");
+    final Path invalidYaml = tempDirPath.resolve("invalid.yaml");
     Files.writeString(invalidYaml, INVALID_YAML);
 
     final YamlConfigurationSource source = YamlConfigurationSource.read(invalidYaml);
@@ -104,7 +107,7 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadPath_Invalid() throws IOException {
-    final Path invalidYaml = tempDir.resolve("invalid.yaml");
+    final Path invalidYaml = tempDirPath.resolve("invalid.yaml");
     Files.writeString(invalidYaml, INVALID);
 
     final YamlConfigurationSource source = YamlConfigurationSource.read(invalidYaml);
@@ -114,7 +117,7 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadPath_NotFound() throws Exception {
-    final Path notFound = tempDir.resolve("not-found.yaml");
+    final Path notFound = tempDirPath.resolve("not-found.yaml");
 
     assertFalse(Files.exists(notFound));
     assertEquals(Optional.empty(), YamlConfigurationSource.read(notFound).configuration());
@@ -122,7 +125,7 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadPath_Directory() throws Exception {
-    final Path directory = tempDir.resolve("dir");
+    final Path directory = tempDirPath.resolve("dir");
     Files.createDirectory(directory);
 
     assertThrows(IOException.class, () -> YamlConfigurationSource.read(directory).configuration());
@@ -130,7 +133,7 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadPath() throws Exception {
-    final Path mix = tempDir.resolve("mix.yaml");
+    final Path mix = tempDirPath.resolve("mix.yaml");
 
     Files.writeString(mix, MIX_YAML);
 
@@ -146,12 +149,12 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadPathCharset_NullCharset() {
-    assertThrows(NullPointerException.class, () -> YamlConfigurationSource.read(tempDir, null));
+    assertThrows(NullPointerException.class, () -> YamlConfigurationSource.read(tempDirPath, null));
   }
 
   @Test
   void testReadPathCharset_InvalidYaml() throws IOException {
-    final Path invalidYaml = tempDir.resolve("invalid.yaml");
+    final Path invalidYaml = tempDirPath.resolve("invalid.yaml");
     Files.writeString(invalidYaml, INVALID, INCOMPATIBLE_CHARSET);
 
     final YamlConfigurationSource source =
@@ -162,7 +165,7 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadPathCharset_Invalid() throws IOException {
-    final Path invalidYaml = tempDir.resolve("invalid.yaml");
+    final Path invalidYaml = tempDirPath.resolve("invalid.yaml");
     Files.writeString(invalidYaml, INVALID, INCOMPATIBLE_CHARSET);
 
     final YamlConfigurationSource source =
@@ -173,7 +176,7 @@ class YamlConfigurationSourceTest {
 
   @Test
   void testReadPathCharset_NotFound() throws Exception {
-    final Path notFound = tempDir.resolve("not-found.yaml");
+    final Path notFound = tempDirPath.resolve("not-found.yaml");
 
     assertFalse(Files.exists(notFound));
     assertEquals(
@@ -184,14 +187,144 @@ class YamlConfigurationSourceTest {
   @Test
   void testReadPathCharset_Directory() {
     assertThrows(
-        IOException.class, () -> YamlConfigurationSource.read(tempDir, INCOMPATIBLE_CHARSET));
+        IOException.class, () -> YamlConfigurationSource.read(tempDirPath, INCOMPATIBLE_CHARSET));
   }
 
   @Test
   void testReadPathCharset() throws Exception {
-    final Path mix = tempDir.resolve("mix.yaml");
+    final Path mix = tempDirPath.resolve("mix.yaml");
 
     Files.writeString(mix, MIX_YAML, INCOMPATIBLE_CHARSET);
+
+    assertTrue(sourceIsMix(YamlConfigurationSource.read(mix, INCOMPATIBLE_CHARSET)));
+  }
+
+  @Test
+  void testReadFile_Null() {
+    assertThrows(NullPointerException.class, () -> YamlConfigurationSource.read((File) null));
+  }
+
+  @Test
+  void testReadFile_InvalidYaml() throws IOException {
+    final File invalidYaml = new File(tempDirFile, "invalid.yaml");
+
+    try (final FileWriter writer = new FileWriter(invalidYaml)) {
+      writer.write(INVALID_YAML);
+    }
+
+    final YamlConfigurationSource source = YamlConfigurationSource.read(invalidYaml);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
+  void testReadFile_Invalid() throws IOException {
+    final File invalidYaml = new File(tempDirFile, "invalid.yaml");
+
+    try (final FileWriter writer = new FileWriter(invalidYaml)) {
+      writer.write(INVALID);
+    }
+
+    final YamlConfigurationSource source = YamlConfigurationSource.read(invalidYaml);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
+  void testReadFile_NotFound() throws Exception {
+    final File notFound = new File(tempDirFile, "not-found.yaml");
+
+    assertFalse(notFound.exists());
+    assertEquals(Optional.empty(), YamlConfigurationSource.read(notFound).configuration());
+  }
+
+  @Test
+  void testReadFile_Directory() {
+    final File directory = new File(tempDirFile, "dir");
+
+    final boolean created = directory.mkdir();
+
+    // It may be more correct for this assertion and other similar assertions
+    // to be assumptions
+    assertTrue(created);
+
+    assertThrows(IOException.class, () -> YamlConfigurationSource.read(directory).configuration());
+  }
+
+  @Test
+  void testReadFile() throws Exception {
+    final File mix = new File(tempDirFile, "mix.yaml");
+
+    try (final FileWriter writer = new FileWriter(mix)) {
+      writer.write(MIX_YAML);
+    }
+
+    assertTrue(sourceIsMix(YamlConfigurationSource.read(mix)));
+  }
+
+  @Test
+  void testReadFileCharset_NullFile() {
+    assertThrows(
+        NullPointerException.class,
+        () -> YamlConfigurationSource.read((File) null, INCOMPATIBLE_CHARSET));
+  }
+
+  @Test
+  void testReadFileCharset_NullCharset() {
+    assertThrows(NullPointerException.class, () -> YamlConfigurationSource.read(tempDirFile, null));
+  }
+
+  @Test
+  void testReadFileCharset_InvalidYaml() throws IOException {
+    final File invalidYaml = new File(tempDirFile, "invalid.yaml");
+
+    try (final FileWriter writer = new FileWriter(invalidYaml, INCOMPATIBLE_CHARSET)) {
+      writer.write(INVALID);
+    }
+
+    final YamlConfigurationSource source =
+        YamlConfigurationSource.read(invalidYaml, INCOMPATIBLE_CHARSET);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
+  void testReadFileCharset_Invalid() throws IOException {
+    final File invalidYaml = new File(tempDirFile, "invalid.yaml");
+
+    try (final FileWriter writer = new FileWriter(invalidYaml, INCOMPATIBLE_CHARSET)) {
+      writer.write(INVALID);
+    }
+
+    final YamlConfigurationSource source =
+        YamlConfigurationSource.read(invalidYaml, INCOMPATIBLE_CHARSET);
+
+    assertThrows(ConfigurationException.class, source::configuration);
+  }
+
+  @Test
+  void testReadFileCharset_NotFound() throws Exception {
+    final File notFound = new File(tempDirFile, "not-found.yaml");
+
+    assertFalse(notFound.exists());
+    assertEquals(
+        Optional.empty(),
+        YamlConfigurationSource.read(notFound, INCOMPATIBLE_CHARSET).configuration());
+  }
+
+  @Test
+  void testReadFileCharset_Directory() {
+    assertThrows(
+        IOException.class, () -> YamlConfigurationSource.read(tempDirFile, INCOMPATIBLE_CHARSET));
+  }
+
+  @Test
+  void testReadFileCharset() throws Exception {
+    final File mix = new File(tempDirFile, "mix.yaml");
+
+    try (final FileWriter writer = new FileWriter(mix, INCOMPATIBLE_CHARSET)) {
+      writer.write(MIX_YAML);
+    }
 
     assertTrue(sourceIsMix(YamlConfigurationSource.read(mix, INCOMPATIBLE_CHARSET)));
   }

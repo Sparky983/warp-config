@@ -3,6 +3,7 @@ package me.sparky983.warp.yaml;
 import com.amihaiemil.eoyaml.Yaml;
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.amihaiemil.eoyaml.exceptions.YamlReadingException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -85,6 +86,45 @@ public interface YamlConfigurationSource extends ConfigurationSource {
     } catch (final NoSuchFileException e) {
       return new OkYamlConfigurationSource(Optional.empty());
     }
+  }
+
+  /**
+   * Creates a new {@code YamlConfigurationSource} from the given file. If there is no file, an
+   * {@linkplain ConfigurationSource##empty-source-header empty source} is returned, otherwise a
+   * {@code YamlConfigurationSource} of the parsed content is returned.
+   *
+   * <p>The {@linkplain Charset#defaultCharset() default charset} is used to read the file.
+   *
+   * @param file the file
+   * @return the new source
+   * @throws IOException if there was an error reading the file.
+   * @throws java.nio.file.InvalidPathException if the file could not be converted to a {@link Path}
+   *     object - see {@link java.nio.file.FileSystem#getPath(String, String...)}.
+   * @throws NullPointerException if the file is {@code null}.
+   * @since 0.2
+   */
+  static YamlConfigurationSource read(final File file) throws IOException {
+    return read(file, Charset.defaultCharset());
+  }
+
+  /**
+   * Creates a new {@code YamlConfigurationSource} from the given file. If there is no file, an
+   * {@linkplain ConfigurationSource##empty-source-header empty source} is returned, otherwise a
+   * {@code YamlConfigurationSource} of the parsed content is returned.
+   *
+   * @param file the file
+   * @param charset the charset
+   * @return the new source
+   * @throws IOException if there was an error reading the file.
+   * @throws java.nio.file.InvalidPathException if the file could not be converted to a {@link Path}
+   *     object - see {@link java.nio.file.FileSystem#getPath(String, String...)}.
+   * @throws NullPointerException if the file or charset is {@code null}.
+   * @since 0.2
+   */
+  static YamlConfigurationSource read(final File file, final Charset charset) throws IOException {
+    Objects.requireNonNull(file, "file cannot be null");
+
+    return read(file.toPath(), charset);
   }
 
   /**
