@@ -1,14 +1,17 @@
 package me.sparky983.warp.internal.schema;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
 import me.sparky983.warp.Property;
 import me.sparky983.warp.internal.ParameterizedType;
+import org.jspecify.annotations.Nullable;
 
 /** The {@link Schema.Property} implementation for property methods. */
 final class MethodProperty<T> implements Schema.Property<T> {
   private final String path;
+  private final @Nullable InternalRenderer<T> defaultRenderer;
   private final ParameterizedType<T> type;
 
   /**
@@ -32,8 +35,8 @@ final class MethodProperty<T> implements Schema.Property<T> {
       throw new IllegalArgumentException("Method " + method + " must be public");
     }
 
-    if (!Modifier.isAbstract(method.getModifiers())) {
-      throw new IllegalArgumentException("Method " + method + " must be abstract or default");
+    if (Modifier.isStatic(method.getModifiers())) {
+      throw new IllegalArgumentException("Method " + method + " must be non-static");
     }
 
     if (method.getParameterCount() != 0) {
@@ -44,6 +47,12 @@ final class MethodProperty<T> implements Schema.Property<T> {
       throw new IllegalArgumentException("Method " + method + " must not be generic");
     }
 
+    if (method.isDefault()) {
+      this.defaultRenderer = (proxy, context) -> (T) InvocationHandler.invokeDefault(proxy, method);
+    } else {
+      this.defaultRenderer = null;
+    }
+
     this.path = property.value();
     this.type = (ParameterizedType<T>) ParameterizedType.of(method.getGenericReturnType());
   }
@@ -51,6 +60,11 @@ final class MethodProperty<T> implements Schema.Property<T> {
   @Override
   public String path() {
     return path;
+  }
+
+  @Override
+  public @Nullable InternalRenderer<T> defaultRenderer() {
+    return defaultRenderer;
   }
 
   @Override
