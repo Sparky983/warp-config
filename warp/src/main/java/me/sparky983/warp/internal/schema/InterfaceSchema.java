@@ -162,10 +162,9 @@ final class InterfaceSchema<T> implements Schema<T> {
         } else {
           try {
             final Deserializer<?> deserializer = propertyDeserializers.get(property);
-            final Renderer<?> renderer =
-                Objects.requireNonNull(
-                    deserializer.deserialize(value, deserializerContext),
-                    "Deserializer returned null");
+            final Renderer<?> renderer = Objects.requireNonNull(
+                deserializer.deserialize(value, deserializerContext),
+                "Deserializer returned null");
             mappedConfiguration.put(key, (proxy, context) -> renderer.render(context));
           } catch (final DeserializationException e) {
             erroneous = true;
