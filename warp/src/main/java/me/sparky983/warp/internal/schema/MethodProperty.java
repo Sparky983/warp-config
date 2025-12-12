@@ -39,6 +39,10 @@ final class MethodProperty<T> implements Schema.Property<T> {
       throw new IllegalArgumentException("Method " + method + " must be non-static");
     }
 
+    if (Modifier.isStatic(method.getModifiers())) {
+      throw new IllegalArgumentException("Method " + method + " must be non-static");
+    }
+
     if (method.getParameterCount() != 0) {
       throw new IllegalArgumentException("Method " + method + " must not declare any parameters");
     }
