@@ -1,11 +1,13 @@
 package me.sparky983.warp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -171,6 +173,50 @@ class WarpTest {
 
     assertEquals(10, builder.property1());
     assertEquals(10, builder.property2());
+  }
+
+  @Test
+  void testUnknownKey() {
+    final ConfigurationBuilder<Configurations.String> configuration =
+        Warp.builder(Configurations.String.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map(
+                        Map.entry("property", ConfigurationNode.string("value")),
+                        Map.entry("unknown-property", ConfigurationNode.string("value")))));
+
+    final ConfigurationException thrown =
+        assertThrows(ConfigurationException.class, configuration::build);
+    assertIterableEquals(
+        List.of(
+            ConfigurationError.group(
+                "unknown-property", ConfigurationError.error("Unknown property"))),
+        thrown.errors());
+  }
+
+  @Test
+  void testUnknownNestedKey() {
+    final ConfigurationBuilder<Configurations.NestedProperty> configuration =
+        Warp.builder(Configurations.NestedProperty.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map(
+                        Map.entry(
+                            "nested",
+                            ConfigurationNode.map(
+                                Map.entry("property", ConfigurationNode.string("value")),
+                                Map.entry(
+                                    "unknown-property", ConfigurationNode.string("value")))))));
+
+    final ConfigurationException thrown =
+        assertThrows(ConfigurationException.class, configuration::build);
+    assertIterableEquals(
+        List.of(
+            ConfigurationError.group(
+                "nested",
+                ConfigurationError.group(
+                    "unknown-property", ConfigurationError.error("Unknown property")))),
+        thrown.errors());
   }
 
   @Test

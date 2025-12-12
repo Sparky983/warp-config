@@ -81,9 +81,9 @@ final class InterfaceSchema<T> implements Schema<T> {
   }
 
   private static @Nullable ConfigurationNode get(
-      final String path, final Map<String, ConfigurationNode> configuration) {
+      final List<String> keysList, final Map<String, ConfigurationNode> configuration) {
     Map<String, ConfigurationNode> currentMap = configuration;
-    final Queue<String> keys = new LinkedList<>(Arrays.asList(path.split("\\.")));
+    final Queue<String> keys = new LinkedList<>(keysList);
     while (true) {
       final ConfigurationNode node = currentMap.get(keys.remove());
       if (node == null) {
@@ -144,6 +144,9 @@ final class InterfaceSchema<T> implements Schema<T> {
 
       final Map<String, ConfigurationNode> nodeConfiguration;
       if (node == null) {
+        // An error occurs if the configuration is absent, however the property
+        // deserializers are still called in order to provide better errors
+        // messages
         nodeConfiguration = Map.of();
         erroneous = true;
       } else {
@@ -152,10 +155,15 @@ final class InterfaceSchema<T> implements Schema<T> {
 
       final Map<Method, InternalRenderer<?>> mappedConfiguration = new HashMap<>();
 
+      final UnseenKeys unseenKeys = UnseenKeys.createInitialKeys(nodeConfiguration);
+
       for (final Map.Entry<Method, Property<?>> entry : properties.entrySet()) {
         final Method key = entry.getKey();
         final Property<?> property = entry.getValue();
-        final ConfigurationNode value = get(property.path(), nodeConfiguration);
+        final String path = property.path();
+        final List<String> keys = Arrays.asList(path.split("\\."));
+        unseenKeys.remove(keys);
+        final ConfigurationNode value = get(keys, nodeConfiguration);
         final InternalRenderer<?> defaultRenderer = property.defaultRenderer();
         if (value == null && defaultRenderer != null) {
           mappedConfiguration.put(key, defaultRenderer);
@@ -169,9 +177,15 @@ final class InterfaceSchema<T> implements Schema<T> {
             mappedConfiguration.put(key, (proxy, context) -> renderer.render(context));
           } catch (final DeserializationException e) {
             erroneous = true;
-            errors.add(ConfigurationError.group(property.path(), e.errors()));
+            errors.add(ConfigurationError.group(path, e.errors()));
           }
         }
+      }
+
+      final List<ConfigurationError> unseenPropertyErrors = unseenKeys.makeErrors();
+      if (!unseenPropertyErrors.isEmpty()) {
+        erroneous = true;
+        errors.addAll(unseenPropertyErrors);
       }
 
       if (erroneous) {
