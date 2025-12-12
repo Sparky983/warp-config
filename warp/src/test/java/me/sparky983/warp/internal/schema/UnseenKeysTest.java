@@ -18,7 +18,7 @@ class UnseenKeysTest {
   static final ConfigurationError UNKNOWN = ConfigurationError.error("Unknown property");
 
   @Test
-  void testCreateInitialKeys() {
+  void testNew() {
     final Map<String, ConfigurationNode> map =
         Map.ofEntries(
             Map.entry("string", ConfigurationNode.string("value")),
@@ -32,7 +32,7 @@ class UnseenKeysTest {
                             Map.entry(
                                 "string", ConfigurationNode.string("doubly nested value")))))));
 
-    final Map<String, UnseenKeys> unseenKeys = UnseenKeys.createInitialKeys(map).unseenKeys();
+    final Map<String, UnseenKeys> unseenKeys = new UnseenKeys(map).unseenKeys();
 
     assertEquals(2, unseenKeys.size());
     assertNull(unseenKeys.get("string"));
@@ -52,7 +52,7 @@ class UnseenKeysTest {
             "nested",
             ConfigurationNode.map(Map.entry("value", ConfigurationNode.string("string"))));
 
-    final UnseenKeys unseenKeys = UnseenKeys.createInitialKeys(map);
+    final UnseenKeys unseenKeys = new UnseenKeys(map);
 
     unseenKeys.remove(List.of("nested", "value"));
 
@@ -67,7 +67,7 @@ class UnseenKeysTest {
             "nested",
             ConfigurationNode.map(Map.entry("value", ConfigurationNode.string("string"))));
 
-    final UnseenKeys unseenKeys = UnseenKeys.createInitialKeys(map);
+    final UnseenKeys unseenKeys = new UnseenKeys(map);
 
     unseenKeys.remove(List.of("nested"));
 
@@ -86,7 +86,7 @@ class UnseenKeysTest {
                 "doubly-nested",
                 ConfigurationNode.map(
                     Map.entry("string", ConfigurationNode.string("doubly nested value"))))));
-    final UnseenKeys keys = UnseenKeys.createInitialKeys(map);
+    final UnseenKeys keys = new UnseenKeys(map);
 
     assertEquals(
         List.of(

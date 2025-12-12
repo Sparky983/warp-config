@@ -19,27 +19,36 @@ import org.jspecify.annotations.Nullable;
 final class UnseenKeys {
   private final Map<String, @Nullable UnseenKeys> unseenKeys;
 
-  private UnseenKeys(final Map<String, @Nullable UnseenKeys> unseenKeys) {
-    this.unseenKeys = unseenKeys;
-  }
-
-  static UnseenKeys createInitialKeys(
-      final Map<String, ? extends ConfigurationNode> configurationMap) {
+  /**
+   * Constructs an {@code UnseenKeys} containing all keys in the given configuration map.
+   *
+   * @param configurationMap the configuration map
+   * @throws NullPointerException if the configuration map is {@code null}.
+   */
+  UnseenKeys(final Map<String, ConfigurationNode> configurationMap) {
     Objects.requireNonNull(configurationMap, "configurationMap cannot be null");
 
-    final Map<String, @Nullable UnseenKeys> unknownKeys = new LinkedHashMap<>();
+    final Map<String, @Nullable UnseenKeys> unseenKeys = new LinkedHashMap<>();
     configurationMap.forEach(
         (key, value) -> {
           try {
-            unknownKeys.put(key, createInitialKeys(value.asMap()));
+            unseenKeys.put(key, new UnseenKeys(value.asMap()));
           } catch (final DeserializationException e) {
-            unknownKeys.put(key, null);
+            unseenKeys.put(key, null);
           }
         });
-    return new UnseenKeys(unknownKeys);
+    this.unseenKeys = unseenKeys;
   }
 
+  /**
+   * Removes the given key; marks it as being seen.
+   *
+   * @param keys the key parts
+   * @throws NullPointerException if keys is {@code null}.
+   */
   void remove(final List<String> keys) {
+    Objects.requireNonNull(keys, "keys cannot be null");
+
     if (keys.isEmpty()) {
       throw new IllegalArgumentException("keys cannot be empty");
     }
@@ -58,11 +67,21 @@ final class UnseenKeys {
     }
   }
 
+  /**
+   * Returns all the unseen keys.
+   *
+   * @return the unseen keys
+   */
   @VisibleForTesting
   Map<String, @Nullable UnseenKeys> unseenKeys() {
     return Collections.unmodifiableMap(this.unseenKeys);
   }
 
+  /**
+   * Creates a list of {@link ConfigurationError ConfigurationErrors} for all unseen keys.
+   *
+   * @return the list of errors
+   */
   List<ConfigurationError> makeErrors() {
     final List<ConfigurationError> errors = new ArrayList<>();
     makeErrors0(errors);

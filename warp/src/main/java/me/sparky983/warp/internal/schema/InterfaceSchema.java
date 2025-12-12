@@ -155,7 +155,7 @@ final class InterfaceSchema<T> implements Schema<T> {
 
       final Map<Method, InternalRenderer<?>> mappedConfiguration = new HashMap<>();
 
-      final UnseenKeys unseenKeys = UnseenKeys.createInitialKeys(nodeConfiguration);
+      final UnseenKeys unseenKeys = new UnseenKeys(nodeConfiguration);
 
       for (final Map.Entry<Method, Property<?>> entry : properties.entrySet()) {
         final Method key = entry.getKey();
