@@ -3,6 +3,7 @@ package me.sparky983.warp;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import org.intellij.lang.annotations.Pattern;
@@ -51,6 +52,7 @@ import org.intellij.lang.annotations.Pattern;
  *
  * @since 0.1
  */
+@Documented
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface Property {
