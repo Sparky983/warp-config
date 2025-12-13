@@ -1,6 +1,7 @@
 package me.sparky983.warp;
 
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Renders a value.
@@ -44,5 +45,16 @@ public interface Renderer<T> {
    *
    * @since 0.1
    */
-  interface Context {}
+  interface Context {
+    /**
+     * Returns an array of any contextual arguments used for rendering.
+     *
+     * <p>They are unspecified and can be interpreted in any way a deserializer sees fit.
+     *
+     * @return an array of any contextual arguments
+     * @since 0.2
+     * @see Deserializer.Context#parameters()
+     */
+    @Nullable Object[] arguments();
+  }
 }

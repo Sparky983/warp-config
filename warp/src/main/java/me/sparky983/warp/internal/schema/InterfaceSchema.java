@@ -3,6 +3,7 @@ package me.sparky983.warp.internal.schema;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -170,11 +172,28 @@ final class InterfaceSchema<T> implements Schema<T> {
         } else {
           try {
             final Deserializer<?> deserializer = propertyDeserializers.get(property);
+            final Deserializer.Context context;
+            if (key.getParameterCount() == 0) {
+              context = deserializerContext;
+            } else {
+              context =
+                  new Deserializer.Context() {
+                    @Override
+                    public Parameter[] parameters() {
+                      return combineArrays(deserializerContext.parameters(), key.getParameters());
+                    }
+
+                    @Override
+                    public <T> Optional<Deserializer<T>> deserializer(final Class<T> type) {
+                      return deserializerContext.deserializer(type);
+                    }
+                  };
+            }
             final Renderer<?> renderer =
                 Objects.requireNonNull(
-                    deserializer.deserialize(value, deserializerContext),
-                    "Deserializer returned null");
-            mappedConfiguration.put(key, (proxy, context) -> renderer.render(context));
+                    deserializer.deserialize(value, context), "Deserializer returned null");
+            mappedConfiguration.put(
+                key, (proxy, rendererContext) -> renderer.render(rendererContext));
           } catch (final DeserializationException e) {
             erroneous = true;
             errors.add(ConfigurationError.group(path, e.errors()));
@@ -199,7 +218,7 @@ final class InterfaceSchema<T> implements Schema<T> {
         Objects.requireNonNull(rendererContext, "context cannot be null");
 
         return newProxyInstance(
-            (proxy, method, args) -> {
+            (proxy, method, innerArgs) -> {
               if (method.getDeclaringClass().equals(Object.class)) {
                 final String name = method.getName();
                 final int parameterCount = method.getParameterCount();
@@ -211,14 +230,31 @@ final class InterfaceSchema<T> implements Schema<T> {
                 } else if (name.equals("equals")
                     && parameterCount == 1
                     && method.getParameters()[0].getType() == Object.class) {
-                  return proxy == args[0];
+                  return proxy == innerArgs[0];
                 }
               }
-              final Object result = mappedConfiguration.get(method).render(proxy, rendererContext);
+              final Renderer.Context context =
+                  () -> combineArrays(rendererContext.arguments(), innerArgs);
+              final Object result = mappedConfiguration.get(method).render(proxy, context);
 
               return Objects.requireNonNull(result, "Renderer returned null");
             });
       };
     };
+  }
+
+  private <T extends @Nullable Object> T[] combineArrays(
+      final T[] first, final T @Nullable [] second) {
+    if (second == null || second.length == 0) {
+      return first;
+    }
+
+    if (first.length == 0) {
+      return second;
+    }
+
+    final T[] combinedArgs = Arrays.copyOf(first, first.length + second.length);
+    System.arraycopy(second, 0, combinedArgs, first.length, second.length);
+    return combinedArgs;
   }
 }

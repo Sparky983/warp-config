@@ -5,11 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Parameter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -193,6 +196,38 @@ class CustomDeserializerTest {
   }
 
   @Test
+  void testCustomerDeserializer_PropertyParameter(
+      @Mock final Deserializer<Object> deserializer, @Mock final Renderer<Object> renderer)
+      throws ConfigurationException, NoSuchMethodException {
+    final Object object = new Object();
+    final Parameter parameter =
+        Configurations.IdentityProperty.class.getDeclaredMethod("property", Object.class)
+            .getParameters()[0];
+
+    when(deserializer.deserialize(isNull(), any())).thenReturn(renderer);
+    when(renderer.render(any())).thenReturn(object);
+
+    final Configurations.IdentityProperty configuration =
+        Warp.builder(Configurations.IdentityProperty.class)
+            .source(ConfigurationSource.of(ConfigurationNode.map()))
+            .deserializer(Object.class, deserializer)
+            .build();
+
+    assertEquals(object, configuration.property(object));
+    verify(deserializer)
+        .deserialize(
+            isNull(),
+            argThat(
+                (context) ->
+                    context.parameters().length == 1 && context.parameters()[0].equals(parameter)));
+    verify(renderer)
+        .render(
+            argThat(
+                (context) -> context.arguments().length == 1 && context.arguments()[0] == object));
+    verifyNoMoreInteractions(deserializer, renderer);
+  }
+
+  @Test
   void testCustomDeserializer(
       @Mock final Deserializer<String> deserializer, @Mock final Renderer<String> renderer)
       throws Exception {
@@ -209,7 +244,7 @@ class CustomDeserializerTest {
 
     assertEquals("value", configuration.property());
     verify(deserializer).deserialize(eq(node), any());
-    verify(renderer).render(any());
+    verify(renderer).render(argThat((context) -> context.arguments().length == 0));
     verifyNoMoreInteractions(deserializer, renderer);
   }
 }

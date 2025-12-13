@@ -2,10 +2,13 @@ package me.sparky983.warp.internal.deserializers;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,7 +32,7 @@ class ConfigurationDeserializerFactoryTest {
   @Mock DeserializerRegistry deserializers;
   @Mock Deserializer.Context deserializerContext;
   @Mock Renderer.Context rendererContext;
-
+  @Mock Deserializer<String> propertyDeserializer;
   DeserializerFactory factory;
 
   @BeforeEach
@@ -39,7 +42,8 @@ class ConfigurationDeserializerFactoryTest {
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(deserializers, deserializerContext, rendererContext);
+    verifyNoMoreInteractions(
+        deserializers, deserializerContext, rendererContext, propertyDeserializer);
   }
 
   @Test
@@ -63,14 +67,13 @@ class ConfigurationDeserializerFactoryTest {
   }
 
   @Test
-  void testDeserialize_NullNodeRequiredProperty(@Mock final Deserializer<String> stringDeserializer)
-      throws DeserializationException {
+  void testDeserialize_NullNodeRequiredProperty() throws DeserializationException {
     final ConfigurationError error = ConfigurationError.error("Some error");
 
-    when(stringDeserializer.deserialize(null, deserializerContext))
+    when(propertyDeserializer.deserialize(null, deserializerContext))
         .thenThrow(new DeserializationException(error));
     when(deserializers.get(ParameterizedType.of(String.class)))
-        .thenReturn(Optional.of(stringDeserializer));
+        .thenReturn(Optional.of(propertyDeserializer));
 
     final Deserializer<? extends Configurations.String> deserializer =
         factory
@@ -86,12 +89,11 @@ class ConfigurationDeserializerFactoryTest {
   }
 
   @Test
-  void testDeserialize_NullNodeOptionalProperties(
-      @Mock final Deserializer<String> stringDeserializer) throws DeserializationException {
-    when(stringDeserializer.deserialize(null, deserializerContext))
+  void testDeserialize_NullNodeOptionalProperties() throws DeserializationException {
+    when(propertyDeserializer.deserialize(null, deserializerContext))
         .thenReturn(Renderer.of("some string"));
     when(deserializers.get(ParameterizedType.of(String.class)))
-        .thenReturn(Optional.of(stringDeserializer));
+        .thenReturn(Optional.of(propertyDeserializer));
 
     final Deserializer<? extends Configurations.String> deserializer =
         factory
@@ -137,15 +139,14 @@ class ConfigurationDeserializerFactoryTest {
   }
 
   @Test
-  void testDeserialize_PropertyHasErrorDuringDeserialization(
-      @Mock final Deserializer<String> stringDeserializer) throws DeserializationException {
+  void testDeserialize_PropertyHasErrorDuringDeserialization() throws DeserializationException {
     final ConfigurationNode property = ConfigurationNode.string("some string");
     final ConfigurationError error = ConfigurationError.error("Some error");
 
-    when(stringDeserializer.deserialize(property, deserializerContext))
+    when(propertyDeserializer.deserialize(property, deserializerContext))
         .thenThrow(new DeserializationException(error));
     when(deserializers.get(ParameterizedType.of(String.class)))
-        .thenReturn(Optional.of(stringDeserializer));
+        .thenReturn(Optional.of(propertyDeserializer));
 
     final Deserializer<? extends Configurations.String> deserializer =
         factory
@@ -161,9 +162,8 @@ class ConfigurationDeserializerFactoryTest {
 
     assertIterableEquals(List.of(ConfigurationError.group("property", error)), thrown.errors());
 
-    verify(stringDeserializer).deserialize(any(), any());
+    verify(propertyDeserializer).deserialize(any(), any());
     verify(deserializers).get(ParameterizedType.of(String.class));
-    verifyNoMoreInteractions(stringDeserializer);
   }
 
   @Test
@@ -191,14 +191,159 @@ class ConfigurationDeserializerFactoryTest {
   }
 
   @Test
-  void testRender() throws DeserializationException {
+  void testRender_OuterArgumentsOnly(@Mock final Renderer<String> propertyRenderer)
+      throws DeserializationException, NoSuchMethodException {
+    interface DummyParameter {
+      void dummyParameter(Object dummyParameter);
+    }
+
+    final Parameter outerParameter =
+        DummyParameter.class.getDeclaredMethod("dummyParameter", Object.class).getParameters()[0];
+    final Object outerArgument = new Object();
+
+    when(deserializerContext.parameters()).thenReturn(new Parameter[] {outerParameter});
+    when(rendererContext.arguments()).thenReturn(new Object[] {outerArgument});
     when(deserializers.get(ParameterizedType.of(String.class)))
-        .thenReturn(
-            Optional.of(
-                (node, context) -> {
-                  assertEquals(node, ConfigurationNode.string("value"));
-                  return Renderer.of("value");
-                }));
+        .thenReturn(Optional.of(propertyDeserializer));
+    when(propertyDeserializer.deserialize(any(), any())).thenReturn(propertyRenderer);
+    when(propertyRenderer.render(any())).thenReturn("value");
+
+    final Deserializer<? extends Configurations.String> deserializer =
+        factory
+            .create(deserializers, ParameterizedType.of(Configurations.String.class))
+            .orElseThrow(AssertionError::new);
+
+    final ConfigurationNode node =
+        ConfigurationNode.map(Map.of("property", ConfigurationNode.string("value")));
+
+    final Renderer<? extends Configurations.String> renderer =
+        deserializer.deserialize(node, deserializerContext);
+
+    final Configurations.String configuration = renderer.render(rendererContext);
+
+    assertEquals("value", configuration.property());
+    verify(propertyDeserializer)
+        .deserialize(
+            eq(ConfigurationNode.string("value")),
+            argThat(
+                (context) ->
+                    context.parameters().length == 1
+                        && context.parameters()[0].equals(outerParameter)));
+    verify(propertyRenderer)
+        .render(
+            argThat(
+                (context) ->
+                    context.arguments().length == 1 && context.arguments()[0] == outerArgument));
+    verifyNoMoreInteractions(propertyRenderer);
+  }
+
+  @Test
+  void testRender_InnerArgumentsOnly(@Mock final Renderer<String> propertyRenderer)
+      throws DeserializationException, NoSuchMethodException {
+    final Parameter innerParameter =
+        Configurations.ParameterizedProperty.class.getDeclaredMethod("property", Object.class)
+            .getParameters()[0];
+    final Object innerArgument = new Object();
+
+    when(deserializerContext.parameters()).thenReturn(new Parameter[0]);
+    when(rendererContext.arguments()).thenReturn(new Object[0]);
+    when(deserializers.get(ParameterizedType.of(String.class)))
+        .thenReturn(Optional.of(propertyDeserializer));
+    when(propertyDeserializer.deserialize(any(), any())).thenReturn(propertyRenderer);
+    when(propertyRenderer.render(any())).thenReturn("value");
+
+    final Deserializer<? extends Configurations.ParameterizedProperty> deserializer =
+        factory
+            .create(deserializers, ParameterizedType.of(Configurations.ParameterizedProperty.class))
+            .orElseThrow(AssertionError::new);
+
+    final ConfigurationNode node =
+        ConfigurationNode.map(Map.of("property", ConfigurationNode.string("value")));
+
+    final Renderer<? extends Configurations.ParameterizedProperty> renderer =
+        deserializer.deserialize(node, deserializerContext);
+
+    final Configurations.ParameterizedProperty configuration = renderer.render(rendererContext);
+
+    assertEquals("value", configuration.property(innerArgument));
+    verify(propertyDeserializer)
+        .deserialize(
+            eq(ConfigurationNode.string("value")),
+            argThat(
+                (context) ->
+                    context.parameters().length == 1
+                        && context.parameters()[0].equals(innerParameter)));
+    verify(propertyRenderer)
+        .render(
+            argThat(
+                (context) ->
+                    context.arguments().length == 1 && context.arguments()[0] == innerArgument));
+    verifyNoMoreInteractions(propertyRenderer);
+  }
+
+  @Test
+  void testRender_CombinedArguments(@Mock final Renderer<String> propertyRenderer)
+      throws DeserializationException, NoSuchMethodException {
+    interface DummyParameter {
+      void dummyParameter(Object dummyParameter);
+    }
+
+    final Parameter outerParameter =
+        DummyParameter.class.getDeclaredMethod("dummyParameter", Object.class).getParameters()[0];
+    final Parameter innerParameter =
+        Configurations.ParameterizedProperty.class.getDeclaredMethod("property", Object.class)
+            .getParameters()[0];
+    final Object outerArgument = new Object();
+    final Object innerArgument = new Object();
+
+    when(deserializerContext.parameters()).thenReturn(new Parameter[] {outerParameter});
+    when(rendererContext.arguments()).thenReturn(new Object[] {outerArgument});
+    when(deserializers.get(ParameterizedType.of(String.class)))
+        .thenReturn(Optional.of(propertyDeserializer));
+    when(propertyDeserializer.deserialize(any(), any())).thenReturn(propertyRenderer);
+    when(propertyRenderer.render(any())).thenReturn("value");
+
+    final Deserializer<? extends Configurations.ParameterizedProperty> deserializer =
+        factory
+            .create(deserializers, ParameterizedType.of(Configurations.ParameterizedProperty.class))
+            .orElseThrow(AssertionError::new);
+
+    final ConfigurationNode node =
+        ConfigurationNode.map(Map.of("property", ConfigurationNode.string("value")));
+
+    final Renderer<? extends Configurations.ParameterizedProperty> renderer =
+        deserializer.deserialize(node, deserializerContext);
+
+    final Configurations.ParameterizedProperty configuration = renderer.render(rendererContext);
+
+    assertEquals("value", configuration.property(innerArgument));
+    verify(propertyDeserializer)
+        .deserialize(
+            eq(ConfigurationNode.string("value")),
+            argThat(
+                (context) ->
+                    context.parameters().length == 2
+                        && context.parameters()[0].equals(outerParameter)
+                        && context.parameters()[1].equals(innerParameter)));
+    verify(propertyRenderer)
+        .render(
+            argThat(
+                (context) ->
+                    context.arguments().length == 2
+                        && context.arguments()[0] == outerArgument
+                        && context.arguments()[1] == innerArgument));
+    verifyNoMoreInteractions(propertyRenderer);
+  }
+
+  @Test
+  void testRender(@Mock final Renderer<String> propertyRenderer) throws DeserializationException {
+    when(deserializers.get(ParameterizedType.of(String.class)))
+        .thenReturn(Optional.of(propertyDeserializer));
+    when(propertyDeserializer.deserialize(eq(ConfigurationNode.string("value")), any()))
+        .thenReturn(propertyRenderer);
+    when(propertyRenderer.render(any())).thenReturn("value");
+    when(deserializerContext.parameters()).thenReturn(new Parameter[0]);
+    when(rendererContext.arguments()).thenReturn(new Object[0]);
 
     final Deserializer<? extends Configurations.String> deserializer =
         factory
@@ -214,5 +359,11 @@ class ConfigurationDeserializerFactoryTest {
     final Configurations.String string = renderer.render(rendererContext);
 
     assertEquals("value", string.property());
+    verify(propertyDeserializer)
+        .deserialize(
+            eq(ConfigurationNode.string("value")),
+            argThat((context) -> context.parameters().length == 0));
+    verify(propertyRenderer).render(argThat((context) -> context.arguments().length == 0));
+    verifyNoMoreInteractions(propertyRenderer);
   }
 }
