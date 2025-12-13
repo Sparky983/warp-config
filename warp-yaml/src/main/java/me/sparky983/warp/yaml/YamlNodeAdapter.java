@@ -62,7 +62,7 @@ final class YamlNodeAdapter {
 
     final String value = scalar.value();
 
-    // no value can't be differentiated from "null" so is convertible to a string
+    // "null" and an empty value are indistinguishable through eo-yaml, so we treat them as the same
     return new YamlScalarConfigurationNode(Objects.toString(value));
   }
 

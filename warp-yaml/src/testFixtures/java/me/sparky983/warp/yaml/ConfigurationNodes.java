@@ -33,7 +33,7 @@ public final class ConfigurationNodes {
       return false;
     }
     final ConfigurationNode noValue = values.get("no value");
-    final ConfigurationNode nil = values.get("null");
+    final ConfigurationNode nil = values.get("null value");
     final ConfigurationNode boolTrue = values.get("true");
     final ConfigurationNode boolFalse = values.get("false");
     final ConfigurationNode integer = values.get("integer");
@@ -82,7 +82,7 @@ public final class ConfigurationNodes {
           && map.asMap().size() == 1
           && value != null
           && noValue.isNil()
-          && nil.asString().equals("null")
+          && noValue.asString().equals("null")
           && cannotConvert(noValue::asDecimal, noValue::asInteger, noValue::asBoolean, noValue::asList, noValue::asMap)
           && nil.isNil()
           && nil.asString().equals("null")
