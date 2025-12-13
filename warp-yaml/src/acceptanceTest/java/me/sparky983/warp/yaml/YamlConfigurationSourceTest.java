@@ -37,7 +37,7 @@ class YamlConfigurationSourceTest {
   static final String MIX_YAML =
       """
         no value:
-        null: null
+        null value: null
         true: true
         false: false
         integer: 10
