@@ -1,6 +1,8 @@
 package me.sparky983.warp;
 
+import java.lang.reflect.Parameter;
 import java.util.Optional;
+import me.sparky983.warp.Renderer.Context;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -37,6 +39,19 @@ public interface Deserializer<T> {
     // Maintenance note: make sure internal passing of the context arguments is valid
     // e.g. the list deserializer passing its own context off to element deserializer which may
     // become invalid
+
+    /**
+     * Returns the an array of any contextual parameters that will be passed during rendering.
+     *
+     * <p>This is usually the parameters of the {@linkplain Property property method} that caused
+     * the deserialization. If the deserializer is a dependency of another deserializer, its
+     * parameters may be included too.
+     *
+     * @return any contextual parameters
+     * @since 0.2
+     * @see Renderer.Context#arguments()
+     */
+    Parameter[] parameters();
 
     /**
      * Returns the {@link Deserializer} for the given type.

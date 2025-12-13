@@ -1,5 +1,6 @@
 package me.sparky983.warp.internal;
 
+import java.lang.reflect.Parameter;
 import java.util.Objects;
 import java.util.Optional;
 import me.sparky983.warp.Configuration;
@@ -24,7 +25,15 @@ import me.sparky983.warp.internal.schema.Schema;
  */
 public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilder<T> {
   /** A cached renderer context (the context is empty). */
-  private static final Renderer.Context RENDERER_CONTEXT = new Renderer.Context() {};
+  private static final Renderer.Context RENDERER_CONTEXT =
+      new Renderer.Context() {
+        private static final Object[] EMPTY_ARGUMENTS = new Object[0];
+
+        @Override
+        public Object[] arguments() {
+          return EMPTY_ARGUMENTS;
+        }
+      };
 
   private ConfigurationSource source = Optional::empty;
 
@@ -94,6 +103,13 @@ public final class DefaultConfigurationBuilder<T> implements ConfigurationBuilde
 
     final Deserializer.Context deserializerContext =
         new Deserializer.Context() {
+          private static final Parameter[] EMPTY_PARAMETERS = new Parameter[0];
+
+          @Override
+          public Parameter[] parameters() {
+            return EMPTY_PARAMETERS;
+          }
+
           @SuppressWarnings({"unchecked", "rawtypes"})
           @Override
           public <T> Optional<Deserializer<T>> deserializer(final Class<T> type) {

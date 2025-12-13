@@ -51,7 +51,13 @@ public final class Configurations {
   @Configuration
   public interface ParameterizedProperty {
     @Property("property")
-    int property(int parameter);
+    java.lang.String property(Object arg);
+  }
+
+  @Configuration
+  public interface IdentityProperty {
+    @Property("property")
+    Object property(Object arg);
   }
 
   @Configuration

@@ -75,13 +75,6 @@ class WarpTest {
   }
 
   @Test
-  void testBuilder_ParameterizedProperty() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> Warp.builder(Configurations.ParameterizedProperty.class));
-  }
-
-  @Test
   void testSource_Null() {
     final ConfigurationBuilder<Configurations.Empty> builder =
         Warp.builder(Configurations.Empty.class);
