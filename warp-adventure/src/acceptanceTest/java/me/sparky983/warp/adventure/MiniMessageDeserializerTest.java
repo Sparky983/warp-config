@@ -12,6 +12,7 @@ import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationException;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.ConfigurationSource;
+import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Property;
 import me.sparky983.warp.Warp;
 import net.kyori.adventure.text.Component;
@@ -54,6 +55,13 @@ class MiniMessageDeserializerTest {
             ConfigurationError.group(
                 "property", ConfigurationError.error("Must be set to a value"))),
         thrown.errors());
+  }
+
+  @Test
+  void testDeserialization_NullContext() {
+    final Deserializer<Component> deserializer = ComponentDeserializer.miniMessage();
+
+    assertThrows(NullPointerException.class, () -> deserializer.deserialize(ConfigurationNode.string(""), null));
   }
 
   @Test
