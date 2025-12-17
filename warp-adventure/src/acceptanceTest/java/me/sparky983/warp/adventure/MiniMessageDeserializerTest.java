@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.text.ChoiceFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import java.util.Map;
 import me.sparky983.warp.Configuration;
@@ -96,9 +99,6 @@ class MiniMessageDeserializerTest {
 
     final ConfigurationBuilder<TestConfiguration> builder =
         Warp.builder(TestConfiguration.class)
-            .source(
-                ConfigurationSource.of(
-                    ConfigurationNode.map(Map.of("property", ConfigurationNode.string("")))))
             .deserializer(Component.class, ComponentDeserializer.miniMessage());
 
     assertThrows(IllegalStateException.class, builder::build);
@@ -153,6 +153,201 @@ class MiniMessageDeserializerTest {
   }
 
   @Test
+  void testDeserialization_ComponentInvalidType() {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder("placeholder") Object placeholder);
+    }
+
+    final ConfigurationBuilder<TestConfiguration> builder =
+        Warp.builder(TestConfiguration.class)
+            .source(
+                ConfigurationSource.of(
+                    ConfigurationNode.map(Map.of("property", ConfigurationNode.string("")))))
+            .deserializer(Component.class, ComponentDeserializer.miniMessage());
+
+    assertThrows(IllegalStateException.class, builder::build);
+  }
+
+  @Test
+  void testDeserialization_ComponentLikeSubtype() throws ConfigurationException {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder("placeholder") TranslatableComponent.Builder placeholder);
+    }
+
+    final TestConfiguration configuration =
+        createPlaceholderConfiguration(TestConfiguration.class, "Hello, <placeholder>!");
+
+    assertEquals(
+        Component.text("Hello, ").append(Component.translatable("key")).append(Component.text("!")),
+        configuration.property(Component.translatable().key("key")));
+  }
+
+  @Test
+  void testDeserialization_ComponentString() throws ConfigurationException {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder("placeholder") @Nullable String placeholder);
+    }
+
+    final TestConfiguration configuration =
+        createPlaceholderConfiguration(TestConfiguration.class, "Hello, <placeholder>!");
+
+    assertEquals(Component.text("Hello, world!"), configuration.property("world"));
+    assertEquals(Component.text("Hello, null!"), configuration.property(null));
+  }
+
+  @Test
+  void testDeserialization_ComponentNumber() throws ConfigurationException {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder("placeholder") float placeholder);
+
+      @Property("property")
+      Component property(@Placeholder("placeholder") double placeholder);
+
+      @Property("property")
+      Component property(@Placeholder("placeholder") int placeholder);
+
+      @Property("property")
+      Component property(@Placeholder("placeholder") long placeholder);
+    }
+
+    final TestConfiguration configuration =
+        createPlaceholderConfiguration(TestConfiguration.class, "Number: <placeholder>");
+
+    assertEquals(Component.text("Number: 1.5"), configuration.property(1.5F));
+    assertEquals(Component.text("Number: 1.5"), configuration.property(1.5));
+    assertEquals(Component.text("Number: 15"), configuration.property(15));
+    assertEquals(Component.text("Number: 15"), configuration.property(15L));
+  }
+
+  @Test
+  void testDeserialization_ComponentChar() throws ConfigurationException {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder("placeholder") char placeholder);
+    }
+
+    final TestConfiguration configuration =
+        createPlaceholderConfiguration(TestConfiguration.class, "Hello, <placeholder>!");
+
+    assertEquals(Component.text("Hello, a!"), configuration.property('a'));
+  }
+
+  @Test
+  void testDeserialization_ComponentBoolean() throws ConfigurationException {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder("placeholder") boolean placeholder);
+    }
+
+    final TestConfiguration configuration =
+        createPlaceholderConfiguration(TestConfiguration.class, "Hello, <placeholder>!");
+
+    assertEquals(Component.text("Hello, true!"), configuration.property(true));
+    assertEquals(Component.text("Hello, false!"), configuration.property(false));
+  }
+
+  @Test
+  void testDeserialization_ChoiceNumber() throws ConfigurationException {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder.Choice("placeholder") int placeholder);
+    }
+
+    final TestConfiguration configuration =
+        createPlaceholderConfiguration(
+            TestConfiguration.class,
+            "<placeholder:'0#no one|1#someone|1<everyone'>");
+
+    assertEquals(Component.text("no one"), configuration.property(0));
+    assertEquals(Component.text("someone"), configuration.property(1));
+    assertEquals(Component.text("everyone"), configuration.property(2));
+    assertEquals(Component.text("everyone"), configuration.property(3));
+  }
+
+  @Test
+  void testDeserialization_ChoiceBoolean() throws ConfigurationException {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder.Choice("placeholder") boolean placeholder);
+    }
+
+    final TestConfiguration configuration =
+        createPlaceholderConfiguration(TestConfiguration.class, "<placeholder:yes:no>");
+
+    assertEquals(Component.text("yes"), configuration.property(true));
+    assertEquals(Component.text("no"), configuration.property(false));
+  }
+
+  @Test
+  void testDeserialization_FormatInvalidType() {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder.Format("placeholder") Object placeholder);
+    }
+
+    final ConfigurationBuilder<TestConfiguration> builder =
+        Warp.builder(TestConfiguration.class)
+            .deserializer(Component.class, ComponentDeserializer.miniMessage());
+
+    assertThrows(IllegalStateException.class, builder::build);
+  }
+
+  @Test
+  void testDeserialization_FormatNumber() throws ConfigurationException {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder.Format("placeholder") float placeholder);
+
+      @Property("property")
+      Component property(@Placeholder.Format("placeholder") double placeholder);
+
+      @Property("property")
+      Component property(@Placeholder.Format("placeholder") int placeholder);
+
+      @Property("property")
+      Component property(@Placeholder.Format("placeholder") long placeholder);
+    }
+
+    final TestConfiguration configuration =
+        createPlaceholderConfiguration(TestConfiguration.class, "Number: <placeholder:00.00>");
+
+    assertEquals(Component.text("Number: 01.50"), configuration.property(1.5F));
+    assertEquals(Component.text("Number: 01.50"), configuration.property(1.5));
+    assertEquals(Component.text("Number: 15.00"), configuration.property(15));
+    assertEquals(Component.text("Number: 15.00"), configuration.property(15L));
+  }
+
+  @Test
+  void testDeserialization_FormatDate() throws ConfigurationException {
+    @Configuration
+    interface TestConfiguration {
+      @Property("property")
+      Component property(@Placeholder.Format("placeholder") LocalDateTime placeholder);
+    }
+
+    final TestConfiguration configuration =
+        createPlaceholderConfiguration(TestConfiguration.class, "Date: <placeholder:'yyyy-MM-dd HH:mm:ss'>");
+
+    assertEquals(
+        Component.text("Date: 2025-12-17 18:36:03"),
+        configuration.property(LocalDateTime.of(2025, 12, 17, 18, 36, 3)));
+  }
+
+  @Test
   void testDeserialization_StringParsed() throws ConfigurationException {
     @Configuration
     interface TestConfiguration {
@@ -181,130 +376,33 @@ class MiniMessageDeserializerTest {
 
     final ConfigurationBuilder<TestConfiguration> builder =
         Warp.builder(TestConfiguration.class)
-            .source(
-                ConfigurationSource.of(
-                    ConfigurationNode.map(Map.of("property", ConfigurationNode.string("")))))
             .deserializer(Component.class, ComponentDeserializer.miniMessage());
 
     assertThrows(IllegalStateException.class, builder::build);
   }
 
   @Test
-  void testDeserialization_PlaceholderInvalidType() {
+  void testDeserialization_NullPlaceholder() throws ConfigurationException {
     @Configuration
     interface TestConfiguration {
       @Property("property")
-      Component property(@Placeholder("placeholder") Object placeholder);
+      Component property1(@Placeholder("placeholder") @Nullable Component placeholder);
+
+      @Property("property")
+      Component property2(@Placeholder("placeholder") @Nullable String placeholder);
+
+      @Property("property")
+      Component property3(@Placeholder.Format("placeholder") @Nullable TemporalAccessor placeholder);
+
+      @Property("property")
+      Component property4(@Placeholder.Parsed("placeholder") @Nullable String placeholder);
     }
 
-    final ConfigurationBuilder<TestConfiguration> builder =
-        Warp.builder(TestConfiguration.class)
-            .source(
-                ConfigurationSource.of(
-                    ConfigurationNode.map(Map.of("property", ConfigurationNode.string("")))))
-            .deserializer(Component.class, ComponentDeserializer.miniMessage());
+    final TestConfiguration configuration = createPlaceholderConfiguration(TestConfiguration.class, "<placeholder>");
 
-    assertThrows(IllegalStateException.class, builder::build);
-  }
-
-  @Test
-  void testDeserialization_StringComponent() throws ConfigurationException {
-    @Configuration
-    interface TestConfiguration {
-      @Property("property")
-      Component property(@Placeholder("placeholder") @Nullable String placeholder);
-    }
-
-    final TestConfiguration configuration =
-        createPlaceholderConfiguration(TestConfiguration.class, "Hello, <placeholder>!");
-
-    assertEquals(Component.text("Hello, world!"), configuration.property("world"));
-    assertEquals(Component.text("Hello, null!"), configuration.property(null));
-  }
-
-  @Test
-  void testDeserialization_NumberComponent() throws ConfigurationException {
-    @Configuration
-    interface TestConfiguration {
-      @Property("property")
-      Component property(@Placeholder("placeholder") float placeholder);
-
-      @Property("property")
-      Component property(@Placeholder("placeholder") double placeholder);
-
-      @Property("property")
-      Component property(@Placeholder("placeholder") int placeholder);
-
-      @Property("property")
-      Component property(@Placeholder("placeholder") long placeholder);
-    }
-
-    final TestConfiguration configuration =
-        createPlaceholderConfiguration(TestConfiguration.class, "Number: <placeholder:00.00>");
-
-    assertEquals(Component.text("Number: 01.50"), configuration.property(1.5F));
-    assertEquals(Component.text("Number: 01.50"), configuration.property(1.5));
-    assertEquals(Component.text("Number: 15.00"), configuration.property(15));
-    assertEquals(Component.text("Number: 15.00"), configuration.property(15L));
-  }
-
-  @Test
-  void testDeserialization_BooleanComponent() throws ConfigurationException {
-    @Configuration
-    interface TestConfiguration {
-      @Property("property")
-      Component property(@Placeholder("placeholder") boolean placeholder);
-    }
-
-    final TestConfiguration configuration =
-        createPlaceholderConfiguration(TestConfiguration.class, "Hello, <placeholder>!");
-
-    assertEquals(Component.text("Hello, true!"), configuration.property(true));
-    assertEquals(Component.text("Hello, false!"), configuration.property(false));
-  }
-
-  @Test
-  void testDeserialization_CharComponent() throws ConfigurationException {
-    @Configuration
-    interface TestConfiguration {
-      @Property("property")
-      Component property(@Placeholder("placeholder") char placeholder);
-    }
-
-    final TestConfiguration configuration =
-        createPlaceholderConfiguration(TestConfiguration.class, "Hello, <placeholder>!");
-
-    assertEquals(Component.text("Hello, a!"), configuration.property('a'));
-  }
-
-  @Test
-  void testDeserialization_ComponentLikeSubtype() throws ConfigurationException {
-    @Configuration
-    interface TestConfiguration {
-      @Property("property")
-      Component property(@Placeholder("placeholder") TranslatableComponent.Builder placeholder);
-    }
-
-    final TestConfiguration configuration =
-        createPlaceholderConfiguration(TestConfiguration.class, "Hello, <placeholder>!");
-
-    assertEquals(
-        Component.text("Hello, ").append(Component.translatable("key")).append(Component.text("!")),
-        configuration.property(Component.translatable().key("key")));
-  }
-
-  @Test
-  void testDeserialization_ComponentLikeNull() throws ConfigurationException {
-    @Configuration
-    interface TestConfiguration {
-      @Property("property")
-      Component property(@Placeholder("placeholder") @Nullable ComponentLike placeholder);
-    }
-
-    final TestConfiguration configuration =
-        createPlaceholderConfiguration(TestConfiguration.class, "Hello, <placeholder>!");
-
-    assertEquals(Component.text("Hello, null!"), configuration.property(() -> null));
-    assertEquals(Component.text("Hello, null!"), configuration.property(null));
+    assertEquals(Component.text("null"), configuration.property1(null));
+    assertEquals(Component.text("null"), configuration.property2(null));
+    assertEquals(Component.text("null"), configuration.property3(null));
+    assertEquals(Component.text("null"), configuration.property4(null));
   }
 }

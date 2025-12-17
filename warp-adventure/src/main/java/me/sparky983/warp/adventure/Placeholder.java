@@ -11,8 +11,26 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(PARAMETER)
 public @interface Placeholder {
+  // String, ComponentLike, primitive number, char, boolean
   String value();
 
+  // number primitive or boolean
+  @Documented
+  @Retention(RUNTIME)
+  @Target(PARAMETER)
+  @interface Choice {
+    String value();
+  }
+
+  // number, TemporalAccessor
+  @Documented
+  @Retention(RUNTIME)
+  @Target(PARAMETER)
+  @interface Format {
+    String value();
+  }
+
+  // string
   @Documented
   @Retention(RUNTIME)
   @Target(PARAMETER)

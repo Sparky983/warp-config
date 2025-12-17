@@ -6,6 +6,7 @@ import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unpa
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Map;
 import java.util.Objects;
 import me.sparky983.warp.ConfigurationError;
@@ -13,6 +14,9 @@ import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Renderer;
+import me.sparky983.warp.adventure.Placeholder.Choice;
+import me.sparky983.warp.adventure.Placeholder.Format;
+import me.sparky983.warp.adventure.Placeholder.Parsed;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -21,18 +25,31 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jspecify.annotations.Nullable;
 
 final class MiniMessageDeserializer implements Deserializer<Component> {
-  private static final Map<Class<?>, PlaceholderKind> FINAL_PLACEHOLDER_CLASSES =
+  private static final Map<Class<?>, PlaceholderKind> FINAL_COMPONENT_CLASSES =
       Map.of(
-          String.class, PlaceholderKind.STRING_COMPONENT,
-          boolean.class, PlaceholderKind.BOOLEAN_COMPONENT,
-          char.class, PlaceholderKind.CHAR_COMPONENT,
-          float.class, PlaceholderKind.NUMBER_FORMAT,
-          double.class, PlaceholderKind.NUMBER_FORMAT,
-          int.class, PlaceholderKind.NUMBER_FORMAT,
-          long.class, PlaceholderKind.NUMBER_FORMAT);
+          String.class, PlaceholderKind.COMPONENT_STRING,
+          boolean.class, PlaceholderKind.COMPONENT_BOOLEAN,
+          char.class, PlaceholderKind.COMPONENT_CHAR,
+          float.class, PlaceholderKind.COMPONENT_NUMBER,
+          double.class, PlaceholderKind.COMPONENT_NUMBER,
+          int.class, PlaceholderKind.COMPONENT_NUMBER,
+          long.class, PlaceholderKind.COMPONENT_NUMBER);
+  private static final Map<Class<?>, PlaceholderKind> CHOICE_CLASSES =
+      Map.of(
+          boolean.class, PlaceholderKind.CHOICE_BOOLEAN,
+          float.class, PlaceholderKind.CHOICE_NUMBER,
+          double.class, PlaceholderKind.CHOICE_NUMBER,
+          int.class, PlaceholderKind.CHOICE_NUMBER,
+          long.class, PlaceholderKind.CHOICE_NUMBER);
+  private static final Map<Class<?>, PlaceholderKind> FINAL_FORMAT_CLASSES =
+      Map.of(
+          float.class, PlaceholderKind.FORMAT_NUMBER,
+          double.class, PlaceholderKind.FORMAT_NUMBER,
+          int.class, PlaceholderKind.FORMAT_NUMBER,
+          long.class, PlaceholderKind.FORMAT_NUMBER);
 
   static {
-    for (final Class<?> finalClass : FINAL_PLACEHOLDER_CLASSES.keySet()) {
+    for (final Class<?> finalClass : FINAL_COMPONENT_CLASSES.keySet()) {
       assert Modifier.isFinal(finalClass.getModifiers());
     }
   }
@@ -51,59 +68,64 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
       throws DeserializationException {
     Objects.requireNonNull(deserializerContext, "context cannot be null");
 
-    if (node == null) {
-      throw new DeserializationException(ConfigurationError.error("Must be set to a value"));
-    }
-
-    final String string = node.asString();
-
     final Parameter[] parameters = deserializerContext.parameters();
-    final @Nullable NamedPlaceholder[] placeholders = new NamedPlaceholder[parameters.length];
+    final PlaceholderFactory[] placeholders = new PlaceholderFactory[parameters.length];
 
     for (int i = 0; i < parameters.length; i++) {
       final Parameter parameter = parameters[i];
 
       final Placeholder placeholder = parameter.getAnnotation(Placeholder.class);
-      final Placeholder.Parsed parsed = parameter.getAnnotation(Placeholder.Parsed.class);
+      final Choice choice = parameter.getAnnotation(Choice.class);
+      final Format format = parameter.getAnnotation(Format.class);
+      final Parsed parsed = parameter.getAnnotation(Parsed.class);
 
       final Class<?> parameterType = parameter.getType();
 
-      final NamedPlaceholder namedPlaceholder;
+      final PlaceholderFactory namedPlaceholder;
 
-      if (placeholder != null) {
-        if (parsed != null) {
-          throw new IllegalStateException(
-              "@Property method declared a parameter with both @Placeholder and @Placeholder.Parsed");
-        }
-
-        final PlaceholderKind placeholderKind;
-
-        final PlaceholderKind finalKind = FINAL_PLACEHOLDER_CLASSES.get(parameterType);
-        if (finalKind != null) {
-          placeholderKind = finalKind;
+      if (placeholder != null && parsed == null && format == null && choice == null) {
+        final PlaceholderKind kind = FINAL_COMPONENT_CLASSES.get(parameterType);
+        if (kind != null) {
+          namedPlaceholder = new PlaceholderFactory(placeholder.value(), kind);
         } else if (ComponentLike.class.isAssignableFrom(parameterType)) {
-          placeholderKind = PlaceholderKind.COMPONENT;
+          namedPlaceholder = new PlaceholderFactory(placeholder.value(), PlaceholderKind.COMPONENT);
         } else {
           throw new IllegalStateException(
-              "@Property method declared parameter with @Placeholder but type is not a primitive, String or ComponentLike");
+              "@Property method declared a parameter annotated with @Placeholder but type is not a primitive, String or ComponentLike");
         }
-
-        namedPlaceholder = new NamedPlaceholder(placeholder.value(), placeholderKind);
-      } else {
-        if (parsed == null) {
-          throw new IllegalStateException(
-              "@Property method declared a parameter not annotated with @Placeholder or @Placeholder.Parsed");
+      } else if (placeholder == null && choice != null && format == null && parsed == null) {
+        final PlaceholderKind kind = CHOICE_CLASSES.get(parameterType);
+        if (kind == null) {
+          throw new IllegalStateException("@Property method declared a parameter @Placeholder.Choice but type is not a primitive number or boolean");
         }
-
-        if (parameterType.equals(String.class)) {
-          namedPlaceholder = new NamedPlaceholder(parsed.value(), PlaceholderKind.STRING_PARSED);
+        namedPlaceholder = new PlaceholderFactory(choice.value(), kind);
+      } else if (placeholder == null && choice == null && format != null && parsed == null) {
+        final PlaceholderKind kind = FINAL_FORMAT_CLASSES.get(parameterType);
+        if (kind != null) {
+          namedPlaceholder = new PlaceholderFactory(format.value(), kind);
+        } else if (TemporalAccessor.class.isAssignableFrom(parameterType)) {
+          namedPlaceholder = new PlaceholderFactory(format.value(), PlaceholderKind.FORMAT_DATE);
         } else {
+          throw new IllegalStateException("@Property method declared a parameter annotated with @Placeholder.Format but type is not a primitive number or TemporalAccessor");
+        }
+      } else if (placeholder == null && choice == null && format == null && parsed != null) {
+        if (!parameterType.equals(String.class)) {
           throw new IllegalStateException(
               "@Property method declared parameter with @Placeholder.Parsed but type is not String");
         }
+        namedPlaceholder = new PlaceholderFactory(parsed.value(), PlaceholderKind.PARSED_STRING);
+      } else {
+        throw new IllegalStateException(
+            "@Property method must annotate all parameters with @Placeholder, @Placeholder.Choice, @Placeholder.Format or @Placeholder.Parsed");
       }
       placeholders[i] = namedPlaceholder;
     }
+
+    if (node == null) {
+      throw new DeserializationException(ConfigurationError.error("Must be set to a value"));
+    }
+
+    final String string = node.asString();
 
     return (rendererContext) -> {
       final Object[] arguments = rendererContext.arguments();
@@ -115,33 +137,38 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
     };
   }
 
-  private record NamedPlaceholder(String name, PlaceholderKind kind) {
+  private record PlaceholderFactory(String name, PlaceholderKind kind) {
     private TagResolver tag(final @Nullable Object value) {
+      if (value == null) {
+        return component(name, Component.text("null"));
+      }
       return switch (kind) {
-        case STRING_PARSED -> parsed(name, String.valueOf(value));
-        case STRING_COMPONENT -> unparsed(name, String.valueOf(value));
-        case NUMBER_FORMAT -> {
-          assert value != null : "primitive value should never be null";
-          yield Formatter.number(name, (Number) value);
-        }
-        case BOOLEAN_COMPONENT, CHAR_COMPONENT -> {
-          assert value != null : "primitive value should never be null";
-          yield component(name, Component.text(String.valueOf(value)));
-        }
+        case COMPONENT_STRING -> unparsed(name, String.valueOf(value));
+        case COMPONENT_NUMBER, COMPONENT_CHAR, COMPONENT_BOOLEAN ->
+            component(name, Component.text(String.valueOf(value)));
         case COMPONENT -> {
-          final Component component = ComponentLike.unbox((ComponentLike) value);
-          yield component(name, component == null ? Component.text("null") : component);
+          final Component component = Objects.requireNonNull(((ComponentLike) value).asComponent());
+          yield component(name, component);
         }
+        case CHOICE_NUMBER -> Formatter.choice(name, (Number) value);
+        case CHOICE_BOOLEAN -> Formatter.booleanChoice(name, (Boolean) value);
+        case FORMAT_NUMBER -> Formatter.number(name, (Number) value);
+        case FORMAT_DATE -> Formatter.date(name, (TemporalAccessor) value);
+        case PARSED_STRING -> parsed(name, String.valueOf(value));
       };
     }
   }
 
   private enum PlaceholderKind {
-    STRING_PARSED,
-    STRING_COMPONENT,
-    NUMBER_FORMAT,
-    BOOLEAN_COMPONENT,
-    CHAR_COMPONENT,
-    COMPONENT
+    COMPONENT,
+    COMPONENT_STRING,
+    COMPONENT_NUMBER,
+    COMPONENT_CHAR,
+    COMPONENT_BOOLEAN,
+    CHOICE_NUMBER,
+    CHOICE_BOOLEAN,
+    FORMAT_NUMBER,
+    FORMAT_DATE,
+    PARSED_STRING
   }
 }
