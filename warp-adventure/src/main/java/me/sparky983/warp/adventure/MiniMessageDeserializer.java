@@ -24,6 +24,10 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * A component deserializer that uses the {@link MiniMessage} format and supports {@linkplain
+ * Placeholder placeholders}.
+ */
 final class MiniMessageDeserializer implements Deserializer<Component> {
   private static final Map<Class<?>, PlaceholderKind> FINAL_COMPONENT_CLASSES =
       Map.of(
@@ -56,6 +60,12 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
 
   private final MiniMessage miniMessage;
 
+  /**
+   * Constructs a {@code MiniMessageDeserializer}.
+   *
+   * @param miniMessage the mini message deserializer
+   * @throws NullPointerException if the mini message deserializer is {@code null}.
+   */
   MiniMessageDeserializer(final MiniMessage miniMessage) {
     Objects.requireNonNull(miniMessage, "miniMessage cannot be null");
 
@@ -96,7 +106,8 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
       } else if (placeholder == null && choice != null && format == null && parsed == null) {
         final PlaceholderKind kind = CHOICE_CLASSES.get(parameterType);
         if (kind == null) {
-          throw new IllegalStateException("@Property method declared a parameter @Placeholder.Choice but type is not a primitive number or boolean");
+          throw new IllegalStateException(
+              "@Property method declared a parameter @Placeholder.Choice but type is not a primitive number or boolean");
         }
         namedPlaceholder = new PlaceholderFactory(choice.value(), kind);
       } else if (placeholder == null && choice == null && format != null && parsed == null) {
@@ -106,7 +117,8 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
         } else if (TemporalAccessor.class.isAssignableFrom(parameterType)) {
           namedPlaceholder = new PlaceholderFactory(format.value(), PlaceholderKind.FORMAT_DATE);
         } else {
-          throw new IllegalStateException("@Property method declared a parameter annotated with @Placeholder.Format but type is not a primitive number or TemporalAccessor");
+          throw new IllegalStateException(
+              "@Property method declared a parameter annotated with @Placeholder.Format but type is not a primitive number or TemporalAccessor");
         }
       } else if (placeholder == null && choice == null && format == null && parsed != null) {
         if (!parameterType.equals(String.class)) {
@@ -137,15 +149,26 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
     };
   }
 
+  /**
+   * Creates {@link TagResolver TagResolvers} for placeholders.
+   *
+   * @param name the name of the placeholder
+   * @param kind the type of placeholder
+   */
   private record PlaceholderFactory(String name, PlaceholderKind kind) {
+    private PlaceholderFactory {
+      Objects.requireNonNull(name, "name cannot be null");
+      Objects.requireNonNull(kind, "kind cannot be null");
+    }
+
     private TagResolver tag(final @Nullable Object value) {
       if (value == null) {
         return component(name, Component.text("null"));
       }
       return switch (kind) {
         case COMPONENT_STRING -> unparsed(name, String.valueOf(value));
-        case COMPONENT_NUMBER, COMPONENT_CHAR, COMPONENT_BOOLEAN ->
-            component(name, Component.text(String.valueOf(value)));
+        case COMPONENT_NUMBER, COMPONENT_CHAR, COMPONENT_BOOLEAN -> component(
+            name, Component.text(String.valueOf(value)));
         case COMPONENT -> {
           final Component component = Objects.requireNonNull(((ComponentLike) value).asComponent());
           yield component(name, component);

@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.text.ChoiceFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.List;
@@ -19,7 +18,6 @@ import me.sparky983.warp.Deserializer;
 import me.sparky983.warp.Property;
 import me.sparky983.warp.Warp;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -64,7 +62,9 @@ class MiniMessageDeserializerTest {
   void testDeserialization_NullContext() {
     final Deserializer<Component> deserializer = ComponentDeserializer.miniMessage();
 
-    assertThrows(NullPointerException.class, () -> deserializer.deserialize(ConfigurationNode.string(""), null));
+    assertThrows(
+        NullPointerException.class,
+        () -> deserializer.deserialize(ConfigurationNode.string(""), null));
   }
 
   @Test
@@ -266,8 +266,7 @@ class MiniMessageDeserializerTest {
 
     final TestConfiguration configuration =
         createPlaceholderConfiguration(
-            TestConfiguration.class,
-            "<placeholder:'0#no one|1#someone|1<everyone'>");
+            TestConfiguration.class, "<placeholder:'0#no one|1#someone|1<everyone'>");
 
     assertEquals(Component.text("no one"), configuration.property(0));
     assertEquals(Component.text("someone"), configuration.property(1));
@@ -340,7 +339,8 @@ class MiniMessageDeserializerTest {
     }
 
     final TestConfiguration configuration =
-        createPlaceholderConfiguration(TestConfiguration.class, "Date: <placeholder:'yyyy-MM-dd HH:mm:ss'>");
+        createPlaceholderConfiguration(
+            TestConfiguration.class, "Date: <placeholder:'yyyy-MM-dd HH:mm:ss'>");
 
     assertEquals(
         Component.text("Date: 2025-12-17 18:36:03"),
@@ -392,13 +392,15 @@ class MiniMessageDeserializerTest {
       Component property2(@Placeholder("placeholder") @Nullable String placeholder);
 
       @Property("property")
-      Component property3(@Placeholder.Format("placeholder") @Nullable TemporalAccessor placeholder);
+      Component property3(
+          @Placeholder.Format("placeholder") @Nullable TemporalAccessor placeholder);
 
       @Property("property")
       Component property4(@Placeholder.Parsed("placeholder") @Nullable String placeholder);
     }
 
-    final TestConfiguration configuration = createPlaceholderConfiguration(TestConfiguration.class, "<placeholder>");
+    final TestConfiguration configuration =
+        createPlaceholderConfiguration(TestConfiguration.class, "<placeholder>");
 
     assertEquals(Component.text("null"), configuration.property1(null));
     assertEquals(Component.text("null"), configuration.property2(null));

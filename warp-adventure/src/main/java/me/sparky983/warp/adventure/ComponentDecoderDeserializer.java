@@ -10,11 +10,24 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.ComponentDecoder;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * A generic component deserializer for any {@link ComponentDecoder}.
+ *
+ * @param <T> the component type
+ */
 final class ComponentDecoderDeserializer<T extends Component> implements Deserializer<T> {
   private final ComponentDecoder<String, T> decoder;
 
+  /**
+   * Constructs a {@code ComponentDecoderDeserializer}.
+   *
+   * @param decoder the generic component deserializer
+   * @throws NullPointerException if the decoder is {@code null}.
+   */
   ComponentDecoderDeserializer(final ComponentDecoder<String, T> decoder) {
-    this.decoder = Objects.requireNonNull(decoder, "decoder cannot be null");
+    Objects.requireNonNull(decoder, "decoder cannot be null");
+
+    this.decoder = decoder;
   }
 
   @Override

@@ -46,10 +46,13 @@ class ComponentDecoderDeserializerTest {
 
   @Test
   void testDeserialize_NullNode() {
-    final ConfigurationException thrown = assertThrows(
-        ConfigurationException.class, () -> deserializer.deserialize(null, deserializerContext));
+    final ConfigurationException thrown =
+        assertThrows(
+            ConfigurationException.class,
+            () -> deserializer.deserialize(null, deserializerContext));
 
-    assertIterableEquals(List.of(ConfigurationError.error("Must be set to a value")), thrown.errors());
+    assertIterableEquals(
+        List.of(ConfigurationError.error("Must be set to a value")), thrown.errors());
   }
 
   @Test
@@ -63,7 +66,10 @@ class ComponentDecoderDeserializerTest {
   void testDeserialize_NonString() {
     final ConfigurationNode node = ConfigurationNode.nil();
 
-    final ConfigurationException thrown = assertThrows(ConfigurationException.class, () -> deserializer.deserialize(node, deserializerContext));
+    final ConfigurationException thrown =
+        assertThrows(
+            ConfigurationException.class,
+            () -> deserializer.deserialize(node, deserializerContext));
 
     assertIterableEquals(List.of(ConfigurationError.error("Must be a string")), thrown.errors());
   }
@@ -72,8 +78,10 @@ class ComponentDecoderDeserializerTest {
   void testRender() throws DeserializationException {
     when(decoder.deserialize("Hello\\nworld")).thenReturn(Component.text("Hello\nworld"));
 
-    final Component component = deserializer.deserialize(ConfigurationNode.string("Hello\\nworld"), deserializerContext)
-        .render(rendererContext);
+    final Component component =
+        deserializer
+            .deserialize(ConfigurationNode.string("Hello\\nworld"), deserializerContext)
+            .render(rendererContext);
 
     verify(decoder).deserialize("Hello\\nworld");
     assertEquals(Component.text("Hello\nworld"), component);
