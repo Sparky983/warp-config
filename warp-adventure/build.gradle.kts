@@ -11,9 +11,16 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
 }
 
-tasks.javadoc {
-    (options as StandardJavadocDocletOptions).run {
-        links("https://jd.advntr.dev/api/4.25.0/")
-        links("https://jd.advntr.dev/text-minimessage/4.25.0/")
+tasks {
+    jar {
+        manifest {
+            attributes("Automatic-Module-Name" to "me.sparky983.warp.adventure")
+        }
+    }
+    javadoc {
+        (options as StandardJavadocDocletOptions).run {
+            links("https://jd.advntr.dev/api/4.25.0/")
+            links("https://jd.advntr.dev/text-minimessage/4.25.0/")
+        }
     }
 }
