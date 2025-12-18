@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     api(project(":warp"))
-    api("net.kyori:adventure-text-minimessage:4.25.0")
+    api("net.kyori:adventure-text-minimessage:4.26.1")
 
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
