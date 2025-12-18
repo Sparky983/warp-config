@@ -25,6 +25,7 @@ public interface Deserializer<T> {
    * @param context the context; never {@code null}
    * @return a {@link Renderer} that renders the deserialized value
    * @throws DeserializationException if the node was unable to be deserialized.
+   * @throws IllegalStateException if the renderer cannot be created, usually due to validation.
    * @since 0.1
    */
   Renderer<T> deserialize(@Nullable ConfigurationNode node, Context context)
