@@ -11,6 +11,7 @@ import java.time.temporal.TemporalAccessor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.TagPattern;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 
 /**
@@ -19,12 +20,13 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
  * component placeholder} for the {@linkplain ComponentDeserializer#miniMessage(MiniMessage) mini
  * message deserializer}.
  *
- * <p>All placeholders arguments resolve tags with the given {@linkplain #value() name} to the
- * provided argument by the caller, usually formatted in some way.
+ * <p>All placeholders parameters cause tags with the given {@linkplain #value() name} to be
+ * resolved to a replacement provided argument by the caller.
  *
- * <p>{@link ComponentDeserializer#miniMessage(MiniMessage)} allows only the following types which
- * resolve the placeholder tag into text components using according to {@linkplain Component
- * Adventure's text component factory methods}:
+ * <p>The {@linkplain ComponentDeserializer#miniMessage(MiniMessage) mini message component
+ * deserializer} allows the following types of component placeholders where the replacement is
+ * constructed using {@linkplain Component Adventure's text component factory methods} and the
+ * argument to the placeholder:
  *
  * <ul>
  *   <li>{@code int}
@@ -51,21 +53,80 @@ public @interface Placeholder {
    * @return the placeholder name
    * @since 0.2
    */
+  @TagPattern
   String value();
 
   /**
    * Marks the annotated parameter as a choice placeholder.
    *
-   * <p>Choice placeholders allow for {@linkplain Formatter#booleanChoice(String, boolean) boolean
-   * choice placeholders} if the annotated parameter is {@code boolean} or {@link
-   * Formatter#choice(String, Number) number choice placeholders} if the parameter is {@code int},
-   * {@code long}, {@code float} or {@code double}.
+   * <p>Choice placeholders allow for conditional replacements.
    *
-   * <p>Boolean choice placeholder tags have two arguments: what to resolve {@code true} to and what
-   * to resolve {@code false} to
+   * <h2>Boolean Choice Placeholders</h2>
    *
-   * <p>Number choice placeholder tags take in an argument of the format specified by {@link
-   * ChoiceFormat}.
+   * <p>The {@linkplain ComponentDeserializer#miniMessage(MiniMessage) mini message component
+   * deserializer} allows for {@code boolean} choice placeholders where the placeholder argument is
+   * used as the condition. {@code boolean} choice placeholders are defined as follows:
+   *
+   * <pre>{@code
+   * @Configuration
+   * interface YesNoConfiguration {
+   *   @Property("yes-no")
+   *   Component yesNo(@Placeholder.Choice("bool") boolean bool);
+   * }
+   * }</pre>
+   *
+   * The {@code yes-no} property may be a string that uses the tag with two arguments: the
+   * replacement for the {@code true} case and the replacement for the {@code false} case.
+   *
+   * <pre>{@code
+   * var source = ConfigurationNode.map(
+   *     Map.entry("yes-no", ConfigurationNode.string("<bool:yes:no>)
+   * );
+   * YesNoConfiguration config = Warp.builder(YesNoConfiguration.class)
+   *     .source(ConfigurationSource.of(source))
+   *     .deserializer(Component.class, ConfigurationDeserializer.miniMessage())
+   *     .build();
+   * assert Component.text("yes").equals(config.yesNo(true));
+   * assert Component.text("no").equals(config.yesNo(false));
+   * }</pre>
+   *
+   * The exact behaviour of the tag is specified by {@linkplain Formatter#booleanChoice(String,
+   * boolean) Adventure's boolean choice dynamic replacement}.
+   *
+   * <h2>Number Choice Placeholders</h2>
+   *
+   * <p>The mini message component deserializer also allows for number choice placeholders. This
+   * works for {@code int}, {@code long}, {@code float} and {@code double}. The property may use the
+   * tag with a single argument, the {@linkplain ChoiceFormat choice format} which specifies choices
+   * based on the argument. A common use case is to express plurality:
+   *
+   * <pre>{@code
+   * @Configuration
+   * interface PeopleConfiguration {
+   *   @Property("people")
+   *   Component people(@Placeholder.Choice("people") int people);
+   * }
+   * }</pre>
+   *
+   * In this example, the {@code people} property uses the correct form of "no one", "someone" or
+   * "everyone" based on the input:
+   *
+   * <pre>{@code
+   * var source = ConfigurationNode.map(
+   *     Map.entry("people", ConfigurationNode.string("<people:'0#no one|1#someone|1<everyone'>")
+   * );
+   * PeopleConfiguration config = Warp.builder(PeopleConfiguration.class)
+   *     .source(ConfigurationSource.of(source))
+   *     .deserializer(Component.class, ConfigurationDeserializer.miniMessage())
+   *     .build();
+   * assert Component.text("no one").equals(configuration.property(0));
+   * assert Component.text("someone").equals(configuration.property(1));
+   * assert Component.text("everyone").equals(configuration.property(2));
+   * assert Component.text("everyone").equals(configuration.property(3));
+   * }</pre>
+   *
+   * The exact behaviour of the tag is specified by {@linkplain Formatter#choice(String, Number)
+   * Adventure's choice dynamic replacement}.
    *
    * @see Placeholder
    * @see Formatter#booleanChoice(String, boolean)
@@ -83,20 +144,32 @@ public @interface Placeholder {
      * @return the placeholder name
      * @since 0.2
      */
+    @TagPattern
     String value();
   }
 
   /**
    * Marks the annotated method as a format placeholder.
    *
-   * <p>The two types of format placeholders:
+   * <p>Format placeholders let a specified format be applied to the placeholder argument.
    *
-   * <ul>
-   *   <li>{@linkplain Formatter#number(String, Number) number formatters} for {@code int}, {@code
-   *       long}, {@code float} and {@code double}
-   *   <li>{@linkplain Formatter#date(String, TemporalAccessor) date formatters} for types
-   *       assignable to {@link TemporalAccessor}
-   * </ul>
+   * <p>The {@linkplain ComponentDeserializer#miniMessage(MiniMessage) mini message component
+   * deserializer} allows for two types of format placeholders. Number format placeholders and date
+   * format placeholders.
+   *
+   * <h2>Number Format Placeholders</h2>
+   *
+   * The mini message component deserializer allows for {@code int}, {@code long}, {@code float} and
+   * {@code double} number format placeholders. The format of the replacement is specified by the
+   * first argument. The details of the tag are specified by {@link Formatter#number(String, Number)
+   * Adventure's number formatter dynamic replacement}.
+   *
+   * <h2>Date Format Placeholders</h2>
+   *
+   * The mini message component deserializer also allows any for date format placeholders for any
+   * type assignable to {@link TemporalAccessor}. The exact behaviour of the tag is specified by
+   * {@link Formatter#date(String, TemporalAccessor) Adventure's date formatter dynamic
+   * replacement}.
    *
    * @see Placeholder
    * @see Formatter#number(String, Number)
@@ -113,6 +186,7 @@ public @interface Placeholder {
      * @return the placeholder name
      * @since 0.2
      */
+    @TagPattern
     String value();
   }
 
@@ -140,6 +214,7 @@ public @interface Placeholder {
      * @return the placeholder name
      * @since 0.2
      */
+    @TagPattern
     String value();
   }
 }
