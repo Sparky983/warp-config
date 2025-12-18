@@ -15,7 +15,6 @@ import java.lang.annotation.Target;
  * <p>The following is a list of requirements for a configuration class:
  *
  * <ul>
- *   <li>A configuration class must be be {@code public}
  *   <li>A configuration class must be an {@code interface}
  *   <li>A configuration class must not be {@link Class#isHidden() hidden}
  *   <li>A configuration class must not be {@link Class#isSealed() sealed}

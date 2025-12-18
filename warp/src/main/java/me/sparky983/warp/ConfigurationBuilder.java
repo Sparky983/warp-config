@@ -30,6 +30,7 @@ import java.util.Optional;
  *       <li>{@link Optional} (a raw {@code Optional} type is unsupported)
  *       <li>{@link java.util.Map} (a raw {@code Map} type is unsupported)
  *       <li>{@link java.util.List} (a raw {@code List} type is unsupported)
+ *       <li>any {@link Enum} (case sensitive)
  *       <li>other {@linkplain Configuration configuration classes}
  *     </ul>
  */

@@ -31,11 +31,8 @@ import org.intellij.lang.annotations.Pattern;
  * <p>The following is a list of requirements for a property class:
  *
  * <ul>
- *   <li>A property method must be {@code public}
  *   <li>A property method must not be {@code static}
  *   <li>A property method must not be generic
- *   <li>A property method must not declare any parameters (an explicit receiver parameter is
- *       allowed)
  *   <li>A property method must be a member of a {@linkplain Configuration configuration class}
  * </ul>
  *
