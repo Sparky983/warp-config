@@ -4,6 +4,7 @@ import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.comp
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.parsed;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
+import java.lang.reflect.Executable;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.time.temporal.TemporalAccessor;
@@ -101,13 +102,21 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
           namedPlaceholder = new PlaceholderFactory(placeholder.value(), PlaceholderKind.COMPONENT);
         } else {
           throw new IllegalStateException(
-              "@Property method declared a parameter annotated with @Placeholder but type is not a primitive, String or ComponentLike");
+              "@Placeholder("
+                  + placeholder.value()
+                  + ") parameter from method "
+                  + getMethodNameFrom(parameter)
+                  + " must be int, long, float, double, String or ComponentLike");
         }
       } else if (placeholder == null && choice != null && format == null && parsed == null) {
         final PlaceholderKind kind = CHOICE_CLASSES.get(parameterType);
         if (kind == null) {
           throw new IllegalStateException(
-              "@Property method declared a parameter @Placeholder.Choice but type is not a primitive number or boolean");
+              "@Placeholder.Choice("
+                  + choice.value()
+                  + ") parameter from method "
+                  + getMethodNameFrom(parameter)
+                  + " must be int, long, float, double or boolean");
         }
         namedPlaceholder = new PlaceholderFactory(choice.value(), kind);
       } else if (placeholder == null && choice == null && format != null && parsed == null) {
@@ -118,17 +127,27 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
           namedPlaceholder = new PlaceholderFactory(format.value(), PlaceholderKind.FORMAT_DATE);
         } else {
           throw new IllegalStateException(
-              "@Property method declared a parameter annotated with @Placeholder.Format but type is not a primitive number or TemporalAccessor");
+              "@Placeholder.Format("
+                  + format.value()
+                  + ") parameter from method "
+                  + getMethodNameFrom(parameter)
+                  + " must be int, long, float, double or TemporalAccessor");
         }
       } else if (placeholder == null && choice == null && format == null && parsed != null) {
         if (!parameterType.equals(String.class)) {
           throw new IllegalStateException(
-              "@Property method declared parameter with @Placeholder.Parsed but type is not String");
+              "@Placeholder.Parsed("
+                  + parsed.value()
+                  + ") parameter from method "
+                  + getMethodNameFrom(parameter)
+                  + " must be String");
         }
         namedPlaceholder = new PlaceholderFactory(parsed.value(), PlaceholderKind.PARSED_STRING);
       } else {
         throw new IllegalStateException(
-            "@Property method must annotate all parameters with @Placeholder, @Placeholder.Choice, @Placeholder.Format or @Placeholder.Parsed");
+            "All parameters of @Property method "
+                + getMethodNameFrom(parameter)
+                + " must have a placeholder annotation");
       }
       placeholders[i] = namedPlaceholder;
     }
@@ -147,6 +166,11 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
       }
       return miniMessage.deserialize(string, tagResolvers);
     };
+  }
+
+  private String getMethodNameFrom(final Parameter parameter) {
+    final Executable executable = parameter.getDeclaringExecutable();
+    return executable.getDeclaringClass().getCanonicalName() + "." + executable.getName();
   }
 
   /**
