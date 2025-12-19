@@ -54,11 +54,17 @@ class ConfigurationExceptionTest {
         - animals.horse:
           - Invalid horse a
           - Invalid horse b
-        - version: Must be a number
-        """
-            .indent(1)
-            .stripTrailing(),
+        - version: Must be a number""",
         exception.getMessage());
+    assertEquals(
+        """
+        me.sparky983.warp.ConfigurationException:
+         - Something went wrong
+         - animals.horse:
+           - Invalid horse a
+           - Invalid horse b
+         - version: Must be a number""",
+        exception.toString());
     assertIterableEquals(
         List.of(
             ConfigurationError.group(
@@ -89,11 +95,17 @@ class ConfigurationExceptionTest {
         - animals.horse:
           - Invalid horse a
           - Invalid horse b
-        - version: Must be a number
-        """
-            .indent(1)
-            .stripTrailing(),
+        - version: Must be a number""",
         exception.getMessage());
+    assertEquals(
+        """
+        me.sparky983.warp.ConfigurationException:
+         - Something went wrong
+         - animals.horse:
+           - Invalid horse a
+           - Invalid horse b
+         - version: Must be a number""",
+        exception.toString());
     assertIterableEquals(
         List.of(
             ConfigurationError.group(

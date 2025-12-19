@@ -3,6 +3,7 @@ package me.sparky983.warp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Thrown by {@link ConfigurationBuilder#build()} if there was an error with the configuration.
@@ -10,8 +11,6 @@ import java.util.List;
  * @since 0.1
  */
 public class ConfigurationException extends Exception {
-  private static final int INITIAL_INDENT = 1;
-
   /** An unmodifiable collection of the errors with a configuration. */
   private final Collection<ConfigurationError> errors;
 
@@ -47,7 +46,7 @@ public class ConfigurationException extends Exception {
 
   private static String createErrorMessage(final Collection<? extends ConfigurationError> errors) {
     final StringBuilder builder = new StringBuilder();
-    addErrorMessage(builder, INITIAL_INDENT, errors);
+    addErrorMessage(builder, 0, errors);
     return builder.toString();
   }
 
@@ -57,7 +56,7 @@ public class ConfigurationException extends Exception {
       final Collection<? extends ConfigurationError> errors) {
     int i = 0;
     for (final ConfigurationError error : errors) {
-      if (i != 0 || indent != INITIAL_INDENT) {
+      if (i != 0 || indent != 0) {
         builder.append("\n");
       }
       builder.append(" ".repeat(indent)).append("- ");
@@ -84,6 +83,13 @@ public class ConfigurationException extends Exception {
   public String getMessage() {
     // Overridden to make the return type non-null
     return super.getMessage();
+  }
+
+  @Override
+  public String toString() {
+    return ConfigurationException.class.getName()
+        + ":\n"
+        + getLocalizedMessage().lines().map(line -> " " + line).collect(Collectors.joining("\n"));
   }
 
   /**
