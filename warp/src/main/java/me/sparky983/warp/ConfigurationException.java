@@ -63,6 +63,13 @@ public class ConfigurationException extends Exception {
       builder.append(" ".repeat(indent)).append("- ");
       if (error instanceof final ConfigurationError.Group group) {
         builder.append(group.name()).append(":");
+        if (group.errors().size() == 1) {
+          final ConfigurationError first = group.errors().iterator().next();
+          if (first instanceof final ConfigurationError.Error message) {
+            builder.append(" ").append(message.message());
+            continue;
+          }
+        }
         addErrorMessage(builder, indent + 2, group.errors());
       } else if (error instanceof final ConfigurationError.Error message) {
         builder.append(message.message());

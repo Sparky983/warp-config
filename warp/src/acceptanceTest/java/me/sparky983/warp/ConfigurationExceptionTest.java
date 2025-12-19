@@ -54,8 +54,7 @@ class ConfigurationExceptionTest {
         - animals.horse:
           - Invalid horse a
           - Invalid horse b
-        - version:
-          - Must be a number
+        - version: Must be a number
         """
             .indent(1)
             .stripTrailing(),
@@ -90,8 +89,7 @@ class ConfigurationExceptionTest {
         - animals.horse:
           - Invalid horse a
           - Invalid horse b
-        - version:
-          - Must be a number
+        - version: Must be a number
         """
             .indent(1)
             .stripTrailing(),
