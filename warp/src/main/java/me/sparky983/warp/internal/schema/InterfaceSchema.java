@@ -22,6 +22,7 @@ import me.sparky983.warp.ConfigurationError;
 import me.sparky983.warp.ConfigurationNode;
 import me.sparky983.warp.DeserializationException;
 import me.sparky983.warp.Deserializer;
+import me.sparky983.warp.Property;
 import me.sparky983.warp.Renderer;
 import me.sparky983.warp.internal.DeserializerRegistry;
 import me.sparky983.warp.internal.ParameterizedType;
@@ -34,7 +35,7 @@ import org.jspecify.annotations.Nullable;
  */
 final class InterfaceSchema<T> implements Schema<T> {
   private final Class<T> configurationClass;
-  private final Map<Method, Property<?>> properties;
+  private final Map<Method, PropertyMethod<?>> properties;
 
   /**
    * Constructs an {@code InterfaceSchema} for the given {@linkplain Configuration configuration
@@ -75,9 +76,9 @@ final class InterfaceSchema<T> implements Schema<T> {
         Stream.of(configurationClass.getMethods())
             .filter(
                 (method) ->
-                    method.isAnnotationPresent(me.sparky983.warp.Property.class)
+                    method.isAnnotationPresent(Property.class)
                         || Modifier.isAbstract(method.getModifiers()))
-            .collect(Collectors.toMap(Function.identity(), MethodProperty::new));
+            .collect(Collectors.toMap(Function.identity(), PropertyMethod::new));
 
     this.configurationClass = configurationClass;
   }
@@ -119,20 +120,20 @@ final class InterfaceSchema<T> implements Schema<T> {
 
   @Override
   public Deserializer<T> deserializer(final DeserializerRegistry deserializers) {
-    final Map<Property<?>, Deserializer<?>> propertyDeserializers =
+    final Map<PropertyMethod<?>, Deserializer<?>> propertyDeserializers =
         properties.values().stream()
             .collect(
                 Collectors.toMap(
                     Function.identity(),
                     (property) -> {
-                      final ParameterizedType<?> type = property.type();
+                      final ParameterizedType<?> type = property.type;
                       return deserializers
                           .get(type)
                           .orElseThrow(
                               () ->
                                   new IllegalStateException(
                                       "Property with path \""
-                                          + property.path()
+                                          + property.path
                                           + "\" required a deserializer of type "
                                           + type
                                           + ", but none was found"));
@@ -159,14 +160,14 @@ final class InterfaceSchema<T> implements Schema<T> {
 
       final UnseenKeys unseenKeys = new UnseenKeys(nodeConfiguration);
 
-      for (final Map.Entry<Method, Property<?>> entry : properties.entrySet()) {
+      for (final Map.Entry<Method, PropertyMethod<?>> entry : properties.entrySet()) {
         final Method key = entry.getKey();
-        final Property<?> property = entry.getValue();
-        final String path = property.path();
+        final PropertyMethod<?> property = entry.getValue();
+        final String path = property.path;
         final List<String> keys = Arrays.asList(path.split("\\."));
         unseenKeys.remove(keys);
         final ConfigurationNode value = get(keys, nodeConfiguration);
-        final InternalRenderer<?> defaultRenderer = property.defaultRenderer();
+        final InternalRenderer<?> defaultRenderer = property.defaultRenderer;
         if (value == null && defaultRenderer != null) {
           mappedConfiguration.put(key, defaultRenderer);
         } else {
@@ -256,5 +257,58 @@ final class InterfaceSchema<T> implements Schema<T> {
     final T[] combinedArgs = Arrays.copyOf(first, first.length + second.length);
     System.arraycopy(second, 0, combinedArgs, first.length, second.length);
     return combinedArgs;
+  }
+
+  /** A {@link PropertyMethod} implementation for property methods. */
+  private static final class PropertyMethod<T> {
+    private final String path;
+
+    /**
+     * The renderer for the default value or {@code null} if the property doesn't have a default
+     * value; a default implementation hasn't been specified.
+     */
+    private final @Nullable InternalRenderer<T> defaultRenderer;
+
+    private final ParameterizedType<T> type;
+
+    /**
+     * Constructs a {@code PropertyMethod} for the given method.
+     *
+     * @param method the method
+     * @throws IllegalArgumentException if the given method is not a valid property method.
+     * @throws NullPointerException if the method is {@code null}.
+     */
+    @SuppressWarnings("unchecked")
+    PropertyMethod(final Method method) {
+      Objects.requireNonNull(method, "method cannot be null");
+
+      final Property property = method.getAnnotation(Property.class);
+      if (property == null) {
+        throw new IllegalArgumentException(
+            "Method " + method + " must be annotated with @" + Property.class.getName());
+      }
+
+      if (!Modifier.isPublic(method.getModifiers())) {
+        throw new IllegalArgumentException("Method " + method + " must be public");
+      }
+
+      if (Modifier.isStatic(method.getModifiers())) {
+        throw new IllegalArgumentException("Method " + method + " must be non-static");
+      }
+
+      if (method.getTypeParameters().length != 0) {
+        throw new IllegalArgumentException("Method " + method + " must not be generic");
+      }
+
+      this.path = property.value();
+      if (method.isDefault()) {
+        this.defaultRenderer =
+            (proxy, context) -> (T) InvocationHandler.invokeDefault(proxy, method);
+      } else {
+        this.defaultRenderer = null;
+      }
+
+      this.type = (ParameterizedType<T>) ParameterizedType.of(method.getGenericReturnType());
+    }
   }
 }
