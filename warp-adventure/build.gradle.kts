@@ -1,6 +1,11 @@
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     id("warp.library-conventions")
     id("warp.test-fixtures-conventions")
+    id("com.vanniktech.maven.publish") version "0.32.0"
 }
 
 dependencies {
@@ -9,6 +14,15 @@ dependencies {
 
     testImplementation("org.mockito:mockito-core:5.21.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.21.0")
+}
+
+mavenPublishing {
+    configure(JavaLibrary(
+        javadocJar = JavadocJar.Javadoc(),
+        sourcesJar = true,
+    ))
+    signAllPublications()
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 }
 
 tasks {
