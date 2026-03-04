@@ -1,6 +1,6 @@
 import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.SonatypeHost
+import com.vanniktech.maven.publish.SourcesJar
 
 plugins {
     id("warp.library-conventions")
@@ -19,10 +19,10 @@ dependencies {
 mavenPublishing {
     configure(JavaLibrary(
         javadocJar = JavadocJar.Javadoc(),
-        sourcesJar = true,
+            sourcesJar = SourcesJar.Sources(),
     ))
     signAllPublications()
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
 }
 
 tasks {
