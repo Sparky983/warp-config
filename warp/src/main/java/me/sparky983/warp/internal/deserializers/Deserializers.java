@@ -123,7 +123,7 @@ public final class Deserializers {
         try {
           renderers.add(elementDeserializer.deserialize(element, deserializerContext));
         } catch (final DeserializationException exception) {
-          listErrors.add(ConfigurationError.group(String.valueOf(i), exception.errors()));
+          listErrors.add(ConfigurationError.group("[" + i + "]", exception.errors()));
         }
       }
 
