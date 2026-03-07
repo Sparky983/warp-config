@@ -12,8 +12,8 @@ dependencies {
     api(project(":warp"))
     api("net.kyori:adventure-text-minimessage:4.26.1")
 
-    testImplementation("org.mockito:mockito-core:5.21.0")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.21.0")
+    testImplementation("org.mockito:mockito-core:5.22.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.22.0")
 }
 
 mavenPublishing {
