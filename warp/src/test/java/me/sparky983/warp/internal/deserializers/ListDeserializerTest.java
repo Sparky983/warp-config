@@ -79,8 +79,8 @@ class ListDeserializerTest {
 
     assertIterableEquals(
         List.of(
-            ConfigurationError.group("0", ConfigurationError.error("Must be an integer")),
-            ConfigurationError.group("2", ConfigurationError.error("Must be an integer"))),
+            ConfigurationError.group("[0]", ConfigurationError.error("Must be an integer")),
+            ConfigurationError.group("[2]", ConfigurationError.error("Must be an integer"))),
         thrown.errors());
     verifyNoMoreInteractions(validRenderer);
   }
