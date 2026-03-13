@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:8.3.0")
 }
 
 kotlin {
