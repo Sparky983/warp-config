@@ -45,8 +45,8 @@ public final class ComponentDeserializer {
   }
 
   /**
-   * Creates a generic generic {@link Component} {@link Deserializer} using a {@linkplain
-   * ComponentDecoder generic component decoder}.
+   * Creates a generic {@link Component} {@link Deserializer} using a {@linkplain ComponentDecoder
+   * generic component decoder}.
    *
    * <p>Note: the returned deserializer does not support {@linkplain Placeholder placeholders}.
    *

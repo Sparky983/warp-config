@@ -166,10 +166,9 @@ public @interface Placeholder {
    *
    * <h2>Date Format Placeholders</h2>
    *
-   * The mini message component deserializer also allows any for date format placeholders for any
-   * type assignable to {@link TemporalAccessor}. The exact behaviour of the tag is specified by
-   * {@link Formatter#date(String, TemporalAccessor) Adventure's date formatter dynamic
-   * replacement}.
+   * The mini message component deserializer allows for date format placeholders for any type
+   * assignable to {@link TemporalAccessor}. The exact behaviour of the tag is specified by {@link
+   * Formatter#date(String, TemporalAccessor) Adventure's date formatter dynamic replacement}.
    *
    * @see Placeholder
    * @see Formatter#number(String, Number)
