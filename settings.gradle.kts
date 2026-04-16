@@ -1,3 +1,3 @@
 rootProject.name = "warp-config"
 
-sequenceOf("warp", "warp-adventure", "warp-yaml").forEach { include(it) }
+include("warp", "warp-adventure", "warp-json", "warp-yaml")
