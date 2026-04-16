@@ -26,6 +26,9 @@ mavenPublishing {
 }
 
 tasks {
+    withType<JavaCompile> {
+        options.release.set(21)
+    }
     jar {
         manifest {
             attributes("Automatic-Module-Name" to "me.sparky983.warp.adventure")
