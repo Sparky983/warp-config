@@ -10,7 +10,7 @@ plugins {
 
 dependencies {
     api(project(":warp"))
-    api("net.kyori:adventure-text-minimessage:4.26.1")
+    api("net.kyori:adventure-text-minimessage:5.0.0")
 
     testImplementation("org.mockito:mockito-core:5.23.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.23.0")
@@ -26,6 +26,9 @@ mavenPublishing {
 }
 
 tasks {
+    withType<JavaCompile> {
+        options.release.set(21)
+    }
     jar {
         manifest {
             attributes("Automatic-Module-Name" to "me.sparky983.warp.adventure")
