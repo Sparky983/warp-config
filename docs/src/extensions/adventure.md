@@ -6,6 +6,9 @@ description: Support for net.kyori:adventure types
 
 ## Installation
 
+> [!NOTE]
+> The Adventure extension requires Java 21 (due to Adventure 5 requiring it), while the rest of Warp Config requires Java 17.
+
 Add the following to your build configuration:
 
 ::: code-group
