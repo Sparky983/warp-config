@@ -114,7 +114,7 @@ class CustomDeserializerTest {
             .deserializer(
                 String.class,
                 (node, deserializerContext) ->
-                    (rendererContext) -> {
+                    rendererContext -> {
                       throw exception;
                     })
             .build();
@@ -130,7 +130,7 @@ class CustomDeserializerTest {
             .source(
                 ConfigurationSource.of(
                     ConfigurationNode.map(Map.entry("property", ConfigurationNode.nil()))))
-            .deserializer(String.class, (node, deserializerContext) -> (rendererContext) -> null)
+            .deserializer(String.class, (node, deserializerContext) -> rendererContext -> null)
             .build();
 
     assertThrows(NullPointerException.class, configuration::property);
@@ -142,7 +142,7 @@ class CustomDeserializerTest {
         (node, context) ->
             context
                 .deserializer(Object.class)
-                .map((objectDeserializer) -> Renderer.of(false))
+                .map(objectDeserializer -> Renderer.of(false))
                 .orElseGet(() -> Renderer.of(true));
 
     final Configurations.Boolean configuration =
@@ -163,7 +163,7 @@ class CustomDeserializerTest {
                   .deserializer(int.class)
                   .orElseThrow(IllegalStateException::new)
                   .deserialize(node, deserializerContext);
-          return (rendererContext) -> String.valueOf(renderer.render(rendererContext));
+          return rendererContext -> String.valueOf(renderer.render(rendererContext));
         };
 
     final Configurations.String configuration =
@@ -217,13 +217,12 @@ class CustomDeserializerTest {
     verify(deserializer)
         .deserialize(
             isNull(),
-            argThat(
-                (context) ->
-                    context.parameters().length == 1 && context.parameters()[0].equals(parameter)));
+            argThat(context ->
+                context.parameters().length == 1 && context.parameters()[0].equals(parameter)));
     verify(renderer)
         .render(
             argThat(
-                (context) -> context.arguments().length == 1 && context.arguments()[0] == object));
+                context -> context.arguments().length == 1 && context.arguments()[0] == object));
     verifyNoMoreInteractions(deserializer, renderer);
   }
 
@@ -244,7 +243,7 @@ class CustomDeserializerTest {
 
     assertEquals("value", configuration.property());
     verify(deserializer).deserialize(eq(node), any());
-    verify(renderer).render(argThat((context) -> context.arguments().length == 0));
+    verify(renderer).render(argThat(context -> context.arguments().length == 0));
     verifyNoMoreInteractions(deserializer, renderer);
   }
 }

@@ -29,13 +29,12 @@ public record DefaultMapNode(Map<String, ConfigurationNode> map) implements Conf
       map = Map.of();
     } else {
       map = Collections.unmodifiableMap(new LinkedHashMap<>(map));
-      map.forEach(
-          (key, value) -> {
-            Objects.requireNonNull(key, "map cannot have null key");
-            if (value == null) {
-              throw new NullPointerException("map[" + key + "] cannot be null");
-            }
-          });
+      map.forEach((key, value) -> {
+        Objects.requireNonNull(key, "map cannot have null key");
+        if (value == null) {
+          throw new NullPointerException("map[" + key + "] cannot be null");
+        }
+      });
     }
   }
 
@@ -47,7 +46,7 @@ public record DefaultMapNode(Map<String, ConfigurationNode> map) implements Conf
   @Override
   public String toString() {
     return map.entrySet().stream()
-        .map((entry) -> entry.getKey() + "=" + entry.getValue())
+        .map(entry -> entry.getKey() + "=" + entry.getValue())
         .collect(Collectors.joining(", ", "{", "}"));
   }
 }

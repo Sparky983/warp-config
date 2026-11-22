@@ -29,14 +29,13 @@ final class UnseenKeys {
     Objects.requireNonNull(configurationMap, "configurationMap cannot be null");
 
     final Map<String, @Nullable UnseenKeys> unseenKeys = new LinkedHashMap<>();
-    configurationMap.forEach(
-        (key, value) -> {
-          try {
-            unseenKeys.put(key, new UnseenKeys(value.asMap()));
-          } catch (final DeserializationException e) {
-            unseenKeys.put(key, null);
-          }
-        });
+    configurationMap.forEach((key, value) -> {
+      try {
+        unseenKeys.put(key, new UnseenKeys(value.asMap()));
+      } catch (final DeserializationException e) {
+        unseenKeys.put(key, null);
+      }
+    });
     this.unseenKeys = unseenKeys;
   }
 
@@ -89,17 +88,16 @@ final class UnseenKeys {
   }
 
   private void makeErrors0(final List<? super ConfigurationError> errors) {
-    this.unseenKeys.forEach(
-        (key, value) -> {
-          if (value == null) {
-            errors.add(ConfigurationError.group(key, ConfigurationError.error("Unknown property")));
-          } else {
-            final List<ConfigurationError> childErrors = new ArrayList<>();
-            value.makeErrors0(childErrors);
-            if (!childErrors.isEmpty()) {
-              errors.add(ConfigurationError.group(key, childErrors));
-            }
-          }
-        });
+    this.unseenKeys.forEach((key, value) -> {
+      if (value == null) {
+        errors.add(ConfigurationError.group(key, ConfigurationError.error("Unknown property")));
+      } else {
+        final List<ConfigurationError> childErrors = new ArrayList<>();
+        value.makeErrors0(childErrors);
+        if (!childErrors.isEmpty()) {
+          errors.add(ConfigurationError.group(key, childErrors));
+        }
+      }
+    });
   }
 }

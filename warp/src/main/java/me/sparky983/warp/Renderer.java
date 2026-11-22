@@ -24,7 +24,7 @@ public interface Renderer<T> {
   static <T> Renderer<T> of(final T value) {
     Objects.requireNonNull(value, "value cannot be null");
 
-    return (context) -> {
+    return context -> {
       Objects.requireNonNull(context, "context cannot be null");
 
       return value;

@@ -158,7 +158,7 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
 
     final String string = node.asString();
 
-    return (rendererContext) -> {
+    return rendererContext -> {
       final Object[] arguments = rendererContext.arguments();
       final TagResolver[] tagResolvers = new TagResolver[placeholders.length];
       for (int i = 0; i < parameters.length; i++) {
@@ -191,8 +191,8 @@ final class MiniMessageDeserializer implements Deserializer<Component> {
       }
       return switch (kind) {
         case COMPONENT_STRING -> unparsed(name, String.valueOf(value));
-        case COMPONENT_NUMBER, COMPONENT_CHAR, COMPONENT_BOOLEAN -> component(
-            name, Component.text(String.valueOf(value)));
+        case COMPONENT_NUMBER, COMPONENT_CHAR, COMPONENT_BOOLEAN ->
+            component(name, Component.text(String.valueOf(value)));
         case COMPONENT -> {
           final Component component = Objects.requireNonNull(((ComponentLike) value).asComponent());
           yield component(name, component);

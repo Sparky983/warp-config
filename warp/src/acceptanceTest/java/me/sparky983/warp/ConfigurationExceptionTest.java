@@ -54,7 +54,8 @@ class ConfigurationExceptionTest {
         - animals.horse:
           - Invalid horse a
           - Invalid horse b
-        - version: Must be a number""",
+        - version: Must be a number\
+        """,
         exception.getMessage());
     assertEquals(
         """
@@ -63,7 +64,8 @@ class ConfigurationExceptionTest {
          - animals.horse:
            - Invalid horse a
            - Invalid horse b
-         - version: Must be a number""",
+         - version: Must be a number\
+        """,
         exception.toString());
     assertIterableEquals(
         List.of(
@@ -95,7 +97,8 @@ class ConfigurationExceptionTest {
         - animals.horse:
           - Invalid horse a
           - Invalid horse b
-        - version: Must be a number""",
+        - version: Must be a number\
+        """,
         exception.getMessage());
     assertEquals(
         """
@@ -104,7 +107,8 @@ class ConfigurationExceptionTest {
          - animals.horse:
            - Invalid horse a
            - Invalid horse b
-         - version: Must be a number""",
+         - version: Must be a number\
+        """,
         exception.toString());
     assertIterableEquals(
         List.of(

@@ -131,10 +131,10 @@ public final class Deserializers {
         throw new DeserializationException(listErrors);
       }
 
-      return (rendererContext) -> {
+      return rendererContext -> {
         Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
 
-        return renderers.stream().<E>map((renderer) -> renderer.render(rendererContext)).toList();
+        return renderers.stream().<E>map(renderer -> renderer.render(rendererContext)).toList();
       };
     };
   }
@@ -198,7 +198,7 @@ public final class Deserializers {
         throw new DeserializationException(mapErrors);
       }
 
-      return (rendererContext) -> {
+      return rendererContext -> {
         Objects.requireNonNull(rendererContext, "rendererContext cannot be null");
         final Map<K, V> result = new HashMap<>();
         renderers.forEach(
@@ -229,7 +229,7 @@ public final class Deserializers {
 
       final Renderer<? extends T> renderer = valueDeserializer.deserialize(node, context);
 
-      return (rendererContext) -> Optional.of(renderer.render(rendererContext));
+      return rendererContext -> Optional.of(renderer.render(rendererContext));
     };
   }
 

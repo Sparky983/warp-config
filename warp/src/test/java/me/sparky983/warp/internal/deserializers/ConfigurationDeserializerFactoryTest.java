@@ -225,15 +225,13 @@ class ConfigurationDeserializerFactoryTest {
     verify(propertyDeserializer)
         .deserialize(
             eq(ConfigurationNode.string("value")),
-            argThat(
-                (context) ->
-                    context.parameters().length == 1
-                        && context.parameters()[0].equals(outerParameter)));
+            argThat(context ->
+                context.parameters().length == 1
+                    && context.parameters()[0].equals(outerParameter)));
     verify(propertyRenderer)
         .render(
-            argThat(
-                (context) ->
-                    context.arguments().length == 1 && context.arguments()[0] == outerArgument));
+            argThat(context ->
+                context.arguments().length == 1 && context.arguments()[0] == outerArgument));
     verifyNoMoreInteractions(propertyRenderer);
   }
 
@@ -269,15 +267,13 @@ class ConfigurationDeserializerFactoryTest {
     verify(propertyDeserializer)
         .deserialize(
             eq(ConfigurationNode.string("value")),
-            argThat(
-                (context) ->
-                    context.parameters().length == 1
-                        && context.parameters()[0].equals(innerParameter)));
+            argThat(context ->
+                context.parameters().length == 1
+                    && context.parameters()[0].equals(innerParameter)));
     verify(propertyRenderer)
         .render(
-            argThat(
-                (context) ->
-                    context.arguments().length == 1 && context.arguments()[0] == innerArgument));
+            argThat(context ->
+                context.arguments().length == 1 && context.arguments()[0] == innerArgument));
     verifyNoMoreInteractions(propertyRenderer);
   }
 
@@ -320,18 +316,16 @@ class ConfigurationDeserializerFactoryTest {
     verify(propertyDeserializer)
         .deserialize(
             eq(ConfigurationNode.string("value")),
-            argThat(
-                (context) ->
-                    context.parameters().length == 2
-                        && context.parameters()[0].equals(outerParameter)
-                        && context.parameters()[1].equals(innerParameter)));
+            argThat(context ->
+                context.parameters().length == 2
+                    && context.parameters()[0].equals(outerParameter)
+                    && context.parameters()[1].equals(innerParameter)));
     verify(propertyRenderer)
         .render(
-            argThat(
-                (context) ->
-                    context.arguments().length == 2
-                        && context.arguments()[0] == outerArgument
-                        && context.arguments()[1] == innerArgument));
+            argThat(context ->
+                context.arguments().length == 2
+                    && context.arguments()[0] == outerArgument
+                    && context.arguments()[1] == innerArgument));
     verifyNoMoreInteractions(propertyRenderer);
   }
 
@@ -362,8 +356,8 @@ class ConfigurationDeserializerFactoryTest {
     verify(propertyDeserializer)
         .deserialize(
             eq(ConfigurationNode.string("value")),
-            argThat((context) -> context.parameters().length == 0));
-    verify(propertyRenderer).render(argThat((context) -> context.arguments().length == 0));
+            argThat(context -> context.parameters().length == 0));
+    verify(propertyRenderer).render(argThat(context -> context.arguments().length == 0));
     verifyNoMoreInteractions(propertyRenderer);
   }
 }
