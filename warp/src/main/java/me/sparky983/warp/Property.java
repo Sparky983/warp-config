@@ -64,6 +64,5 @@ public @interface Property {
    * @return the path
    * @since 0.1
    */
-  @Pattern("[-\\w]+(\\.[-\\w]+)*")
-  String value();
+  @Pattern("[-\\w]+(\\.[-\\w]+)*") String value();
 }
