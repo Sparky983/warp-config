@@ -39,7 +39,7 @@ idea {
 
 spotless {
     java {
-        googleJavaFormat("1.17.0")
+        googleJavaFormat("2.0.0")
         formatAnnotations()
         toggleOffOn()
     }

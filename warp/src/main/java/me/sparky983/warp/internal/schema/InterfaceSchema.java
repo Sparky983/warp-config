@@ -74,10 +74,9 @@ final class InterfaceSchema<T> implements Schema<T> {
 
     properties =
         Stream.of(configurationClass.getMethods())
-            .filter(
-                (method) ->
-                    method.isAnnotationPresent(Property.class)
-                        || Modifier.isAbstract(method.getModifiers()))
+            .filter(method ->
+                method.isAnnotationPresent(Property.class)
+                    || Modifier.isAbstract(method.getModifiers()))
             .collect(Collectors.toMap(Function.identity(), PropertyMethod::new));
 
     this.configurationClass = configurationClass;
@@ -125,18 +124,17 @@ final class InterfaceSchema<T> implements Schema<T> {
             .collect(
                 Collectors.toMap(
                     Function.identity(),
-                    (property) -> {
+                    property -> {
                       final ParameterizedType<?> type = property.type;
                       return deserializers
                           .get(type)
-                          .orElseThrow(
-                              () ->
-                                  new IllegalStateException(
-                                      "Property with path \""
-                                          + property.path
-                                          + "\" required a deserializer of type "
-                                          + type
-                                          + ", but none was found"));
+                          .orElseThrow(() ->
+                              new IllegalStateException(
+                                  "Property with path \""
+                                      + property.path
+                                      + "\" required a deserializer of type "
+                                      + type
+                                      + ", but none was found"));
                     }));
 
     return (node, deserializerContext) -> {
@@ -215,31 +213,30 @@ final class InterfaceSchema<T> implements Schema<T> {
         throw new DeserializationException(errors);
       }
 
-      return (rendererContext) -> {
+      return rendererContext -> {
         Objects.requireNonNull(rendererContext, "context cannot be null");
 
-        return newProxyInstance(
-            (proxy, method, innerArgs) -> {
-              if (method.getDeclaringClass().equals(Object.class)) {
-                final String name = method.getName();
-                final int parameterCount = method.getParameterCount();
-                if (name.equals("toString") && parameterCount == 0) {
-                  return configurationClass.getName();
-                } else if (name.equals("hashCode") && parameterCount == 0) {
-                  return super.hashCode();
-                  // this is fine since our configurations are identity-based
-                } else if (name.equals("equals")
-                    && parameterCount == 1
-                    && method.getParameters()[0].getType() == Object.class) {
-                  return proxy == innerArgs[0];
-                }
-              }
-              final Renderer.Context context =
-                  () -> combineArrays(rendererContext.arguments(), innerArgs);
-              final Object result = mappedConfiguration.get(method).render(proxy, context);
+        return newProxyInstance((proxy, method, innerArgs) -> {
+          if (method.getDeclaringClass().equals(Object.class)) {
+            final String name = method.getName();
+            final int parameterCount = method.getParameterCount();
+            if (name.equals("toString") && parameterCount == 0) {
+              return configurationClass.getName();
+            } else if (name.equals("hashCode") && parameterCount == 0) {
+              return super.hashCode();
+              // this is fine since our configurations are identity-based
+            } else if (name.equals("equals")
+                && parameterCount == 1
+                && method.getParameters()[0].getType() == Object.class) {
+              return proxy == innerArgs[0];
+            }
+          }
+          final Renderer.Context context =
+              () -> combineArrays(rendererContext.arguments(), innerArgs);
+          final Object result = mappedConfiguration.get(method).render(proxy, context);
 
-              return Objects.requireNonNull(result, "Renderer returned null");
-            });
+          return Objects.requireNonNull(result, "Renderer returned null");
+        });
       };
     };
   }

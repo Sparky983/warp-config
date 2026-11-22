@@ -27,10 +27,9 @@ public final class ListDeserializerFactory implements DeserializerFactory {
     final Deserializer<?> deserializer =
         registry
             .get(valueType)
-            .orElseThrow(
-                () ->
-                    new IllegalStateException(
-                        "Deserializer for the elements of " + type + " not found"));
+            .orElseThrow(() ->
+                new IllegalStateException(
+                    "Deserializer for the elements of " + type + " not found"));
     return Optional.of((Deserializer<T>) Deserializers.list(deserializer));
   }
 }

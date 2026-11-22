@@ -26,10 +26,8 @@ public final class OptionalDeserializerFactory implements DeserializerFactory {
     final Deserializer<?> deserializer =
         registry
             .get(valueType)
-            .orElseThrow(
-                () ->
-                    new IllegalStateException(
-                        "Deserializer for the value of " + type + " not found"));
+            .orElseThrow(() ->
+                new IllegalStateException("Deserializer for the value of " + type + " not found"));
     return Optional.of((Deserializer<T>) Deserializers.optional(deserializer));
   }
 }

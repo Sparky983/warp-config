@@ -138,7 +138,7 @@ class MiniMessageDeserializerTest {
 
     final MiniMessage miniMessage =
         MiniMessage.builder()
-            .editTags((tags) -> tags.tag("tag", Tag.inserting(Component.text("world"))))
+            .editTags(tags -> tags.tag("tag", Tag.inserting(Component.text("world"))))
             .build();
     final TestConfiguration configuration =
         Warp.builder(TestConfiguration.class)

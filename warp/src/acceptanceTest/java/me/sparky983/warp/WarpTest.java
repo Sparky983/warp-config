@@ -233,10 +233,9 @@ class WarpTest {
   void testSourceThrows() {
     final ConfigurationBuilder<Configurations.String> builder =
         Warp.builder(Configurations.String.class)
-            .source(
-                () -> {
-                  throw new ConfigurationException();
-                });
+            .source(() -> {
+              throw new ConfigurationException();
+            });
 
     assertThrows(ConfigurationException.class, builder::build);
   }

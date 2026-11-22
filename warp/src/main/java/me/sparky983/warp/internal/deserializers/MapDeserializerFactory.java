@@ -28,17 +28,13 @@ public final class MapDeserializerFactory implements DeserializerFactory {
     final Deserializer<?> keyDeserializer =
         registry
             .get(keyType)
-            .orElseThrow(
-                () ->
-                    new IllegalStateException(
-                        "Deserializer for the keys of " + type + " not found"));
+            .orElseThrow(() ->
+                new IllegalStateException("Deserializer for the keys of " + type + " not found"));
     final Deserializer<?> valueDeserializer =
         registry
             .get(valueType)
-            .orElseThrow(
-                () ->
-                    new IllegalStateException(
-                        "Deserializer for the values of " + type + " not found"));
+            .orElseThrow(() ->
+                new IllegalStateException("Deserializer for the values of " + type + " not found"));
     return Optional.of((Deserializer<T>) Deserializers.map(keyDeserializer, valueDeserializer));
   }
 }

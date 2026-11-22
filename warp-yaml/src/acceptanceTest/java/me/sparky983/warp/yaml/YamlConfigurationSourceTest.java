@@ -23,12 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 class YamlConfigurationSourceTest {
-  static final String INVALID_YAML = """
+  static final String INVALID_YAML =
+      """
       map:
         ? invalid
       """;
 
-  static final String INVALID = """
+  static final String INVALID =
+      """
       map:
         ? [ key ]
         : value
@@ -36,19 +38,19 @@ class YamlConfigurationSourceTest {
 
   static final String MIX_YAML =
       """
-        no value:
-        null value: null
-        true: true
-        false: false
-        integer: 10
-        decimal: 10.0
-        string: some string
-        list:
-          - 10
-          - some string
-        map:
-          key: value
-        """;
+      no value:
+      null value: null
+      true: true
+      false: false
+      integer: 10
+      decimal: 10.0
+      string: some string
+      list:
+        - 10
+        - some string
+      map:
+        key: value
+      """;
 
   /**
    * A charset that is not compatible with the UTF-8 charset. This is used to test that the charset
